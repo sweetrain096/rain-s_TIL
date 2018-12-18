@@ -6,6 +6,12 @@
 
 
 
+윈도우에서 사용하기 위해 [git for windows (Git bash)](https://gitforwindows.org/)  설치.
+
+사용하고자 하는 폴더에서 우클릭 -> Git Bash Here
+
+
+
 ## 기초 명령어 정리
 
 ### 0. git 초기 설정
@@ -56,11 +62,15 @@ student@DESKTOP MINGW64 ~/Desktop/TIL (master)
 
 ```
 $ touch a.txt
-$git add .
+$ git add .
 ```
 
 * git add a.txt를 해도 되지만, 우선 git add . 를 하자! -> 폴더에 있는 모든 파일을 업데이트한다.
 * `.`은 리눅스 상에서 현재 디렉토리를 뜻한다.
+
+```
+$ git add kospi.py
+```
 
 
 
