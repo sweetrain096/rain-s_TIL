@@ -116,3 +116,14 @@ https://github.com/sweetrain096/rain-s_TIL.git
 git push -u origin master
 ```
 
+
+
+## 원격 저장소에서 받기
+
+디렉토리 하나를 생성 한 후 디렉토리에서 Git Bash Here
+
+```powershell
+$ git clone "주소"
+```
+
+![1545121319328](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1545121319328.png)
