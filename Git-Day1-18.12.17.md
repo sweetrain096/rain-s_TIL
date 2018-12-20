@@ -4,6 +4,16 @@
 
 소스코드의 버전 관리를 할 수 있고, 이력이 관리된다.
 
+### Git 사용 이유?
+
+`git init` : 폴더 하나를 git 으로 관리하겠다
+
+![til](C:\Users\student\Desktop\TIL\til.jpg)
+
+
+
+
+
 
 
 윈도우에서 사용하기 위해 [git for windows (Git bash)](https://gitforwindows.org/)  설치.
@@ -127,3 +137,14 @@ $ git clone "주소"
 ```
 
 ![1545121319328](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1545121319328.png)
+
+
+
+
+
+
+
+
+
+
+
