@@ -166,3 +166,19 @@ $ git clone url(https://github.com/~~~.git)
 
 
 
+
+
+## 원격 저장소에 올리기 싫은 것 관리하기(gitignore)
+
+디렉토리에 .gitignore 파일을 생성한 후 원하지 않는 디렉토리 및 파일이름 작성 후 저장.
+
+git에 올리지 않는 게 좋은 디렉토리 및 파일들을 확인하는 곳 [**gitignore**](https://www.gitignore.io/)
+
+
+
+```
+# .gitignore
+
+.ipynb_checkpoints/
+```
+
