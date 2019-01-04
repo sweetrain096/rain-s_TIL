@@ -225,3 +225,139 @@ my_url(60, key='aa', targetDt='yyyymmdd')
 필수 요청변수가 누락되었습니다.
 1~10까지의 값을 넣어주세요.
 ```
+
+
+
+
+
+## Ture or False
+
+### 각자 다른 타입을 비교하는 것을 주의하자!
+
+
+
+False : [], "", {}, 0, .....
+
+
+
+```python
+print([] == False)
+```
+
+실행결과 : 
+
+False
+
+
+
+```python
+print(bool([]) == False)
+```
+
+실행 결과 :
+
+True
+
+
+
+so, 
+
+```python
+if not input_[i] :
+    break
+```
+
+
+
+## 재귀함수(recursive function)
+
+재귀 함수는 함수 내부에서 자기 자신을 호출 하는 함수.
+
+python에서 재귀함수는 1000 번이 넘어가면 자동 종료시킨다.
+
+
+
+### 재귀함수를 이용한 팩토리얼
+
+``` python
+def factorial(n):
+    if n <= 1 :
+        return n
+    else :
+        return n * factorial(n-1)
+factorial(5)
+```
+
+
+
+실행 결과 : 
+
+120
+
+
+
+### 재귀함수를 이용한 피보나치수열 vs 반복문을 이용한 피보나치 수열
+
+
+
+#### 재귀함수
+
+```python
+def fib(n):
+    n_now, n_pre = 1, 1
+    
+    if n <= 1:
+        return 1
+    else :
+        return fib(n-1) + fib(n-2)
+fib(10)
+```
+
+실행 결과 :
+
+89
+
+
+
+#### 반복문
+
+```python
+# 선생님 코드
+
+def fib_loop_t(n) :
+    old, new = 1, 1
+    for i in range(1, n-1) :
+        old, new = new, old + new
+    return old + new
+fib_loop_t(10)
+```
+
+실행 결과 :
+
+89
+
+
+
+### 하노이의 탑
+
+```python
+def hanoi (n, start, tmp, end) :
+    if n > 0 :
+        hanoi(n-1, start, end, tmp)
+        print(f"{n}번째 원판을 {start} -> {end}")
+        hanoi(n-1, tmp, start, end)
+hanoi(3, "a", "b", "c")
+```
+
+실행결과 :
+
+```
+1번째 원판을 a -> c
+2번째 원판을 a -> b
+1번째 원판을 c -> b
+3번째 원판을 a -> c
+1번째 원판을 b -> a
+2번째 원판을 b -> c
+1번째 원판을 a -> c
+```
+
