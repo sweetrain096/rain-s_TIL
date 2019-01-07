@@ -361,3 +361,83 @@ hanoi(3, "a", "b", "c")
 1번째 원판을 a -> c
 ```
 
+
+
+## 인덱스 슬라이싱
+
+```python
+a = "123"
+print(a[::-1])
+```
+
+실행결과
+
+```
+"321"
+```
+
+
+
+
+
+## 메소드 활용
+
+문자열.메소드 형식으로 사용
+
+
+
+### 문자열 메소드 활용
+
+#### 문자열은 변하지 않는다!!
+
+So, 추가, 삭제 불가.
+
+
+
+
+
+
+
+
+
+## 리스트 생성 (list comprehension)
+
+```python
+even_list = [x * 2 for x in range(1, 6)]
+print(even_list)
+```
+
+실행결과 :
+
+```
+[2, 4, 6, 8, 10]
+```
+
+
+
+```python
+even_list = [x for x in range(1, 11) if not x % 2]
+print(even_list)
+```
+
+실행 결과 :
+
+```
+[2, 4, 6, 8, 10]
+```
+
+
+
+```python
+girls = ['jane', 'iu', 'mary']
+boys = ['justin', 'david', 'kim']
+
+print([(x, y) for x in boys for y in girls])
+```
+
+실행 결과 :
+
+```
+[('justin', 'jane'), ('justin', 'iu'), ('justin', 'mary'), ('david', 'jane'), ('david', 'iu'), ('david', 'mary'), ('kim', 'jane'), ('kim', 'iu'), ('kim', 'mary')]
+```
+
