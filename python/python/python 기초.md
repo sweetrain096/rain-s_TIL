@@ -760,3 +760,8 @@ print({x: "나쁨" if y > 80 else "보통" for x, y in dusts.items()})
 
 
 
+
+
+
+
+
