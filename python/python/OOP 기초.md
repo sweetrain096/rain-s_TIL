@@ -25,6 +25,8 @@ iu.greeting()       # 메서드 호출
 
 
 
+
+
 ## 인스턴스의 self
 
 인스턴스에서 클래스를 호출하려면 self를 사용해야한다.
@@ -697,4 +699,318 @@ num.imag
 ```
 
 위와 같이 인스턴스 이름.인스턴스 변수 로 가져오게 된다.
+
+
+
+
+
+
+
+
+
+## 인스턴스, 클래스, 정적 메서드 정리
+
+1. 인스턴트 메서드 : 첫번째 인자로 인스턴스 객체를 전달한다. (self)
+2. 클래스 메서드 : 첫번째 친자로 클래스 객체를 전달한다. (cls)
+   // 인스턴스 메서드와 클래스 메서드는 p1.메서드이름() or class이름().메서드이름
+     // 위가 자동적으로 넘어간다.
+     // 쉽게 말해 인스턴스이름.메서드() 괄호 안에 넘겨주지 않아도 메서드(인스턴스이름)
+     // 같이 자동으로 넘어가게된다.
+3. 정적 메서드 : 인자로 어떠한 객체를 전달하지 않는다.
+
+  // 그러나 정적메서드는 무조건 괄호 안에 넘겨주는 값이 필요하다.
+  // 인스턴스 or 클래스 이름.static_method(_**넘겨주는값**_)이 필요하다.
+
+
+
+```python
+class Person:
+    title = "사람입니다."
+    
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        
+    def instance_method(self) :
+        print(self)
+        return f"{self.name}"
+    
+    def greeting(self):
+        print(self)
+        return "안녕?"
+    
+    # 인스턴스나 클래스에서 받아온 각각의 이름. 객체의 이름을 사용할 수 없다.
+    # self나, cls 등 사용이 되지 않는다.
+    # (def 안으로 들어오지 않는다. 이것을 넘기지 않는다고 한다.)
+    @staticmethod
+    def static_method(nothing):
+        print(nothing)
+        return nothing
+    
+    @classmethod
+    def class_method(cls):
+        print(cls)
+        return f"{cls.title}"
+```
+
+
+
+
+
+```python
+p1 = Person("이재찬", 25)
+```
+
+
+
+```python
+Person.__dict__
+```
+
+out
+
+```
+mappingproxy({'__module__': '__main__',
+              'title': '사람입니다.',
+              '__init__': <function __main__.Person.__init__(self, name, age)>,
+              'instance_method': <function __main__.Person.instance_method(self)>,
+              'greeting': <function __main__.Person.greeting(self)>,
+              'static_method': <staticmethod at 0x23e141832b0>,
+              'class_method': <classmethod at 0x23e14183320>,
+              '__dict__': <attribute '__dict__' of 'Person' objects>,
+              '__weakref__': <attribute '__weakref__' of 'Person' objects>,
+              '__doc__': None})
+```
+
+
+
+
+
+```python
+p1.__dict__
+```
+
+Out
+
+```
+{'name': '이재찬', 'age': 25}
+```
+
+
+
+
+
+```python
+# p1 안에 title이 없기 때문에 클래스까지 나가서 가져오게 된다.
+p1.title
+```
+
+Out[10]:
+
+```
+'사람입니다.'
+```
+
+
+
+
+
+```python
+# 인스턴스 메소드는 인스턴스 객체를 인자로 넘겨준다. (자동으로)
+p1.instance_method()
+print(p1)
+```
+
+out
+
+```
+<__main__.Person object at 0x0000023E141729B0>
+<__main__.Person object at 0x0000023E141729B0>
+```
+
+
+
+
+
+In [15]:
+
+```
+# 클래스 메서드는 클래스 객체를 인자로 넘겨준다.
+Person.class_method()
+print(Person)
+```
+
+out
+
+```
+<class '__main__.Person'>
+<class '__main__.Person'>
+```
+
+
+
+
+
+```python
+Person.static_method()
+```
+
+out
+
+```
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-16-4e5dea2b151d> in <module>
+      1 #
+----> 2 Person.static_method()
+
+TypeError: static_method() missing 1 required positional argument: 'nothing'
+```
+
+
+
+in
+
+```
+Person.static_method("hi")
+```
+print
+
+```
+hi
+```
+
+Out[17]:
+
+```
+'hi'
+```
+
+
+
+in
+
+```
+p1.static_method()
+```
+
+out
+
+```
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-18-e51caa84cc20> in <module>
+----> 1 p1.static_method()
+
+TypeError: static_method() missing 1 required positional argument: 'nothing'
+```
+
+
+
+in
+
+```
+p1.static_method("안녕하세요")
+```
+
+print
+
+```
+안녕하세요
+```
+
+Out[19]:
+
+```
+'안녕하세요'
+```
+
+
+
+
+
+## 클래스 상속
+
+
+
+```python
+class Student(Person):
+    title = "학생입니다."
+```
+
+
+
+
+
+In [21]:
+
+```python
+s1 = Student("박성민", 1)
+```
+
+
+
+In [22]:
+
+```
+s1.greeting()
+```
+
+```
+<__main__.Student object at 0x0000023E140D3438>
+```
+
+Out[22]:
+
+```
+'안녕?'
+```
+
+
+
+In [23]:
+
+```
+Person.class_method()
+```
+
+print
+
+```
+<class '__main__.Person'>
+```
+
+Out[23]:
+
+```
+'사람입니다.'
+```
+
+
+
+
+
+
+
+In [24]:
+
+```
+Student.class_method()
+```
+
+print
+
+```
+<class '__main__.Student'>
+```
+
+Out[24]:
+
+```
+'학생입니다.'
+```
+
+
+
+
 
