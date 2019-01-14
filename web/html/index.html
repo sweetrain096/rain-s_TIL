@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="utf-8">
+        <title>HTML연습</title>
+        <style>
+            body {
+                height: 10000px
+            }
+            table, tr, td{
+                border: 1px solid darkgreen;
+            }
+        </style>
+    </head>
+    <body>
+        <a href="#a">링크로 가기</a>
+        <!-- 여기는 주석입니다. -->
+        <h1 id="heading">heading1</h1>
+        <h2>2</h2>
+        <h6>6</h6>
+        <!-- lorem 엔터 치면 아무말이나 입력됨 -->
+        <!-- p태그는 문단을 나타낼 때 사용 -->
+        <p><b>Lorem ipsum</b> dolor sit amet consectetur adipisicing elit. Fuga reiciendis velit quis doloremque iusto porro veritatis repellendus omnis officia architecto quaerat exercitationem in ipsam at quia quam, rerum, quidem sint.</p>
+        <!-- br 태그는 엔터(줄바꿈) -->
+        <!-- hr 태그는 한줄-->
+        <br>
+        <hr>
+        <p>위에 작성한 것은 <strong>Lorem Ipsum</strong>으로 임의의 문자열을 나타냅니다.</p>
+        
+        <strong> strong 태그와 b태그는 굵은 글씨체 다만, strong이 더 시맨틱한 의미를 가진다.</strong><br>
+        <em>이탤릭체도 작성 가능 : em태그.</em>
+        <i>i로도 작성 가능하다. 다만, em이 시맨틱한 의미를 가진다.</i>
+        <p><del>del로 취소선을 나타낸다.</del></p>
+        <p><mark>mark로 하이라이팅</mark>도 가능하다.</p>
+        <p>log<sub>10</sub>10</p>
+        <p>2<sup>3</sup></p>
+        <p>sub는 아래첨자, sup은 위첨자로 들어간다.</p>
+        <p>아                          아!!</p>
+        <p>아&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;아!!</p>
+        <p>html 에서는 띄어쓰기가 기본 한칸이다.</p>
+        <pre>
+            이곳에서는 띄어쓰기나 줄바꿈이 자동으로 된다.
+            import random
+            random.sample(range(1, 46), 6)
+            띄     어      쓰      기     
+        </pre>
+        <q id="q">안녕하세요, 인용문입니다. 짧을 때 사용해요. q태그입니다.</q>
+        
+        <blockquote>인용문이지만 긴 문장입니다.
+            들여쓰기가 기본적으로 적용됩니다.
+            typora에서 > 와 같이 사용합니다.
+        </blockquote>
+        <ul>
+            <li> 순서가 없습니다.</li>
+            <li style="list-style-type: square"> 이재찬 </li>
+            <li> 박성민 </li>
+        </ul>
+
+        <ol>
+            <li>1교시</li>
+            <li>2교시</li>
+            <li>3교시</li>
+            <li>4교시</li>
+            <li>5교시</li>
+            <li>li태그이름에*6하면 한번에 6개 생기지롱롱롱</li>
+            <p>ctrl + alt를 누르고 원하는 위치에서 커서를 내리면 한번에 입력 가능</p>
+        </ol>
+        <!--reversed-->
+        <ol reversed>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+        </ol>
+        <!--시작 정하기 start="", type="a"-->
+        <ol start="2">
+            <li>1</li>
+            <li value="10">2</li>
+            <li>3</li>
+        </ol>
+        <!-- ul>li*3 아래와 같이 생긴다-->
+        <!-- emmet 기능 -->
+        <ul>
+            <li>사과</li>
+            <li>바나나</li>
+            <li>청포도 먹고싶다</li>
+        </ul>
+        <a href="https://google.com" target="_blank" id="a">새 창에서 구글로 가기</a>
+        <a href="https://google.com" target="_self">여기에서 구글로 가기(디폴트값)</a>
+        <a href="#heading">상단으로 가기</a>
+        <a href="#q">인용문으로 가기</a>
+        <a href="hello.html" target="_blank">hello, world!</a>
+        <a href="templates/test.html">test</a>
+        <a href="mailto:t@t.t">메일보내기</a>
+        
+        <table>
+            <tr>
+                <th colspan="2">표실습</th>
+                <!-- <th>숫자</th> -->
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td colspan="2">1</td>
+                
+            </tr>
+            <tr>
+                <td rowspan="2">1</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>2</td>
+            </tr>
+        </table>
+    
+    
+
+        <hr>
+        <h2>Form input</h2>
+        <form action="#">
+            일반텍스트 : <input name="username" type="text" placeholder="이름을 입력해주세요" autofocus><br>
+            이메일 : <input type="email" placeholder="이메일을 입력해주세요" autocomplete="email"><br>
+            비밀번호 : <input type="password" placeholder="비밀번호를 입력해주세요"><br>
+            날짜 : <input type="date">
+            <input type="hidden" name="hidden" value="비밀~">
+            <input type="submit" value="전송~"><br>
+            <!-- radio button -->
+            <input type="radio" name="gender" value="male"> 남자
+            <input type="radio" name="gender" value="female" checked> 여자<br>
+            <br>
+            <!-- check box -->
+            <input type="checkbox" name="option" value="1">SIA<br>
+            <input type="checkbox" name="option" value="2">QUEEN<br>
+            <input type="checkbox" name="option" value="3">hihi<br>
+            <!--dropdown-->
+            <br>
+            <select name="country">
+                <option value="korea">한국</option>
+                <option value="japan" disabled>일본</option>
+                <option value="china" selected>중국</option>
+            </select>
+            <br>
+            <input name="number" type="range" min="0" max="100" step="10">
+
+        </form>
+        
+        <form action="https://google.com/search">
+            검색어 : <input name="q"><br>
+            <input type="submit" value="구글검색">
+        </form>
+    
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/vlLSyc9dx1g" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe width="30%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/551801490&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>
+
+    </body>
+
+</html>
