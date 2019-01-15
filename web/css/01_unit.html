@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="01.css">
+</head>
+<body>
+    <p>20px</p>
+    <ol>
+        <!-- li : html*1.2 == 20*1.2 -->
+        <li>1.2rem</li>
+    </ol>
+    <ul>
+        <p>안녕?</p>
+        <!-- ul : 20px*1.2 -->
+        <!-- li : ul*1.2 == 20*1.2*1.2 -->
+        <li>2em</li>
+    </ul>
+    <p class="vh">5vh</p>
+    <p class="vw">5vw</p>
+    <!-- vimin은 높이와 너비의 최솟값중에서 골라 유동적으로 변한다. -->
+    <p class="vmin">10vmin</p>
+</body>
+</html>

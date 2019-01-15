@@ -42,6 +42,18 @@ https://www.google.co.kr/search?q=구글
 
 
 
+확장프로그램 
+
+
+
+[web developer](https://chrome.google.com/webstore/detail/web-developer/bfbameneiokkgbdmiekhjnmfkcnldhhm?hl=ko)
+
+: css 사용한 것을 지워서 보여줄 수 있다.
+
+
+
+
+
 
 
 # html
@@ -167,7 +179,27 @@ footer 푸터 : 문서나 섹션의 하단에 존재
 
 
 
+## [마크업(Markup)](https://brunch.co.kr/@coveryou/14)
 
+'마크업'이란 어딘가에 Mark, 즉 표시를 해두는 것. 
+
+**마크업 언어를 통해 구조적으로 표현이 가능**
+
+
+
+**예 1)** 표시가 없을 때 
+
+> 양말 노점 노하우 전수 30년 노점 장사를 통해 쌓은 노하우를 직접 전수해드립니다. 하루 매출 100만 원 보장! 대전 서구 XX카페 010-8XX2-XX21
+
+**예 2) 표시가 있을 때**
+
+> \- 제목: 양말 노점 노하우 전수
+> \- 내용: 30년 노점 장사를 통해 쌓은 노하우를 직접 전수해드립니다. 하루 매출 100만 원 보장!
+> \- 주소 및 연락처: 대전 서구 XX카페 010-8XX2-XX21
+
+ **예 1)** 보다는 **예 2)가** 보기에 편함. 왜냐하면 제목이 어떤 것인지, 내용이 어떤 것인지. 단락 구분까지 되어있음.
+
+**문서를 구조적으로 표시하기 위한 것이 마크업의 개념**.
 
 
 
@@ -208,9 +240,9 @@ html:5 엔터 치면 기본 구조 생성가능.
 <head>
 
     <meta charset="UTF-8">
-
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
 ​    <title>Document</title>
@@ -541,6 +573,290 @@ mdn 웹기술: https://developer.mozilla.org/ko/
 
 
 
+## style 적용
+
+1. inline 적용 : h나 p태그에 style=""로 적용
+
+2. 내부참조 : head 안에 <style>내용이 있어용<
+
+   으로 사용
+
+3. 외부참조 : css파일을 새로 만들어 href로 링크를 연결하여 사용한다.
+
+```html
+<!--00_css.html-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <style>
+        h2{
+            color: burlywood;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+    
+<body>
+    <h1 style="color: palevioletred">inline css 적용</h1>
+    <h2>내부참조, embedding</h2>
+    <h3>외부참조, 파일 link</h3>
+</body>
+</html>
+```
+
+
+
+```css
+/* style.css */
+h3{
+    color: skyblue;
+}
+```
+
+
+
+![1547514038997](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1547514038997.png)
+
+
+
+## 사용하는 내용
+
+### 키워드
+
+
+
+### 단위
+
+1. px	
+
+   거의 같은 값을 갖는다. 
+
+
+2. %
+
+   전체 비율에 따라 값을 갖게된다.
+
+3. em
+
+   부모에 따라 값을 갖게된다. 부모의 몇배수의 값을 갖는다.
+
+   <ul>
+       <li>2em</li>
+   </ul>
+   2em이 자식으로 들어가면 부모도 그 배수를 갖게되고, 그 자식은 부모의 배수를 갖는다.
+   html이 2이면, ul은 4, li는 8을 갖게 된다.
+
+
+4. rem
+
+   html의 배수를 갖는다.
+
+5. viewport(vh, vw, vmin)
+
+   `vh` : 화면의 높이 비율에 따라 달라짐
+
+   `vw` : 화면의 가로 비율에 따라 달라짐
+
+   `vmin` : 가로 세로 중 작은 것의 비율에 따라 달라짐.
+
+
+```html
+<!-- 01_unit.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="01.css">
+</head>
+<body>
+    <p>20px</p>
+    <ol>
+        <!-- li : html*1.2 == 20*1.2 -->
+        <li>1.2rem</li>
+    </ol>
+    <ul>
+        <p>안녕?</p>
+        <!-- ul : 20px*1.2 -->
+        <!-- li : ul*1.2 == 20*1.2*1.2 -->
+        <li>2em</li>
+    </ul>
+    <p class="vh">5vh</p>
+    <p class="vw">5vw</p>
+    <!-- vimin은 높이와 너비의 최솟값중에서 골라 유동적으로 변한다. -->
+    <p class="vmin">10vmin</p>
+</body>
+</html>
+```
+
+```css
+/* 01.css */
+
+html{
+    font-size: 20px;
+}
+ol, ol li {
+    font-size: 1.2rem;
+}
+ul, ul li {
+    font-size: 2em;
+}
+.vh {
+    font-size: 5vh;
+}
+.vw {
+    font-size: 5vw;
+}
+.vmin {
+    font-size: 10vmin;
+}
+```
+
+![1547514433512](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1547514433512.png)
+
+
+
+### 색상
+
+* 컬러명(ex, black)
+* 헥사코드(#000000)
+* rgb값 & rgba(r, g, b, alpha(투명도))
+
+
+
+
+
+
+
+## 선택자
+
+선택자 종류에는 `tag`, `class`, `id` 등이 있다.
+
+id가 가장 높고, class, tag순으로 우선순위가 높다.
+
+id는 보통 문서에서 하나, class는 여러개 있을 수 있으며, tag는 문서 전체에 적용 가능하다.
+
+```
+id > class > Tag
+```
+
+
+
+
+
+### 마크업 
+
+태그들을 사용하는 과정
+
+css를 적용시키기 위해서는 마크업을 하고 선택자를 부여한다.
+
+span, div 태그는 의미는 없지만 css 적용을 위해서 활용한다.
+
+span태그 : 아무 의미 없이 특정한 것을 `마크업`하기 위하여 사용한다.
+
+```html
+<p><span class="pink">핑크색</span>, <span id="yellow">노란색</span></p>
+```
+
+
+
+```css
+* {
+    color: red;
+}
+
+.pink {
+    color: pink;
+}
+#yellow {
+    color: yellowgreen;
+}
+```
+
+![1547515079948](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1547515079948.png)
+
+
+
+### 클래스 동시사용
+
+클래스가 여러개 올 때 css 순서가 뒤에 있는것이 앞에 있는 것을 덮어쓴다.
+
+**css 코드 순서에 영향을 받는다!!**
+
+```html
+<p class="bold purple pink">볼드체</p>
+```
+
+```css
+.pink {
+    color: pink;
+}
+.bold {
+    font-weight: bold;
+}
+.purple {
+    color: purple;
+}
+```
+
+![1547516003037](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1547516003037.png)
+
+
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="02.css">
+</head>
+<body>
+    <p>빨간색</p>
+    <h1>Tag(요소) 선택자</h1>
+    <h2 class="pink">클래스 선택자</h2>
+    <h3 id="yellow">아이디 선택자</h3>
+    <h3 class="pink" id="yellow">id > class</h3>
+    <h2 class="pink"> class > tag</h2>
+    <!-- css를 적용시키기 위해서는 마크업을 하고 선택자를 부여한다.
+    span, div 태그는 의미는 없지만 css 적용을 위해서 활용한다.-->
+    <p><span class="pink">핑크색</span>, <span id="yellow">노란색</span></p>
+    <p class="bold purple pink">볼드체</p>
+    <p><strong>볼드체 특정 강조 부분만 쓰려고 하면 strong을 쓰세요</strong></p>
+    <p><b>볼드체 주로 b태그를 쓰세요</b></p>
+</body>
+</html>
+```
+
+
+
+```css
+* {
+    color: red;
+}
+
+h1 {
+    color: blue;
+}
+
+.pink {
+    color: pink;
+}
+#yellow {
+    color: yellowgreen;
+}
+
+.purple {
+    color: purple;
+}
+.bold {
+    font-weight: bold;
+}
+```
 
 
 
@@ -557,25 +873,103 @@ mdn 웹기술: https://developer.mozilla.org/ko/
 
 
 
-[web developer](https://chrome.google.com/webstore/detail/web-developer/bfbameneiokkgbdmiekhjnmfkcnldhhm?hl=ko)
-
-: css 사용한 것을 지워서 보여줄 수 있다.
 
 
 
 
 
+## display
+
+### block
+
+항상 새로운 라인에서 시작
+
+div, h1~h6, p, ol, ul, li, br, hr, ...
+
+
+
+### inline
+
+새로운 라인에서 시작하지 않으며 문장의 중간에 들어갈 수 있다. 
+
+span, a, strong, img, button, input, select, textarea, ...
+
+
+
+### inline-block
+
+block과 inline 레벨 요소의 특징을 모두 갖는다.
+
+inline 레벨 요소처럼 한 줄에 표시되면서 block의 마진 등을 사용할 수 있다.
+
+
+
+### none
+
+요소를 표현하지 않는다.
+
+태그는 있지만 보여지지 않는다.
+
+특정 너비가 넘어가거나 너비보다 작으면 안보이게 하는것으로 주로 사용된다.
 
 
 
 
 
+## ㅇ
+
+### hidden
+
+안보이게 하는것. 그러나 공간은 존재한다.
 
 
 
 
 
+## 위치
+
+### 1. static (기본위치)
+
+기본적인 요소의 배치순서에 따른다.
+
+부모가 있을 때 부모 요소에 따른다.
+
+
+
+### 2. relative (상대위치)
+
+기본 위치 **(static 기준)**으로 좌표(top, right, bottom, left), 를 따라 이동
+
+**적용 전 (static일 때) 원래 있던 위치에서 이동한다.**
+
+움직이고 원래 있었던 공간이 유지된다.
+
+원래 (0, 100)이면 (300, 200)이동할 때 (300, 300)이 된다.
 
 
 
 
+
+### 3. absolute (절대위치)
+
+부모요소, 또는 가장 가까이 있는 조상 요소**(static제외)** 기준으로 좌표 프로퍼티(top, right, bottom, left)만큼 이동
+
+가장 가까운 조상 중에  static이 아닌 것의 위치에서 이동.
+
+조상을 탈출할 수 있다.
+
+
+
+
+
+### 4. fixed (고정위치)
+
+부모 요소와 관계 없이 브라우저의 viewport를 기준으로 위치를 고정.
+
+fixed로 bottom, top, left, right를 정해서 특정 위치에 고정시킨다.
+
+bottom: 0;
+
+left: 0;
+
+으로 하면 왼쪽 아래에 달라붙는다.

@@ -1,0 +1,62 @@
+.big-box {
+    position: relative;
+    margin: 100px auto 500px;
+    border: 5px solid black;
+    width: 500px;
+    height: 500px;
+  }
+  
+  .small-box {
+    width: 100px;
+    height: 100px;
+  }
+  
+  #red {
+    position: absolute;
+    background-color: red;
+    bottom: 0px;
+    right: 0px;
+  }
+  
+  #gold {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background-color: gold;
+  }
+  
+  #green {
+    position: absolute;
+    top: 200px;
+    left: 200px;
+    background-color: green;
+  }
+  
+  #blue {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    background-color: blue;
+  }
+  
+  #pink {
+    background-color: pink;
+    /* position: absolute; */
+    /* top: 0px;
+    left: 0px; */
+  }
+
+  /*  심화 */
+  #purple {
+    background-color: purple;
+    position: absolute;
+    top: 100px;
+    left: 100px;
+  }
+  
+  #orange {
+    background-color: orange;
+    position: absolute;
+    top: -100px;
+    left: 100px;
+  }
