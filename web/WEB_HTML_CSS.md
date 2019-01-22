@@ -973,3 +973,62 @@ bottom: 0;
 left: 0;
 
 으로 하면 왼쪽 아래에 달라붙는다.
+
+
+
+
+
+
+
+
+
+## css font
+
+### [font family](https://fonts.google.com/?selection.family=Nanum+Myeongjo)
+
+### 웹폰트를 왜 사용할까요????
+
+=> 다른 사람들의 컴퓨터에 설치 되지 않은 폰트를 웹폰트로 불러오면 어디서든 그 폰트로 볼 수 있다.
+
+1. 원하는 폰트 우상단 +
+2. EMBED -> @IMPORT
+3. @import url 내용을 css style을 복사 후 css style 상단에 붙여넣기
+4. 사용하고 싶은 부분의 css 내용에 specify in css를 붙여넣기
+
+
+
+### [font awesome](https://fontawesome.com/)
+
+웹에서 가장 많이 사용하는 것
+
+1. [start](https://fontawesome.com/start)의 CDN 내용에서 webfont나 svg를 사용가능
+
+   svg : 그림 그리는 태그까지 가능. html 페이지에 넣는것
+
+   web font : font-family에서 사용
+
+
+
+### [font awesom animation](http://l-lin.github.io/font-awesome-animation/)
+
+font및 아이콘에 애니메이션 효과를 넣는다.
+
+
+
+
+
+### [Animate.css](https://daneden.github.io/animate.css/)
+
+그냥 우리가 만든 css 파일에 애니메이션 효과를 넣기 위해서 사용.
+
+
+
+[github page](https://github.com/daneden/animate.css)에 들어가서 사용. link부분을 헤드 안에 집어넣기.
+
+```
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+</head>
+```
+
+사용할 때에는 animated "애니메이션명" 으로 사용.
