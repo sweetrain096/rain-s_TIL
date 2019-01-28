@@ -121,6 +121,10 @@ body의 닫는 태그 위에 복사 붙여넣기
 
 
 
+
+
+
+
 ```
 bg-primary : 파란색
 <div class="mt-3 bg-secondary">secondary</div>

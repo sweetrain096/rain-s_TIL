@@ -211,3 +211,10 @@ git에 올리지 않는 게 좋은 디렉토리 및 파일들을 확인하는 �
 
 
 
+## gitlab
+
+1. git init
+2. git add .
+3. git commit
+4. git remote add gitlab "url 주소"
+5. git push gitlab master
