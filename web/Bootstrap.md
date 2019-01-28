@@ -547,6 +547,9 @@ check box, radio button, inline속성 가능
 
 상단 바 처럼 생김.
 
++ sticky top : section 공간 위에 따로 공간 있음
++ fixed top : section 공간과 함께 시작.
+
 
 
 ### [Pagination](https://getbootstrap.com/docs/4.2/components/pagination/)
