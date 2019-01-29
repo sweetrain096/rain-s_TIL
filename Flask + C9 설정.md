@@ -301,9 +301,12 @@ def hello():
         <h2>{{html_name}}님 오셨습니까??</h2>
     {% endif %}
 
-
 ​    꼭 endif로 닫아야만 합니다!!! 확인할 수 있는 부분이 없기 때문에 endif로 끝난것을 확인해요
-​    
+
++ **주석처리 할 때에는 %를 #으로 바꿔서 앞뒤로 막는다!!**
+
+
+
 ```python
 @app.route("/hi/<string:name>")
 def greeting(name='홍길동'):
