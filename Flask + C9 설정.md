@@ -1,6 +1,6 @@
 # [Flask](http://flask.pocoo.org/) + C9 설정
 
-## 1. 설정하기 (파이썬 버전관리)
+## 1. c9 설정하기 (파이썬 버전관리)
 
 https://zzu.li/c9
 
@@ -60,6 +60,14 @@ pyenv local flask-venv
 
 ### flask 설치
 
+: 요청과 응답을 처리해준다.
+
+: 사용자로부터 정보를받거나보내는 과정
+
+: variable routing : url 안에 내가 사용할 정보를 넣어서 보내는 것. (개발자가 편하기 위해)
+
+:
+
 ```
 pip install flask
 ```
@@ -91,6 +99,28 @@ Werkzeug==0.14.1
 
 
 ## 2. 사용하기
+
+모든 경우, 
+
+### 1. @filename.route("가야할 경로")
+
+### 2. def 안에서 정보 전달.
+
+### 3. return 으로 (render_template으로 전달)
+
+### 4. html에서 사용할 input값 전송(action)
+
+### 5. action으로 전달된 route 새로 생성 및 정보 획득
+
+### 6. return으로 정보 전달
+
+
+
+
+
+
+
+
 
 ```python
 # app.py
@@ -179,7 +209,7 @@ a
 
 
 
-### 주소창에서 str, int 등 읽어오기
+### 주소창에서 str, int 등 읽어오기(variable routing)
 
 
 
@@ -460,6 +490,100 @@ def pong():
 6. pong.html에서 name과 msg 출력
 
 
+
+
+
+## 4. csv 생성 및 읽기, redirect
+
+
+
+```python
+# app.py
+import csv
+
+@app.route("/timeline")
+def timeline():
+    # 지금까지 기록되어있는방명록들('timeline2.csv')을 보여주자!
+    with open("timeline2.csv", "r", encoding="utf-8", newline="") as f:
+        read = csv.DictReader(f)
+        timelines = []
+        for row in read:
+            timelines.append([row["username"]])
+            timelines[-1].append(row["message"])
+
+    
+    return render_template('timeline.html',timelines=timelines)
+    
+    
+@app.route("/timeline/create")
+def timeline_create():
+    username = request.args.get("username")
+    message = request.args.get("message")
+    
+    with open("timeline2.csv", "a", encoding="utf-8", newline="") as f:
+        write = csv.DictWriter(f, fieldnames=['username', 'message'])
+        write.writerow({
+            'username' : username,
+            'message' : message
+        })
+        
+
+    return redirect('/timeline')
+```
+
+
+
+
+
+```html
+<!--timeline.html-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+    <form action="/timeline/create">
+        <input type="text" name="username">
+        <input type="text" name="message">
+        <input type="submit" value="전송!">
+        
+    </form>
+    
+    <ul>
+        {% for timeline in timelines %}
+            <li>{{timeline[0]}} : {{timeline[1]}}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+```
+
+
+
+```html
+<!--timeline_create.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>{{username}} : {{message}}</li>
+        
+    </ul>
+</body>
+</html>
+```
 
 
 
