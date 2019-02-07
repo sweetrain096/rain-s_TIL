@@ -307,6 +307,8 @@ def hello():
 
 
 
++ variable routing
+
 ```python
 @app.route("/hi/<string:name>")
 def greeting(name='홍길동'):
@@ -589,6 +591,22 @@ def timeline_create():
 ```
 
 
+
+
+
+## [HTTP 정보 전달 (get, post)](https://developer.mozilla.org/ko/docs/Learn/HTML/Forms/Sending_and_retrieving_form_data)
+
+### get
+
++ 정보가 주소창에 사용된다. 민감한 정보가 url에 공개될 수 있음.
++ 정보를 요청받아서 전달
+
+
+
+### post
+
++ 정보를 서버로 보낼 때 사용. 
++ 정보가 url에 남지 않는다.
 
 
 
