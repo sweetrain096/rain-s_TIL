@@ -579,6 +579,10 @@ url에 정보가 남는다.
 
 
 
+
+
+
+
 + post: app.py
 
 ```python
@@ -598,6 +602,27 @@ def create_user():
 ```
 
 url에 정보가 남지 않는다.
+
++ post : new.html
+
+```html
+{% extends 'base.html' %}
+{% block title %}
+회원가입 폼
+{% endblock %}
+{% block body %}
+    <!--기본은 method가 get-->
+    <form action="/users/create", method="POST">
+        username : <input type="text" name="username"> <br>
+        emali : <input type="email" name="email"> <br>
+        <input type="submit" value="회원가입!">
+    </form>
+{% endblock %}
+```
+
+
+
+
 
 
 
