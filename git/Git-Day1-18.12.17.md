@@ -8,7 +8,7 @@
 
 `git init` : 폴더 하나를 git 으로 관리하겠다
 
-![Untitled Diagram](C:\Users\student\Downloads\Untitled Diagram.png)
+![til](img/til.jpg)
 
 
 

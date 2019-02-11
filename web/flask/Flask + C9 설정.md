@@ -340,7 +340,98 @@ out :
 
 
 
+## 4. base.html
 
++ base.html을 만들어서 다른 페이지에서 공통적으로 나타나는 부분을 하나로 묶는다.
+
++ base.html
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="ko">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>{% block title %}{% endblock %}</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  </head>
+  <body>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <a class="navbar-brand" href="/">Main</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                      <a class="nav-link" href="/movies">영화 목록 <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/movies/new">영화 등록</a>
+                  </li>
+  
+                  <li class="nav-item">
+                      <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                  </li>
+              </ul>
+              <form action="/movies" class="form-inline my-2 my-lg-0">
+                  <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+          </div>
+      </nav>
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+              <div class="alert alert-{{category}}" role="alert">
+                    {{ message }}
+              </div>
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+      <div class="comtainer mt-5">
+      
+      <div class="container">
+          {% block body %}
+          {% endblock %}        
+      </div>
+  
+      
+      
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+  </html>
+  ```
+
++ 적용되는 페이지
+
++ index.html
+
+  ```html
+  {% extends "base.html" %}
+  {% block title %}영화 목록{% endblock %}
+  
+  
+  {% block body %}
+      <h1> 영화 목록</h1>
+      <h2 class="mt-5 mb-5"><a href="/movies/new">새 영화 등록</a></h2>
+      
+      <ul>
+          {% for movie in movies %}
+              <p><a href="/movies/{{movie.id}}">{{movie.title}} ({{movie.title_en}}) : {{movie.score}}</a></p>
+              <hr>
+          {% endfor %}
+      </ul>
+  {% endblock %}
+  ```
+
+  + `{% extends "base.html" %}`을 사용하여 base.html 파일을 읽는다.
+  + `{% block title %}영화 목록{% endblock %}`을  base.html 파일의 `{% block title %}`과 `{% endblock %}` 사이에 넣는다.
 
 
 
@@ -609,6 +700,32 @@ def timeline_create():
 + 정보가 url에 남지 않는다.
 
 
+
++ app.py
+
+  ```python
+  app.secret_key = "qhshqhshqksksk"
+  @app.route("/users/create", methods=["POST"])
+  def create_user():
+      username = request.form.get("username")     # name
+      email = request.form.get("email")           # email
+      user = User(username=username, email=email)     # 인스턴스
+      db.session.add(user)
+      db.session.commit()
+      return render_template("create.html", username=user.username, email=user.email)
+  ```
+
++ new.html
+
+  ```python
+      <form action="/users/create", method="POST">
+          username : <input type="text" name="username"> <br>
+          emali : <input type="email" name="email"> <br>
+          <input type="submit" value="회원가입!">
+      </form>
+  ```
+
+  
 
 
 

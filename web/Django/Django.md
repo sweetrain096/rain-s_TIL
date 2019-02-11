@@ -2,7 +2,7 @@
 
 ## 0. 구조 확인하기
 
-![photo_2019-02-11_12-10-57](https://github.com/sweetrain096/Django-intro/blob/master/img/photo_2019-02-11_12-10-57.jpg?raw=true)
+![photo_2019-02-11_12-10-57](img/photo_2019-02-11_12-10-57.jpg)
 
 
 
@@ -25,6 +25,12 @@ pip install django
    ​	프로젝트 시작하겠다는 뜻
 
    ​	하게 되면 프로젝트 이름으로 파일 생성
+
+   ```bash
+   django-admin startapp home(app 이름)
+   ```
+
+   
 
    ```
    django_intro
@@ -77,7 +83,8 @@ pip install django
 
    앞으로 모든 장고 명령어는 프로젝트를 만들때를 제외하고 `python manage.py`를 활용한다. 따라서, 명령어가 안 될때는 반드시 `pwd`와 `ls`를 통해 현재 bash(터미널) 위치를 확인하자
 
-3. 
+   
+
 
 
 
@@ -254,9 +261,123 @@ out :
    <h1> {{dinner}} </h1>
    ```
 
+4. base 설정
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="ko">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+       <title>{% block title %}{% endblock %}</title>
+   </head>
+   <body>
+       <h1> Django 실습</h1>
+       <hr>
+       {% block body %}
+       {% endblock %}
+   </body>
+   </html>
+   ```
+
    
 
+## 4. Variable Routing
 
+1. url 설정
+
+   ```python
+   path('home/you/<name>', views.you),
+   path('hone/cube/<int:num>', views, cube),
+   ```
+
+2. view 파일 설정
+
+   ```python
+   def you(request, name):
+       return render(request, 'you.html', {'name' : name})
+   ```
+
+3. template 설정
+
+   ```django
+   <h1> {{ name }}, 안녕!! </h1>
+   ```
+
+
+
+
+## 5. Form data
+
+1. `ping`
+
+   1. 요청 url 설정
+
+      ```python
+      path('home/ping/', views.ping)
+      ```
+
+   2. view 설정
+
+      ```python
+      def ping(request):
+          return render(request, 'ping.html')
+      ```
+
+   3. template 설정
+
+      ```django
+      <form action='/home/pong/'>
+          <inupt name="message" tyep="text">
+          <inupt type="submit">
+      </form>
+      ```
+
+2. `pong`
+
+   1. 요청 url 설정
+
+      ```python
+      path('home/pong/', views.pong)
+      ```
+
+   2. view 설정
+
+      ```python
+      def pong(request):
+          msg = request.GET.get("message")
+          return render(request, 'pong.html', {'msg' : msg})
+      ```
+
+   3. template 설정
+
+      ```django
+      <h1>{{ msg }}</h1>
+      ```
+
+3. POST 요청 처리
+
+   1. 요청 FORM 수정
+
+      ```django
+      <form action="/home/pong/" method="POST">
+          {% csrf_token %}
+      </form>
+      ```
+
+   2. view 수정
+
+      ```python
+      def pong(request):
+          msg = request.POST.get("message")
+      ```
+
+   + `csrf_token`은 보안을 위해 django에서 기본적으로 설정해 놓은 보안 장치(?) 이다.
+     + CSRF 공격 : Cross Site Request Forgery
+     + form을 통해 POST 요청을 보낸다는 것은 데이터베이스에 반영되는 경우가 대부분인데, 해당 요청을 우리가 만든 정해진 form에서 보내는지 검증하는 것.
+     + 실제로 input type hidden으로 특정한 hash 값이 담겨 있는 것을 볼 수 있다.
+     + `settings.py`에 `MIDDLEWARE` 설정에 보면 csrf  관련된 내용이 설정된 것을 볼 수 있다.
 
 
 
