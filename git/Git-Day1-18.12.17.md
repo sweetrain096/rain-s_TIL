@@ -196,6 +196,18 @@ git에 올리지 않는 게 좋은 디렉토리 및 파일들을 확인하는 �
 
 
 
+```bash
+$ vi .gitignore
+```
+
+i눌러서 끼워넣기
+
+모든 내용 붙여넣기
+
+esc -> :wq
+
+
+
 
 
 
@@ -218,3 +230,24 @@ git에 올리지 않는 게 좋은 디렉토리 및 파일들을 확인하는 �
 3. git commit
 4. git remote add gitlab "url 주소"
 5. git push gitlab master
+
+
+
+
+
+### git commit 틀릴때
+
+```bash
+git commit --amend
+```
+
+수정한 후 ctrl + x -> y -> enter
+
+
+
+### git commit 확인
+
+```bash
+$ git log -1
+```
+

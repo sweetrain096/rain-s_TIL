@@ -20,6 +20,7 @@ source ~/.bashrc
 pyenv install 3.6.7
 pyenv global 3.6.7
 python -V
+pip install --upgrade pip
 ```
 
 
@@ -42,12 +43,23 @@ exec "$SHELL"
 
 
 
-### 실행
+### 실행(아래 장고에서 사용할 이름이 있다면 아래로!!)
 
 ```
 pyenv virtualenv 3.6.7 (가상환경 이름, 여기서는 flask-venv)
 pyenv local (가상환경 이름)
 ```
+
+### 
+
+```
+pyenv virtualenv django-venv(가상환경 이름)
+pyenv local django-venv(가상환경 이름)
+```
+
+
+
+
 
 
 
@@ -56,10 +68,9 @@ pyenv local (가상환경 이름)
 > c9은 기본적으로 workspace에서 git config가 가입한 이메일로 되어있기 때문에 github에 커밋 기록을 제대로 남기기 위해서 설정.
 
 ```
-git config --global --user.name _______(github name)
-git config --global --user.email ______(github email)
+git config --global user.name _______(github name)
+git config --global user.email ______(github email)
 ```
-
 
 
 
