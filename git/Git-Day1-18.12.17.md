@@ -146,7 +146,7 @@ git push -u origin master
 $ git clone "주소"
 ```
 
-![1545121319328](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1545121319328.png)
+![1545121319328](https://github.com/sweetrain096/rain-s_TIL/blob/master/img/til.jpg?raw=true)
 
 
 

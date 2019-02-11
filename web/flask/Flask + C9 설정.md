@@ -402,7 +402,7 @@ def movie():
     return render_template("movie.html", movies=movies)
 ```
 
-![c9_1](C:\Users\student\Desktop\rain\rain-s_TIL\c9_1.PNG)
+![c9_1](https://github.com/sweetrain096/rain-s_TIL/blob/master/img/c9_1.PNG?raw=true)
 
 
 
