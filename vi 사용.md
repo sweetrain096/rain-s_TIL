@@ -29,3 +29,32 @@ python 사용할 때
 import os
 
 key = os.getenv("사용할 키값이에용")
+
+
+
+
+
+
+
+c9에서
+
+
+
+vi ~/.bashrc
+
+내용 추가
+
+
+
+source ~/.bashrc
+
+사용할 때에는 위와 동일
+
+
+
+
+
+
+
+
+
