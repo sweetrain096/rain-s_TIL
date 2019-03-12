@@ -1406,7 +1406,7 @@ urlpatterns = [
    ```
 
    ```bash
-   $ python managey createsuperuser
+   $ python manage.py createsuperuser
    사용자 이름 (leave blank to use 'ubuntu'): admin
    이메일 주소: 
    Password: 
@@ -1735,7 +1735,13 @@ urlpatterns = [
        return redirect(f'/boards/{board.id}/')
    ```
 
++ edit.html
 
+  ```django
+  <input name="birthday" type="date" value={{student.birtday|date:'Y-m-d'}}>
+  ```
+
+  날짜와 같은 것을 받아오게 될 때 value에 값을 그대로 가져오려면 필터로 맞춰주어야 한다.
 
 
 
@@ -1765,6 +1771,107 @@ urlpatterns = [
    
 
 
+
+## URL 이름 지정
+
+```python
+# urls.py
+app_name = 'boards'
+
+urlpatterns = [
+    path('', views.index, name='index'),    # /borads/ 를 index로 보낼 수 있다.
+    path('<int:pk>/', views.detail, name='detail'), # /boards/new/
+    path('new/', views.new, name='new'),
+    path('create/', views.create, name='create'),
+    path('<int:pk>/edit/', views.edit, name='edit'),
+    path('<int:pk>/update/', views.update, name='update'),
+    path('<int:pk>/delete/', views.delete, name='delete'),
+
+]
+```
+
+```python
+# views.py
+def update(request, pk):
+    edit = Board.objects.get(pk = pk)
+    edit.title = request.POST.get("title")
+    edit.content = request.POST.get("content")
+    edit.save()
+    return redirect(f'boards:detail')
+
+def delete(request, pk):
+    delete_content = Board.objects.get(pk = pk)
+    delete_content.delete()
+    return redirect('boards:index')
+```
+
+```django
+<!--detail.html-->
+{% extends 'boards/base.html' %}
+{% block body %}
+<div class="container">
+    <h1>{{content.id}}번글 : {{content.title}}</h1>
+    <h3>작성 날짜 : {{content.created_at}} 수정 날짜 : {{content.updated_at}}</h3>
+    <p>내용 : {{content.content}}</p>
+    <a href="{% url 'boards:index' %}">목록으로 가기</a>	<!--목록 이름으로-->
+    <a href="{% url 'boards:edit' content.pk %}">수정하기</a>	<!--variable routing이 사용될 때에는 보내야 할 값으로 뒤에 붙여서 보내기-->
+    <a href="{% url 'boards:delete' content.pk %}">삭제하기</a>
+</div>
+{% endblock %}
+```
+
+
+
+## GET, POST 요청 사용하기
+
+```python
+# views.py
+
+def new(request):
+    if request.method == 'POST':
+        new = Board()
+        new.title = request.POST.get("title")
+        new.content = request.POST.get("content")
+        new.save()
+        return redirect('boards:detail', new.pk)
+    else:
+        return render(request, 'boards/new.html')
+```
+
+위의 경우, post 방식으로 들어오면 들어온 정보로 알아서 제작. get방식으로 들어오게 되면 알아서 만든 html 템플릿을 뿌려준다.
+
+
+
+```python
+# views.py
+def edit(request, pk):
+    if request.method == 'POST':
+        edit = Board.objects.get(pk = pk)
+        edit.title = request.POST.get("title")
+        edit.content = request.POST.get("content")
+        edit.save()
+        return redirect('boards:detail', edit.pk)
+    else:
+        edit_content = Board.objects.get(pk = pk)
+        return render(request, 'boards/edit.html', {'edit_content' : edit_content})
+```
+
+
+
+```python
+# views.py
+def delete(request, pk):
+    delete_content = Board.objects.get(pk = pk)
+    if request.method == 'POST':
+        delete_content.delete()
+        return redirect('boards:index')
+    else:
+        return redirect('boards:detail', delete_content.pk)
+```
+
+post로 들어오게 되면 제대로 삭제.
+
+아닌 경우 상세페이지를 redirect하여 화면을 다시 보여준다.
 
 
 
