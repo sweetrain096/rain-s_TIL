@@ -820,6 +820,8 @@ static에 들어갈 내용을 `home(app 이름)/static/구분폴더(img, stylesh
 
    + home/templates/static_example.html
 
+   + **상속을 받는다면 extends가 최상단에 위치해야한다!!! **
+
      ```django
      {% extends 'base.html' %}
         {% load static %}
@@ -854,6 +856,23 @@ out :
   STATIC_URL = '/static/'
   
   ```
+
+
+
+### 추가적인 디렉토리 사용
+
+`settings.py`
+
+```python
+STATIC_URL = '/static/'
+# 기본으로 INSTALLED_APPS 아래 있는 static 디렉토리를 탐색
+# 추가적인 디렉토리를 활용하려면 아래와 같이 작성(임의 디렉토리 추가)
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'assets'),
+]
+```
+
++ `STATICFILES_DIRS` 이름으로 폴더명을 지정해주면 그 디렉토리에 static 파일을 저장하여 사용할 수 있다.
 
 
 
@@ -960,7 +979,7 @@ out :
 
 ### 디렉토리 구조
 
-디렉토리 구조는 `home/templates/home/`으로 구정된다.
+디렉토리 구조는 `home/templates/home/`으로 구성된다.
 
 
 
@@ -1872,6 +1891,162 @@ def delete(request, pk):
 post로 들어오게 되면 제대로 삭제.
 
 아닌 경우 상세페이지를 redirect하여 화면을 다시 보여준다.
+
+
+
+
+
+## image 파일 입력받기
+
+1. `models.py`
+
+   ```python
+   class Board(models.Model):
+       title = models.CharField(max_length=30)
+       content = models.TextField()
+       image = models.ImageField(blank=True)
+       created_at = models.DateTimeField(auto_now_add=True)
+       updated_at = models.DateTimeField(auto_now=True)
+   ```
+
+2. migrations
+
+   ```bash
+   $ pip install Pillow 
+   $ python manage.py makemigrations
+   $ python manage.py migrate
+   ```
+
+3. `new.html`
+
+   ```html
+   <!--file upload를 위해서는 form에 enctype을 설정해줘야 한다.-->
+   <!--기본값은 application/x-www-form-urlencoded 이다.-->
+   <form method="POST" enctype="multipart/form-data">
+       {% csrf_token %}
+       <input type="text" name="title"><br>
+       <textarea name="content"></textarea><br>
+       <!--accept는 file 업로드시 확장자 제한을 하거나, audio, video, image 제한을 한다. 여기서는 아직 검증 안됨-->
+       <input type="file" name="image" accept="image/*"><br>
+       <input type="submit">
+   </form>
+   ```
+
+4. `views.py`
+
+   ```python
+   def new(request):
+       if request.method == 'POST':
+           board = Board()
+           board.title = request.POST.get('title')
+           board.content = request.POST.get('content')
+           board.image = request.FILES.get('image')
+   ```
+
+   + `board.image = request.FILES.get('image')`
+   + file은 POST가 아니라 FILES로 받는다!
+
+5. 웹 사이트에 들어가서 이미지를 저장받게 되면, 
+
+   ```bash
+   .
+   ├── assets
+   ├── boards
+   ├── db.sqlite3
+   ├── django_recrud
+   ├── image.png		=> app과 같은 위치
+   └── manage.py
+   ```
+
+   app 과 같은 위치(boards)에 저장한 이미지가 들어가게된다.
+
+6. `settings.py`
+
+   ```python
+   # media files (사용자가 업로드 한 이미지 파일 관리)
+   MEDIA_URL = '/media/'
+   MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+   ```
+
+   ```bash
+   .
+   ├── assets
+   ├── boards
+   ├── db.sqlite3
+   ├── django_recrud
+   ├── image.png
+   ├── manage.py
+   └── media
+       └── image.png
+   ```
+
+   `media` 폴더 안에 image.png가 들어가게된다.
+
+7. `django_recrud/urls.py`
+
+   ```python
+   from django.contrib import admin
+   from django.urls import path, include
+   # media를 찾아가기 위해 셋팅 및 static 설정
+   from django.conf import settings
+   from django.conf.urls.static import static
+   
+   urlpatterns = [
+       path('admin/', admin.site.urls),
+       path('boards/', include('boards.urls'))
+   ]
+   
+   # urlpatterns에 static 추가. 
+   urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+   ```
+
+8. `detail.html`
+
+   ```html
+   <h1>{{ board.id }}번글</h1>
+   <hr>
+   <!--image를 띄우기 위해 아래 와 같이 작성-->
+   <img src="{{ board.image.url }}">
+   <h2>{{ board.title }}</h2>
+   <p>{{ board.content }}</p>
+   ```
+
+   ![1552875363173](img/1552875363173.png)
+
+   `board.image.url`로 가져와야 `.png`까지 (확장자까지) 가져올 수 있다.
+
+9. `admin` 페이지 확인
+
+   ![1552875764997](img/1552875764997.png)
+
+10. shell_plus 확인
+
+    ```bash
+    $ python manage.py shell_plus
+    >>> Board.objects.all()
+    <QuerySet [<Board: <Board(12): ????asdfasfd>>, <Board: <Board(13): 12312312312>>, <Board: <Board(14): 3번일까?>>, <Board: <Board(15): 이미지>>]>
+    >>> board = Board.objects.get(pk=15)
+    >>> board.image
+    <ImageFieldFile: image.png>
+    >>> dir(board.image)
+    ['DEFAULT_CHUNK_SIZE', '__bool__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__enter__', '__eq__', '__exit__', '__format__', '__ge__', '__getattribute__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_committed', '_del_file', '_file', '_get_file', '_get_image_dimensions', '_require_file', '_set_file', 'chunks', 'close', 'closed', 'delete', 'encoding', 'field', 'file', 'fileno', 'flush', 'height', 'instance', 'isatty', 'multiple_chunks', 'name', 'newlines', 'open', 'path', 'read', 'readable', 'readinto', 'readline', 'readlines', 'save', 'seek', 'seekable', 'size', 'storage', 'tell', 'truncate', 'url', 'width', 'writable', 'write', 'writelines']
+    >>> board.image.size
+    89604
+    >>> board.image.path
+    '/home/ubuntu/workspace/django_recrud/media/image.png'
+    >>> board.image.url
+    '/media/image.png'
+    >>> type(board.image)
+    <class 'django.db.models.fields.files.ImageFieldFile'>
+    >>> type(board.title)
+    <class 'str'>
+    ```
+
+    
+
+
+
+
 
 
 
