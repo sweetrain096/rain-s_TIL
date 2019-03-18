@@ -1898,6 +1898,8 @@ post로 들어오게 되면 제대로 삭제.
 
 ## image 파일 입력받기
 
+### image 입력
+
 1. `models.py`
 
    ```python
@@ -2042,7 +2044,144 @@ post로 들어오게 되면 제대로 삭제.
     <class 'str'>
     ```
 
-    
+
+
+### image 없을 때 기본 default
+
+1. `detail.html`
+
+   ```html
+   {% if board.image %}
+       <img src="{{ board.image.url }}" alt="{{board.image}}">
+   {% else %}
+       <p>이미지가 없어요.</p>
+       <img src="{% static 'boards/보노보노.png' %}">
+   {% endif %}
+   ```
+
+   
+
+### image 사이즈 동일하게 사용
+
+1. 라이브러리 설치
+
+   ```bash
+   $ pip install pilkit
+   $ pip install django-imagit
+   ```
+
+2. `settings.py`
+
+   ```python
+   INSTALLED_APPS = [
+       'imagekit',
+       'boards',
+   ]
+   ```
+
+   + `imagekit`이라는 앱 등록
+
+3. `models.py`
+
+   ```python
+   from django.db import models
+   # 라이브러리 사용 위해 불러오기
+   from imagekit.models import ProcessedImageField
+   from imagekit.processors import ResizeToFill, ResizeToFit
+   
+   # Create your models here.
+   # 게시글
+   class Board(models.Model):
+       title = models.CharField(max_length=30)
+       content = models.TextField()
+       image = models.ImageField(blank=True)
+       # 썸네일 생성
+       thumbnail_fit = ProcessedImageField(
+               blank=True,
+               upload_to = 'boards/media',
+               processors = [ResizeToFit(300, 300)],
+               format = 'JPEG',
+               options = {'quality' : 90},
+           )
+       thumbnail_fill = ProcessedImageField(
+               blank=True,
+               upload_to = 'boards/media',
+               processors = [ResizeToFill(300, 300)],
+               format = 'JPEG',
+               options = {'quality' : 90},
+           )
+   ```
+
+   + `upload_to` : 업로드 할 위치
+   + `processors` : 전처리 과정
+   + `format` : 저장 위치
+
+4. `views.py`
+
+   ```python
+   def new(request):
+       if request.method == 'POST':
+           board = Board()
+           board.title = request.POST.get('title')
+           board.content = request.POST.get('content')
+           board.image = request.FILES.get('image')
+           board.thumbnail_fill = request.FILES.get('image')
+           board.thumbnail_fit = request.FILES.get('image')
+           board.save()
+   ```
+
+5. `detail.html`
+
+   ```html
+   {% if board.image %}
+       <img src="{{ board.image.url }}" alt="{{board.image}}">
+       <img src="{{ board.thumbnail_fill.url }}" alt="{{board.image}}">
+       <img src="{{ board.thumbnail_fit.url }}" alt="{{board.image}}">
+   {% else %}
+       <p>이미지가 없어요.</p>
+       <img src="{% static 'boards/보노보노.png' %}">
+   {% endif %}
+   ```
+
+   + thumbnail_fill : 이미지 자체를 늘리거나 줄여 원하는 사이즈를 맞춘다.
+   + thumbnail_fit : 이미지 중 가장 긴 부분을 원하는 사이즈에 맞춘 후 나머지를 잘라낸다.
+
+   ![1552877388859](img/1552877388859.png)
+
+6. `models.py`
+
+   ```python
+   def board_image_path(board, filename):
+       return f'boards/{board.pk}/images/{filename}'
+   
+   class Board(models.Model):
+   	thumbnail_fit = ProcessedImageField(
+               blank=True,
+           	# file 위치 설정
+               upload_to = board_image_path,
+               processors = [ResizeToFit(300, 300)],
+               format = 'JPEG',
+               options = {'quality' : 90},
+           )
+       thumbnail_fill = ProcessedImageField(
+               blank=True,
+               upload_to = board_image_path,
+               processors = [ResizeToFill(300, 300)],
+               format = 'JPEG',
+               options = {'quality' : 90},
+           )
+   ```
+
+   ```bash
+   └── media
+       ├── boards
+       │   ├── None
+       │   │   └── images
+       │   │       ├── image.jpg
+       │   │       └── image_I4DbyrQ.jpg
+   ```
+
+   
 
 
 
