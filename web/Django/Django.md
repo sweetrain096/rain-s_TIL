@@ -2209,3 +2209,12 @@ post로 들어오게 되면 제대로 삭제.
    ```
 
    새로운 폴더(home)(app)을 만들게 된다. => MTV의 집합
+
+
+
+### static과 media의 차이
+
++ static : 내가 사용하는 정적파일(img, js, css)
+  + 내가 만든 파일(home.css)
+  + 외부에서 가져온 파일(bootstrap.min.css) => 라이브러리를 가져다가 쓰기만 한다.
++ MEDIA : 클라이언트(사용자)가 업로드 한 파일

@@ -276,7 +276,7 @@ def update(request, board_pk):
 
 ### model form
 
-1. `models.py`
+1. `forms.py`
 
    + model에 있는 내용을 가져오기. model을 상속받는것
 
