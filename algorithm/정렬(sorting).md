@@ -161,8 +161,6 @@ print(data)
 
 
 
-
-
 ## 병합정렬(merge sort)
 
 => 병합해놓은 리스트를 원본에 복사하는 과정 등이 필요하기 때문에 시간이 오래 걸리며, 
@@ -221,7 +219,59 @@ out:
 
 
 
+## 퀵정렬
 
++ 주어진 배열을 두 개로 분할하고, 각각을 정렬
+  + 합병정렬(merge)와 비슷하다.
+  + 다른점 1: 합병정렬은 그쟝 두 부분으로 나눔. 퀵정렬은 분할할 대 기준 아이템(pivot item) 중심으로 작은것을 왼쪽 큰것을 오른쪽에 위치
+  + 다른점 2: 각 부분 정렬이 끝난 후, 합병정렬은 '합병'이란 후처리 작업은 필요하나 퀵정렬은 필요하지 않다.
++ 아이디어 
+  + P(피봇) 값들보다 큰 값은 오른쪽, 작은 값들은 왼쪽에 위치시켜서 피봇을 두 집합의 가운데에 위치.
+  + 피봇을 선택할 때 맨 왼쪽으로 사용하나, 값의 치우침을 방지하기 위해서는 (왼쪽끝/오른쪽끝/임의의 값) 세 개 중 중간값을 사용할 수도 있다.
+
+```python
+def PrintArray():
+    for i in range(len(arr)):
+        print("%3d" % arr[i], end=" ")
+    print()
+
+def partition(a, l, r):
+    pivot = a[l]
+    i = l
+    j = r
+
+    while i < j:
+        while a[i] <= pivot:
+            i += 1
+            if i == r:
+                break
+        while a[j] >= pivot:
+            j -= 1
+            if j == l:
+                break
+        if i < j:
+            a[i], a[j] = a[j], a[i]
+    arr[l], arr[j] = arr[j], arr[l]
+    return j
+
+def quicksort(a, low, high):
+    if low < high:
+        pivot = partition(a, low, high)
+        quicksort(a, low, pivot - 1)
+        quicksort(a, pivot + 1, high)
+
+arr = [11, 45, 22, 81, 23, 34, 99, 22, 17, 8]
+# arr = [69, 10, 30, 2, 16, 8, 31, 22]
+# arr = [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+PrintArray()
+quicksort(arr, 0, len(arr) - 1)
+PrintArray()
+```
+
+out :
+
+ 11  45  22  81  23  34  99  22  17   8 
+  8  11  17  22  22  23  34  45  81  99 
 
 
 
