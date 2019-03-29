@@ -4,14 +4,15 @@
 
 
 
-| 알고리즘   | 평균수행시간 | 최악수행시간 | 알고리즘 기법 | 비고                                               |
-| ---------- | ------------ | ------------ | ------------- | -------------------------------------------------- |
-| 버블정렬   | O(n^2)       | O(N^2)       | 비교와 교환   | 코딩이 가장 손쉽다                                 |
-| 카운팅정렬 | O(n+k)       | O(n+k)       | 비교환방식    | n이 비교적 작을때만 가능                           |
-| 선택정렬   | O(n^2)       | O(n^2)       | 비교와 교환   | 교환의  횟수가 버블, 삽입정렬보다 작다.            |
-| 퀵정렬     | O(n log n)   | O(n^2)       | 분할정복      | 최악의 경우 O(n^2)이지만 평균적으로는 가장 빠르다. |
-| 삽입정렬   | O(n^2)       | O(n^2)       | 비교와 교환   | n의 개수가 작을 때 효과적이다                      |
-| 병합정렬   | O(n log n)   | O(n log n)   | 분할정복      | 연결리스트의 경우 가장 효율적인 방식               |
+| 알고리즘   | 평균수행시간 | 최악수행시간 | 알고리즘 기법 | 비고                                                 |
+| ---------- | ------------ | ------------ | ------------- | ---------------------------------------------------- |
+| 버블정렬   | O(n^2)       | O(N^2)       | 비교와 교환   | 코딩이 가장 손쉽다                                   |
+| 카운팅정렬 | O(n+k)       | O(n+k)       | 비교환방식    | n이 비교적 작을때만 가능                             |
+| 선택정렬   | O(n^2)       | O(n^2)       | 비교와 교환   | 교환의  횟수가 버블, 삽입정렬보다 작다.              |
+| 퀵정렬     | O(n log n)   | O(n^2)       | 분할정복      | 최악의 경우 O(n^2)이지만 평균적으로는 가장 빠르다.   |
+| 삽입정렬   | O(n^2)       | O(n^2)       | 비교와 교환   | n의 개수가 작을 때 효과적이다. 책 정리하듯 정렬한다. |
+| 병합정렬   | O(n log n)   | O(n log n)   | 분할정복      | 연결리스트의 경우 가장 효율적인 방식                 |
+| 힙정렬     | O(n log n)   |              |               |                                                      |
 
 
 
@@ -160,6 +161,57 @@ print(data)
 
 
 
+## 병합정렬(merge sort)
+
+=> 병합해놓은 리스트를 원본에 복사하는 과정 등이 필요하기 때문에 시간이 오래 걸리며, 
+
+=> 긴 배열이 뒤에 따라붙으면 복사하는 과정이 오래 걸리기 때문에 linked list로 해야만 효율이 좋다.
+
+
+
+### 구현
+
+```python
+def merge_sort(m):
+    if len(m) <= 1:
+        return m
+
+    # 1. divide
+    mid = len(m) // 2
+    left = m[:mid]
+    right = m[mid:]
+
+    # 리스트 길이가 1이 될 때 까지 divide
+    left = merge_sort(left)
+    right = merge_sort(right)
+
+    # merge 부분
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    # 양 쪽 리스트에 원소가 없을 때 까지 반복
+    while left and right:
+        if left[0] <= right[0]:
+            result.append(left.pop(0))
+        else:
+            result.append(right.pop(0))
+    if left:
+        result.extend(left)
+    elif right:
+        result.extend(right)
+    return result
+
+
+data = [61, 324, 21, 56, 243, 6, 1, 634, 43, 3, 52]
+print(data)
+print(merge_sort(data))
+```
+
+out:
+
+[61, 324, 21, 56, 243, 6, 1, 634, 43, 3, 52]
+[1, 3, 6, 21, 43, 52, 56, 61, 243, 324, 634]
 
 
 
@@ -167,6 +219,59 @@ print(data)
 
 
 
+## 퀵정렬
+
++ 주어진 배열을 두 개로 분할하고, 각각을 정렬
+  + 합병정렬(merge)와 비슷하다.
+  + 다른점 1: 합병정렬은 그쟝 두 부분으로 나눔. 퀵정렬은 분할할 대 기준 아이템(pivot item) 중심으로 작은것을 왼쪽 큰것을 오른쪽에 위치
+  + 다른점 2: 각 부분 정렬이 끝난 후, 합병정렬은 '합병'이란 후처리 작업은 필요하나 퀵정렬은 필요하지 않다.
++ 아이디어 
+  + P(피봇) 값들보다 큰 값은 오른쪽, 작은 값들은 왼쪽에 위치시켜서 피봇을 두 집합의 가운데에 위치.
+  + 피봇을 선택할 때 맨 왼쪽으로 사용하나, 값의 치우침을 방지하기 위해서는 (왼쪽끝/오른쪽끝/임의의 값) 세 개 중 중간값을 사용할 수도 있다.
+
+```python
+def PrintArray():
+    for i in range(len(arr)):
+        print("%3d" % arr[i], end=" ")
+    print()
+
+def partition(a, l, r):
+    pivot = a[l]
+    i = l
+    j = r
+
+    while i < j:
+        while a[i] <= pivot:
+            i += 1
+            if i == r:
+                break
+        while a[j] >= pivot:
+            j -= 1
+            if j == l:
+                break
+        if i < j:
+            a[i], a[j] = a[j], a[i]
+    arr[l], arr[j] = arr[j], arr[l]
+    return j
+
+def quicksort(a, low, high):
+    if low < high:
+        pivot = partition(a, low, high)
+        quicksort(a, low, pivot - 1)
+        quicksort(a, pivot + 1, high)
+
+arr = [11, 45, 22, 81, 23, 34, 99, 22, 17, 8]
+# arr = [69, 10, 30, 2, 16, 8, 31, 22]
+# arr = [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+PrintArray()
+quicksort(arr, 0, len(arr) - 1)
+PrintArray()
+```
+
+out :
+
+ 11  45  22  81  23  34  99  22  17   8 
+  8  11  17  22  22  23  34  45  81  99 
 
 
 

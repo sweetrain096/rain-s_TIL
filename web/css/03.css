@@ -51,6 +51,6 @@ ol > li {
 /* nth-child를 사용하면 특정부분만 */
 /* :nth-of-type(2) : 형제 중에 2번째 */
 /* :nth-child(2) : 자식 중에 2번째 */
-ul li + li {
+li:nth-child(1) {
     color: salmon;
 }

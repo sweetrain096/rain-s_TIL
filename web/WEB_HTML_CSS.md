@@ -52,6 +52,16 @@ https://www.google.co.kr/search?q=구글
 
 
 
+### URL
+
+URL = URI(90%) + URN
+
+
+
+URL의 구조 : 
+
+Scheme + Host + Port + Path + Query + fragment
+
 
 
 
