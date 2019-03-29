@@ -230,7 +230,7 @@ font-weight
 
 flex연습: [froggy](https://flexboxfroggy.com/#ko)
 
-`d-flex` : 세로로 길게 늘리게 된다. ( 기본값이 row 이기 때문)
+`d-flex` : 가로로 길게 늘리게 된다. ( 기본값이 row 이기 때문)
 
 
 
@@ -246,9 +246,9 @@ flex연습: [froggy](https://flexboxfroggy.com/#ko)
 
 #### justify-content
 
-행을 배치(왼쪽, 가운데, 오른쪽)
+열을 배치(왼쪽, 가운데, 오른쪽)
 
-기본적으로 행을 조정한다. (가로정렬)
+기본적으로 열을 조정한다. (가로정렬)
 
 `justify-content-first`
 
@@ -264,9 +264,9 @@ flex연습: [froggy](https://flexboxfroggy.com/#ko)
 
 #### align-items
 
-열로 배치. (위, 중앙, 아래)
+행로 배치. (위, 중앙, 아래)
 
-기본적으로 열을 조정. (세로정렬)
+기본적으로 행을 조정. (세로정렬)
 
 `align-items-start`
 
@@ -280,7 +280,7 @@ flex연습: [froggy](https://flexboxfroggy.com/#ko)
 
 #### align-content
 
-열을 배치.
+행을 배치.
 
 한번에 여러줄의 아이템을 위, 아래, 중앙 등으로 정렬이 가능하다.
 

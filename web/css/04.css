@@ -27,6 +27,12 @@
     margin: 10px 20px 30px ;
     /* margin: auto :  */
 }
+.center {
+    margin: auto;
+}
+.right {
+    margin-left: auto;
+}
 .border {
     /* border: 2px solid(style지정) color */
     border-style: dashed;
@@ -35,6 +41,10 @@
     border-left-style: inset;
     border-bottom-color: coral;
 }
+/* .border {
+    border: 2px solid black;
+} */
+
 .circle {
     width: 100px;
     height: 100px;
