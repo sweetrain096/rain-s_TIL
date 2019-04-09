@@ -229,6 +229,10 @@ out:
   + P(피봇) 값들보다 큰 값은 오른쪽, 작은 값들은 왼쪽에 위치시켜서 피봇을 두 집합의 가운데에 위치.
   + 피봇을 선택할 때 맨 왼쪽으로 사용하나, 값의 치우침을 방지하기 위해서는 (왼쪽끝/오른쪽끝/임의의 값) 세 개 중 중간값을 사용할 수도 있다.
 
+
+
+python 피봇설정
+
 ```python
 def PrintArray():
     for i in range(len(arr)):
@@ -272,6 +276,70 @@ out :
 
  11  45  22  81  23  34  99  22  17   8 
   8  11  17  22  22  23  34  45  81  99 
+
+
+
+python 재귀 버전
+
+```python
+def Qsort(s, e):
+	if s >= e: return
+	t, p = s, e
+	for l in range(s, e+1):
+		if arr[l] < arr[p]:
+			arr[l], arr[t] = arr[t], arr[l]
+			t += 1
+	arr[p], arr[t] = arr[t], arr[p]
+	Qsort(s, t-1)
+	Qsort(t+1, e)
+```
+
+
+
+c언어 재귀버전
+
+```c
+# include <stdio.h>
+int data[80] = { 94, 546, 1, 5, 35, 7, 485, 1, 5, 6, 1, 8, 1, 23, 3 ,4, 9, 55, 34, 25 };
+void QuickSort(int s, int e) {
+	int tmp;
+	if (s >= e) return;
+	int t = s;
+	int p = e;
+
+	for (int l = s; l <= e; l++) {
+		if (data[l] < data[p]) {
+			tmp = data[t];
+			data[t] = data[l];
+			data[l] = tmp;
+			t++;
+		}
+	}
+	tmp = data[t];
+	data[t] = data[p];
+	data[p] = tmp;
+	QuickSort(s, t - 1);
+	QuickSort(t + 1, e);
+
+}
+
+int main() {
+	for (int i = 0; i < 20; i++) {
+		printf("%d ", data[i]);
+	}
+	printf("\n");
+	QuickSort(0, 19);
+	for (int i = 0; i < 20; i++) {
+		printf("%d ", data[i]);
+	}
+	printf("\n");
+	return 0;
+}
+```
+
+
+
+
 
 
 
