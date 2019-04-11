@@ -439,6 +439,8 @@
   + 쿠키 : 클라이언트 **로컬**에 저장되는 **키와 값**이 들어있는 작은 데이터 파일
   + 세션 : **서버측**에서 관리. 접속시간에 제한을 두어 일정 시간 응답이 없다면 정보가 유지 되지 않게 설정 가능. 
 
++ **세션을 쓰는 거의 모든 것들은 request를 사용합니다!!**
+
 + 로그인과 로그아웃
 
   + 로그인 : 세션을 만드는 것. 
@@ -1428,7 +1430,28 @@
    ```
 
    + User를 import 해와 그 안의 모든 objects를 불러오게 된다.
+
    + 각 user들이 작성한 글 수를 체크하기 위해 user.board_set.all()으로 모든 글을 불러온 후 그 개수를 체크해 cnt에 넣어 context로 보낸다.
+
+   + `from django.contrib.auth.models import User` 사용을 지양한다. 대신 
+
+     `from django.contrib.auth import get_user_model` 를 사용하고 `User = get_user_model()` 로 불러오는것이 좋다.
+
+   + ```python
+     from django.contrib.auth import get_user_model
+     ...
+     
+     def userlist(request):
+         print(request.user)
+         User = get_user_model()
+         users = User.objects.all()
+         for user in users:
+             user.cnt = len(user.board_set.all())
+         context = {'user_list' : users}
+         return render(request, 'accounts/userlist.html', context)
+     ```
+
+   
 
 4. `accounts/userlist.html`
 
@@ -1605,7 +1628,72 @@
 
    ![1554879704854](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1554879704854.png)
 
-   
+   + 작성한 글을 보여주는 두 가지 방법
+
+     1. django
+
+        ```django
+        <!--mypage.html-->
+        	<div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label">작성한 글</label>
+                </div>
+                <div class="col-sm-10">
+                    {% if contents %}
+                    {% for board in user.board_set.all %}
+                        <label for="staticEmail" class="col-sm-10 col-form-label">{{ board.title }}</label>
+                    {% empty %}
+                        <p>글을 작성해 주세요...</p>
+                    {% endfor %}
+                
+                    {% else %}
+                    <label for="staticEmail" class="col-sm-10 col-form-label">None</label>
+                    {% endif %}
+                </div>
+                
+            </div>
+        ```
+
+        + user.board_set 자체를 장고에서 불러와서 board로 모두 불러올수 있다.
+
+     2. python
+
+        ```python
+        # views.py
+        def mypage(request, user_id):
+            # user = request.user
+            contents = request.user.board_set.all()
+            print(contents)
+            context = {'contents' : contents}
+            return render(request, 'accounts/mypage.html', context)
+        ```
+
+        
+
+        ```django
+        # mypage.html
+        
+            <div class="form-group row">
+                <div class="col-sm-2">
+                    <label class="col-form-label">작성한 글</label>
+                </div>
+                <div class="col-sm-10">
+                    {% if contents %}
+                    {% for content in contents %}
+                        <label for="staticEmail" class="col-sm-10 col-form-label">{{ content.title }}</label>
+                    {% endfor %}
+                
+                    {% else %}
+                    <label for="staticEmail" class="col-sm-10 col-form-label">None</label>
+                    {% endif %}
+                </div>
+                
+            </div>
+        ```
+
+        + 내용 자체를 context로 해서 넘겨서 띄우기
+
+
 
 
 
@@ -1635,7 +1723,77 @@
 
 
 
+## 14. [메세지 프레임워크(The messages framework)](<https://docs.djangoproject.com/ko/2.2/ref/contrib/messages/#module-django.contrib.messages>)
 
+1. 로그인이 된 후 사용된 것을 확인하기 위해서 settings.py에 추가하기
+
+   `settings.py`
+
+   ```python
+   MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+   ```
+
+2. `accounts/views.py`
+
+   ```python
+   from django.contrib import messages
+   
+   
+   def signup(request):
+       if request.user.is_authenticated:
+           return redirect('boards:index')
+       if request.method == 'POST':
+           user_form = UserCustomCreationForm(request.POST)
+           if user_form.is_valid():
+               user = user_form.save()
+               auth_login(request, user)
+               messages.info(request, f'{user.username}님 회원가입이 되었습니다~')
+               return redirect('boards:index')
+           messages.warning(request, f'양식을 다시 확인해주세요')
+       else:
+           user_form = UserCustomCreationForm()
+       context = {'user_form' : user_form}
+       return render(request, 'accounts/signup.html', context)
+   ```
+
+   `messages.info(request, f'{user.username}님 회원가입이 되었습니다~')` 부분과 `messages.warning(request, f'양식을 다시 확인해주세요')`을 통해 메세지를 보내겠다는것을 알려준다. info나 warning 등이 보내는 tags가 되며, 이것이 부트스트랩에서 색상코드가 될 수 있다.
+
+3. `boards/base.html`
+
+   ```html
+       {% if messages %}
+           <div class="messages">
+           {% for message in messages %}
+               <div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+               {{ message.message }}
+               </div>
+           {% endfor %}
+           </div>
+       {% endif %} 
+   ```
+
+   + message.tags가 있을 때 색상을 넣어서 표현한다.
+
+   + 기능 추가
+
+     ```html
+         {% if messages %}
+             <div class="messages">
+             {% for message in messages %}
+                 <div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                 {{ message.message }}
+                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                 </button>
+                 </div>
+             {% endfor %}
+             </div>
+         {% endif %} 
+     ```
+
+     ![1554945986987](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1554945986987.png)
+
+     닫기 버튼 추가
 
 
 
