@@ -17,7 +17,10 @@
 ### forms.py
 
 + form 내용을 비워두는 것과 같은 것을 막기 위한 검증 작업. 
-+ form을 상속받는것.
++ form을 상속받는것. 
++ model 을 상속받아서 사용. => modelform
++ model form 을 사용하는 이유????
+  + class Meta를 통해 사용하고싶은 cloumn명을 어디서든 일관적으로 사용할 수 있기 때문.
 
 ```python
 from django import forms

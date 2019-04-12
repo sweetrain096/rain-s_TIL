@@ -92,7 +92,7 @@
 
 
 
-## 01 posts app 생성
+## 01. posts app 생성
 
 1. app 생성 및 등록
 
@@ -340,7 +340,462 @@
 
     
 
-## CRUD
+
+
+
+
+## 02. CRUD
+
+### create
+
+1. `posts/urls.py`
+
+   ```python
+   urlpatterns = [
+       path('', views.list, name="list"),
+       path('create/', views.create, name="create"),
+   ```
+
+2. `posts/views.py`
+
+   ```python
+   def create(request):
+       if request.method == 'POST':
+           post_form = PostForm(request.POST)
+           if post_form.is_valid():
+               post = post_form.save()
+               return redirect('posts:list')
+       else:
+           post_form = PostForm()
+       context = {'post_form' : post_form}
+       
+       return render(request, 'posts/form.html', context)
+   ```
+
+3. `posts/forms.py`
+
+   ```python
+   from django import forms
+   from .models import Post
+   
+   class PostForm(forms.ModelForm):
+       class Meta:
+           model = Post
+           fields = ['content', ]
+   ```
+
+   
+
+4. `posts/form.html`
+
+   ```html
+   {% extends 'base.html' %}
+   {% block body %}
+   
+   <h2>new post</h2>
+   <form method="POST">
+       {% csrf_token %}
+       {{ post_form }}
+       <input type='submit' value="등록!">
+   </form>
+   {% endblock %}
+   ```
+
+   
+
+### read
+
+1. `posts/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('<int:post_pk>/', views.detail, name="detail"),
+   ```
+
+2. `posts/views.py`
+
+   ```python
+   from django.shortcuts import render, redirect, get_object_or_404
+   
+   
+   def detail(request, post_pk):
+       post = get_object_or_404(Post, pk=post_pk)
+       context = {'post' : post}
+       return render(request, 'posts/detail.html', context)
+   ```
+
+3. `posts/detail.html`
+
+   ```html
+   {% extends 'base.html' %}
+   {% block body %}
+   <p>{{ post.pk }}번 글</p>
+   <p>{{ post.content}}</p>
+   <a href="" class="btn btn-outline-warning btn-sm" role="button">수정</a>
+   <form action="" method="POST" >
+       {% csrf_token %}
+       <input type="submit" class="btn btn-outline-danger btn-sm" role="button" value="삭제">
+   </form>
+   {% endblock %}
+   ```
+
+   + 수정, 삭제 버튼 미리 만들기
+
+
+
+### delete
+
+1. `posts/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('delete/<int:post_pk>/', views.delete, name="delete"),
+   ]
+   ```
+
+2. `posts/views.py`
+
+   ```python
+   def delete(request, post_pk):
+       post = get_object_or_404(Post, pk=post_pk)
+       if request.method == 'POST':
+           post.delete()
+           return redirect('posts:list')
+       else:
+           return redirect('posts:detail', post_pk)
+   ```
+
+
+
+### edit (create와 form.html 공유)
+
+1. `posts/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('edit/<int:post_pk>/', views.edit, name="edit"),
+   ```
+
+2. `posts/views.py`
+
+   ```python
+   def edit(request, post_pk):
+       post = get_object_or_404(Post, pk=post_pk)
+       if request.method == 'POST':
+           post_form = PostForm(request.POST)
+           if post_form.is_valid():
+               post.content = post_form.cleaned_data.get('content')
+               post.save()
+               return redirect('posts:detail', post_pk)
+       else:
+           post_form = PostForm(initial=post.__dict__)
+       
+       context = {'post_form' : post_form}
+       return render(request, 'posts/form.html', context)
+   ```
+
+   + GET 방식으로 들어올 때 post_form을 `PostForm(initial=post.__dict__)` 으로 받아온다. 이 경우 PostForm을 초기 값 자체를 우리가 받아온 post로 띄워준다. 이렇게 되면 post의 pk값까지 일치하게 되어 저장을 해도 그 위치로 저장되게된다.
+   + POST요청으로 들어올 때에는 create와 유사하나 들어온 값이 유효한지를 확인 한 후 cleaned_data로 가져온 내용을 저장하게 된다.
+
+
+
+
+
+## 03. [ImageField 만들기](<https://cjh5414.github.io/django-file-upload/>)
+
+1. `posts/models.py`
+
+   ```python
+   class Post(models.Model):
+       content = models.TextField()
+       image = modles.ImageField()
+   ```
+
+   
+
+2. `bash`
+
+   ```bash
+   $ pip install Pillow
+   $ python manage.py makemigrations
+   $ python manage.py migrate
+   ```
+
+   - 이미지 사용을 위해 pillow 를 설치한 후 마이그레이트.
+
+     
+
+3. `settings.py`
+
+   ```python
+   MEDIA_URL = '/media/'
+   MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+   ```
+
+   추가
+
+   - MEDIA_URL : 만들 루트
+
+   - MEDIA_ROOT : 실제로 저장되는 위치
+
+   - 이후 project 가장 상단에서 media라는 이름의 폴더를 만든다.
+
+     
+
+4. `urls.py`
+
+   ```python
+   from django.conf import settings
+   from django.conf.urls.static import static
+   
+   urlpatterns=[]
+   
+   urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+   ```
+
+   + settings를 불러오기 위해서는 `from django.conf import settings` 하기
+   + 맨 아래 url을 불러오기 위해서 static을 import 해오게 된다.
+
+   
+
+5. `posts/forms.py`
+
+   ```python
+       class Meta:
+           model = Post
+           fields = ['content', 'image']
+           widgets = {
+               'content' : forms.Textarea(),
+               'image' : forms.FileInput(),
+           }
+   
+   ```
+
+6. `posts/form.html`
+
+   ```html
+   {% extends 'base.html' %}
+   {% block body %}
+   
+   <h2>new post</h2>
+   <form method="POST" enctype="multipart/form-data">
+       {% csrf_token %}
+       {{ post_form }}
+       <input type='submit' value="등록!">
+   </form>
+   {% endblock %}
+   ```
+
+   `enctype="multipart/form-data"`부분을 넣어야한다.
+
+7. `posts/views.py`
+
+   ```python
+   def create(request):
+       if request.method == 'POST':
+           post_form = PostForm(request.POST, request.FILES)
+           if post_form.is_valid():
+               post = post_form.save()
+               return redirect('posts:detail', post.pk)
+       else:
+           post_form = PostForm()
+       context = {'post_form' : post_form}
+       
+       return render(request, 'posts/form.html', context)
+       
+   ```
+
+   + redirect를 detail로 보내기
+
+8. `posts/detail.html`
+
+   ```html
+   {% extends 'base.html' %}
+   {% block body %}
+   <p>{{ post.pk }}번 글</p>
+   <p>{{ post.content}}</p>
+   <img src="{{ post.image.url }}"><br>
+   <a href="{% url 'posts:edit' post.pk %}" class="btn btn-outline-warning btn-sm" role="button">수정</a>
+   <form action="{% url 'posts:delete' post.pk %}" method="POST" >
+       {% csrf_token %}
+       <input type="submit" class="btn btn-outline-danger btn-sm" role="button" value="삭제">
+   </form>
+   {% endblock %}
+   ```
+
+   
+
+
+
+
+
+## 04. 이미지 여러장 받기
+
+1. `posts/models.py`
+
+   ```python
+   class Post(models.Model):
+       content = models.TextField()
+       # image = models.ImageField()
+       
+       def __str__(self):
+           return f'Post : {self.pk} - {self.content}'
+       
+       def get_absolute_url(self):
+           return reverse('posts:detail', args=[self.pk])
+           # reverse : object가 가야하는데 뒤의 내용을 실제 path로 만드는 역할.
+           
+   class Image(models.Model):
+       file = models.ImageField()
+       post = models.ForeignKey(Post, on_delete=models.CASCADE)
+       
+   ```
+
+   + Image class가 가지고 있는 post의 주소 저장하기
+
+     
+
+2. `posts/forms.py`
+
+   ```python
+   from django import forms
+   from .models import Post, Image
+   
+   class PostForm(forms.ModelForm):
+       class Meta:
+           model = Post
+           fields = ['content',]
+       
+   class ImageForm(forms.ModelForm):
+       class Meta:
+           model = Image
+           exclude = ('post',)
+   ```
+
+   + exclude에서 foreignkey만 제외하고 가져오기
+
+3. `posts/views.py`
+
+   ```python
+   from .forms import PostForm, ImageForm
+   
+   def create(request):
+       ...
+       else:
+           post_form = PostForm()
+           image_form = ImageForm()
+       context = {'post_form' : post_form, 'image_form' : image_form}
+       
+       return render(request, 'posts/form.html', context)
+   ```
+
+   + else에서 image_form을 같이 가져오기
+
+4. `posts/form.html`
+
+   ```html
+   {% extends 'base.html' %}
+   {% block body %}
+   {% load crispy_forms_tags %}
+   
+   <h2>new post</h2>
+   <form method="POST" enctype="multipart/form-data">
+       {% csrf_token %}
+       {{ post_form|crispy }}
+       {{ image_form|crispy }}
+       <input type='submit' value="등록!">
+   </form>
+   {% endblock %}
+   ```
+
+   + crispy 다운하여 적용.
+   + post_form과 image_form을 각각 띄운다.
+
+   여기까지는 아직 사진 한장만 업로드 가능
+
+5. `posts/forms.py`
+
+   ```python
+   class ImageForm(forms.ModelForm):
+       class Meta:
+           model = Image
+           exclude = ('post',)
+           widgets = {
+               'file' : forms.FileInput(attrs={'multiple' : True}),
+           }
+   ```
+
+   + widgets에 file의 multiple을 주기만 하면 여러장 입력이 가능하다.
+
+6. `posts/views.py`(이해하기 쉽게. but, 동작하지는 않는다.)
+
+   ```python
+   def create(request):
+       if request.method == 'POST':
+           post_form = PostForm(request.POST)
+           if post_form.is_valid():
+               post = post_form.save()
+               files = request.FILES.getlist('file')
+               for file in files:
+                   image_form = ImageForm(file)
+                   image = image_form.save(commit=False)
+                   image.post = post
+                   image.save()
+               return redirect('posts:detail', post.pk)
+   ```
+
+   + files에 request.FILES.getlist('file')로 가져오게 된다. 이것은 장고가 지원하는 문법이며, file들의 목록이 된다.
+     + 이때, 'file'은 모델에서 만든 column 이다
+   + files 들을 하나씩 돌면서 file을 저장하기 위해 for문을 사용.
+   + image_form을 ImageForm(file)로 가져오는데, 이 때 post의 id가 없기 때문에 우선 commit=False로 image 저장을 멈춰놓는다.
+   + iamge.post = post로 image 아이디 값을 저장해놓고, image.save()로 저장한다....면 좋겠지만,,,,
+
+7. `posts/views.py`
+
+   ```python
+   def create(request):
+       if request.method == 'POST':
+           post_form = PostForm(request.POST)
+           if post_form.is_valid():
+               post = post_form.save()
+               files = request.FILES.getlist('file')
+               for file in files:
+                   request.FILES['file'] = file
+                   image_form = ImageForm(files=request.FILES)
+                   if image_form.is_valid():
+                       image = image_form.save(commit=False)
+                       image.post = post
+                       image.save()
+               return redirect('posts:detail', post.pk)
+       else:
+           post_form = PostForm()
+           image_form = ImageForm()
+       context = {'post_form' : post_form, 'image_form' : image_form}
+       
+       return render(request, 'posts/form.html', context)
+   ```
+
+   + request.FILSE를 할 때에는 필요한 내용 및 형식이 존재한다. 이것을 깨뜨리지 않고 저장하기 위해서 형식을 유지해준다. 
+   + `request.FILES['file'] = file`를 통해 `request.FILES['file']`가 형식을 유지시키고, for 안에서 돌아가는 file 하나하나가 업데이트 된다. 
+   + 이후 `image_form = ImageForm(request.POST, request.FILES)` 에서 image_form이 받는 ImageForm 함수에서 request.FILES는 우리가 위에서 업데이트 시킨 이미지 파일 하나에 대한 내용이며, 나머지 내용들을 같이 받기 위해 request.POST를 같이 가져오게된다.
+   + 이렇게 가져온 image_form을 valid를 거쳐 저장하게 된다.
+
+
+
+
+
+## 05. 이미지 여러장 보여주기
+
+
+
+
+
+
+
+
 
 
 
