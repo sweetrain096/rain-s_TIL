@@ -1,5 +1,12 @@
 # instagram 만들기
 
++ user form 쉽게 외우기!!
+  + `from django.contrib.auth.forms import UserCreationForm`
+    + django가 주는 contrib(기여?) 중에 auth 에 사용할수 있는 forms. 중에서 UserCreationForm(여기서 **creation**에 주의!!!)
+  +  `from django.contrib.auth import get_user_model`
+    +  get_user_model은 user 내용을 가져와 보여주는 함수라고 생각하면 쉽다.
+  + contribute
+
 ## 00. setting
 
 1. `bash` startproject
@@ -787,7 +794,547 @@
 
 
 
-## 05. 이미지 여러장 보여주기
+
+
+
+
+## 05. User사용하기
+
+### 회원가입
+
+1. bash
+
+   ```bash
+   $ python manage.py startapp accounts
+   ```
+
+2. `settings.py`
+
+   ```python
+   INSTALLED_APPS = [
+   	...
+       'posts',
+       'accounts',
+   ]
+   
+   ```
+
+3. `urls.py`
+
+   ```python
+   urlpatterns = [
+       path('admin/', admin.site.urls),
+       path('posts/', include('posts.urls')),
+       path('accounts/', include('accounts.urls')),
+   ]
+   ```
+
+4. `accounts/urls.py` 생성.
+
+   ```python
+   from django.urls import path
+   from . import views
+   app_name = 'accounts'
+   
+   urlpatterns = [
+       path('signup/', views.signup, name="signup"),
+   ]
+   ```
+
+5. `accounts/views.py`
+
+   ```python
+   # Create your views here.
+   def signup(request):
+       return render(request, 'accounts/signup.html')
+   ```
+
+6. `accounts/templates/accounts/signup.html`
+
+   ```html
+   {% extends 'base.html' %}
+   ```
+
+7. `accounts/views.py`
+
+   ```python
+   from django.contrib.auth.forms import UserCreationForm
+   # Create your views here.
+   def signup(request):
+       user_form = UserCreationForm()
+       
+       context = {"user_form" : user_form}
+       return render(request, 'accounts/signup.html', context)
+   ```
+
+   + user를 사용하기 위해 `from django.contrib.auth.forms import UserCreationForm` 사용
+
+8. `accounts/signup.html`
+
+   ```html
+   {% extends 'base.html' %}
+   
+   {% block body %}
+   {% load crispy_forms_tags %}
+   {{ user_form|crispy }}
+   
+   {% endblock %}
+   ```
+
+9. `accounts/forms.py` 생성
+
+   ```python
+   from django.contrib.auth import get_user_model
+   from django.contrib.auth.forms import UserCreationForm
+   
+   class UserCustomCreationFrom(UserCreationForm):
+       class Meta:
+           model = get_user_model()
+           # fields = '__all__'
+           fields = ['username', 'email', 'password1', 'password2']
+   ```
+
+   + user 모델은 modelform이 아니라 만들어진 usercreateform 을 가져와야한다. 이렇게 우리가 가져오는 이유는 우리가 원하는 폼의 내용을 추가할 수 있기 때문이다. 
+   + 우리가 사용하려고 하는 model이 class의 매개변수로 들어가고, model을 `get_user_model` 함수로 사용한다. get_user_model은 user 내용을 가져와 보여주는 함수라고 생각하면 쉽다. 그렇기 때문에 `from django.contrib.auth import get_user_model`로 가져올 수 있다.
+
+10. `accounts/views.py`
+
+    ```python
+    from .forms import UserCustomCreationFrom
+    
+    # Create your views here.
+    def signup(request):
+        if request.method == "POST":
+            user_form = UserCustomCreationFrom(request.POST)
+            if user_form.is_valid():
+                user_form.save()
+                return redirect('posts:list')
+                
+        else:
+            user_form = UserCustomCreationFrom()
+        
+        context = {"user_form" : user_form}
+        return render(request, 'accounts/signup.html', context)
+    ```
+
+    + forms.py에서 만든 UserCustomCreationForm을 사용하여 회원가입한다.
+
+11. `accounts/signup.html`
+
+    ```html
+    {% extends 'base.html' %}
+    
+    {% block body %}
+    {% load crispy_forms_tags %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ user_form|crispy }}
+        <input type="submit" class="button">
+    </form>
+    
+    {% endblock %}
+    ```
+
+    + 이 때 `action=`을 쓰지 않아야 동작한다. 쓰지 않아도 자동으로 POST형식으로 넘어가게 된다.
+
+12. `_navbar.html`
+
+    ```html
+            <li class="nav-item active">
+              <a class="nav-link" href="{% url 'accounts:signup' %}">sign up</a>
+            </li>
+    ```
+
+    + 회원가입 버튼 추가
+
+
+
+
+
+### login
+
+1. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+       path('signup/', views.signup, name="signup"),
+       path('login/', views.login, name="login"),
+   ]
+   ```
+
+2. `accounts/views.py`
+
+   ```python
+   from django.contrib.auth import login as auth_login
+   from django.contrib.auth.forms import AuthenticationForm
+   
+   def login(request):
+       if request.method == 'POST':
+           user_form = AuthenticationForm(request, request.POST)
+           print(user_form)
+           if user_form.is_valid():
+               user_form = auth_login(request, user_form.get_user())
+           return redirect('posts:list')
+       else:
+           user_form = AuthenticationForm()
+       context = {'user_form' : user_form}
+       return render(request, 'accounts/login.html', context)
+   ```
+
+   + `AuthenticationForm`에서 정보를 요청받는다. 이 때 request와 request.POST를 모두 가져온다. POST로 받는 정보 이외의 정보도 받아와야만 로그인이 가능하다.
+
+   + 받아온 정보가 유효한지 확인한 후, 이 정보를 가져오기 위해서는 `.get_user()`를 사용해서 form에서 가져온 정보를 가져온다.
+
+   + 이 때 print(user_form)은 
+
+     + ```
+       <tr><th><label for="id_username">사용자 이름:</label></th><td><input type="text" name="username" value="admin" autofocus required id="id_username"></td></tr>
+       <tr><th><label for="id_password">비밀번호:</label></th><td><input type="password" name="password" required id="id_password"></td></tr>
+       ```
+
+     + 이런 정보를 갖게되며, 여기서 `get_user()`를 통해 우리가 원하는 정보를 뽑아낼 수 있다. get_user는 Authentication이 제공하는 함수이다.
+
+3. `_navbar.html`
+
+   ```html
+             {% if user.is_authenticated %}
+             <li class="navbar-brand">{{user.username}}님</li>
+             {% else %}
+             <li class="nav-item active">
+                 <a class="nav-link" href="{% url 'accounts:login' %}">login</a>
+             </li>
+             <li class="nav-item active">
+                 <a class="nav-link" href="{% url 'accounts:signup' %}">sign up</a>
+             </li>
+             {% endif %}
+   ```
+
+   - 로그인 버튼 및 `is_authenticated`로 로그인 되어있는지 확인.
+
+
+
+### logout
+
+1. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+       path('signup/', views.signup, name="signup"),
+       path('login/', views.login, name="login"),
+       path('logout/', views.logout, name="logout"),
+   ]
+   ```
+
+2. `accounts/views.py`
+
+   ```python
+   from django.contrib.auth import logout as auth_logout
+   
+   
+   def logout(request):
+       auth_logout(request)
+       return redirect('posts:list')
+       
+   ```
+
+3. `_navbar.html`
+
+   ```html
+             {% if user.is_authenticated %}
+             <li class="navbar-brand">{{user.username}}님</li>
+             <li class="nav-item active">
+               <a class="nav-link" href="{% url 'accounts:logout' %}">logout</a>
+             </li>
+   
+             {% else %}
+   ```
+
+   
+
+
+
+
+
+## 06. mypage 생성 / 프로필 수정
+
+### mypage
+
+1. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+       path('signup/', views.signup, name="signup"),
+       path('login/', views.login, name="login"),
+       path('logout/', views.logout, name="logout"),
+       path('<str:user_name>', views.mypage, name="mypage"),
+   ]
+   ```
+
+2. `accounts/views.py`
+
+   ```python
+   def mypage(request, user_name):
+       return render(request, 'accounts/mypage.html')
+   ```
+
+3. `accounts/mypage.html`
+
+   ```html
+   {% extends 'base.html' %}
+   {% block css %}
+   <style>
+   
+   </style>
+   {% endblock %}
+   
+   {% block body %}
+   <div id="inner" class="container m-5 " style="margin: 0 auto; max-width: 935px">
+       <div class="row d-flex justify-content-around">
+           <div class="col-3">
+               <img src="https://picsum.photos/150/150">
+           </div>
+   
+           <div class="col-6">
+               <div class="row">
+                   <div class="col-6">{{ user }}</div>
+                   <div class="col-6">프로필편집</div>
+               </div>
+               <div class="row my-4">
+                   게시물 : 
+               </div>
+               <div class="row my-4">
+                   <pre>내 소개</pre>
+               </div>
+           </div>
+       </div>
+       <div class="row d-flex justify-content-center my-4">
+           <div class="col-2">게시물</div>
+           <div class="col-2">IGTV</div>
+           <div class="col-2">저장됨</div>
+           <div class="col-2">태그됨</div>
+       </div>
+       <hr>
+       {{ user }}
+   </div>
+   
+   {% endblock %}
+   ```
+
+4. `_navbar.html`
+
+   ```html
+             {% if user.is_authenticated %}
+             <li class="navbar-brand">{{user.username}}님</li>
+             <li class="nav-item active">
+               <a class="nav-link" href="{% url 'accounts:mypage' user %}"> My Page </a>
+             </li>
+   ```
+
+
+
+### 프로필 수정
+
+1. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('<str:user_name>', views.mypage, name="mypage"),
+       path('<str:user_name>/edit', views.edit, name="edit"),
+   ]
+   ```
+
+2. `accounts/views.py`
+
+   ```python
+   from django.contrib.auth.forms import UserChangeForm
+   
+   def edit(request, user_name):
+       if request.method == 'POST':
+           user_form = UserChangeForm(request.POST, instance=request.user)
+           if user_form.is_valid():
+               user_form.save()
+       else:
+           user_form = UserChangeForm(instance=request.user)
+   
+       
+       context = {"user_form" : user_form}
+       return render(request, 'accounts/edit.html', context)
+   ```
+
+3. `accounts/forms.py`
+
+   ```python
+   from django.contrib.auth.forms import UserChangeForm
+   
+   class UserCustomChangeForm(UserChangeForm):
+       class Meta:
+           model = get_user_model()
+           fields = ['email']
+   ```
+
+   + 수정하는 form 사용
+
+4. `accounts/views.py`
+
+   ```python
+   def edit(request, user_name):
+       if request.method == 'POST':
+           user_form = UserCustomChangeForm(request.POST, instance=request.user)
+           if user_form.is_valid():
+               user_form.save()
+               return redirect('posts:list')
+       else:
+           user_form = UserCustomChangeForm(instance=request.user)
+   
+       context = {"user_form" : user_form}
+       return render(request, 'accounts/edit.html', context)
+   ```
+
+
+
+### 비밀번호 수정
+
+1. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+   	...
+       path('<str:user_name>/password/', views.password, name="password"),
+   ]
+   ```
+
+2. `accounts/views.py`
+
+   ```python
+   from django.contrib.auth.forms import PasswordChangeForm
+   
+   def password(request, user_name):
+       if request.method == 'POST':
+           user_form = PasswordChangeForm(request.POST, instance=request.user)
+           if user_form.is_valid():
+               user_form.save()
+               return redirect('posts:list')
+       else:
+           user_form = PasswordChangeForm(request.user)
+       context = { 'user_form' : user_form }
+       return render(request, 'accounts/password.html', context)
+   ```
+
+3. `accounts/password.html`
+
+   ```html
+   {% extends 'base.html' %}
+   
+   {% block body %}
+   <h1>비밀번호 변경</h1>
+   {% load crispy_forms_tags %}
+   <form method="POST">
+       {% csrf_token %}
+       {{ user_form|crispy }}
+       <input type="submit" class="button">
+   </form>
+   
+   {% endblock %}
+   ```
+
+   
+
+
+
+
+
+## 07. 게시글 작성자 표시 및 댓글, userpage 수정
+
+1. `posts/models.py`
+
+   ```python
+   from django.conf import settings
+   from django.contrib.auth import get_user_model
+   
+   # Create your models here.
+   class Post(models.Model):
+       content = models.TextField()
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+       # image = models.ImageField()
+       
+       def __str__(self):
+           return f'Post : {self.pk} - {self.content}'
+       
+       def get_absolute_url(self):
+           return reverse('posts:detail', args=[self.pk])
+           # reverse : object가 가야하는데 뒤의 내용을 실제 path로 만드는 역할.
+           
+   class Image(models.Model):
+       file = models.ImageField()
+       post = models.ForeignKey(Post, on_delete=models.CASCADE)
+       
+   class Comment(models.Model):
+       content = models.TextField()
+       post = models.ForeignKey(Post, on_delete=models.CASCADE)
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+   ```
+
+2. `posts/views.py`
+
+   ```python
+   def create(request):
+       if request.method == 'POST':
+           post_form = PostForm(request.POST)
+           if post_form.is_valid():
+               post = post_form.save(commit=False)
+               post.user = request.user
+               post.save()
+   ```
+
+   
+
+3. `posts/urls.py`
+
+   ```python
+   urlpatterns = [
+   	...
+       
+       path('<int:post_pk>/create_comment/', views.create_comment, name="create_comment"),
+   ]
+   
+   ```
+
+4. `posts/views.py`
+
+   ```python
+   def list(request):
+       posts = Post.objects.order_by('-id')
+       comment_form = CommentForm()
+       for post in posts:
+           post.comments = post.comment_set.all()
+           print(post.comments)
+       context = {'posts' : posts, 'comment_form' : comment_form}
+       
+       return render(request, 'posts/list.html', context)
+   ```
+
+   + list의 모달에 댓글을 달기 위해 댓글 폼 추가
+
+   `posts/views.py`
+
+   ```python
+   def create_comment(request, post_pk):
+       print(post_pk)
+       post = Post.objects.get(pk = post_pk)
+       # comment_form = CommentForm()
+       if request.method == 'POST':
+           comment_form = CommentForm(request.POST)
+           if comment_form.is_valid():
+               comment = comment_form.save(commit=False)
+               comment.post = post
+               comment.user = request.user
+               comment.save()
+   
+       return redirect('posts:list')
+   ```
+
+   + CommentForm은 comment_form로 받아와야한다. 받아온 후 유효성 검사를 하고, 저장된 것을 comment로 저장한다.
 
 
 
@@ -797,11 +1344,7 @@
 
 
 
+```
 
-
-
-
-
-
-
+```
 

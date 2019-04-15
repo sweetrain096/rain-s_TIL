@@ -4,6 +4,16 @@
 
 + [djano template language](https://docs.djangoproject.com/en/1.7/topics/templates/)
 
++ 다른사람 코드를 clone 받아오면 가장 먼저 해야 할 일??
+
+  => migration => migrate
+
+  why? clone 받아온 코드에는 기본적으로 DB가 없다. 그것을 먼저 설정해주기.
+
+  
+
+  
+
 ## 0. 구조 확인하기
 
 ![photo_2019-02-11_12-10-57](img/photo_2019-02-11_12-10-57.jpg)
