@@ -1342,9 +1342,160 @@
 
 
 
+![Untitled](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\Untitled.jpg)
 
 
-```
 
-```
+
+
+## 08. 좋아요 기능 만들기
+
+1. `posts/model.py`
+
+   ```python
+   # Create your models here.
+   class Post(models.Model):
+       content = models.TextField()
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+       # users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+       # 윗줄과 같이 작성을 하면
+       # user.post_set.all() - 게시글? 좋아요 한 글? 확인할 수 없다.
+       like_users = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='like_posts')
+       # image = models.ImageField()
+       
+       def __str__(self):
+           return f'Post : {self.pk} - {self.content}'
+       
+       def get_absolute_url(self):
+           return reverse('posts:detail', args=[self.pk])
+           # reverse : object가 가야하는데 뒤의 내용을 실제 path로 만드는 역할.
+   
+   ```
+
+   + `users = models.ManyToManyField(settings.AUTH_USER_MODEL)` 와 같이 작성하면 N:M 관계를 사용하여 좋아요를 만들 수 있지만, 이렇게 작성하면 
+
+     `user.post_set.all()` 이렇게 작성할 때 user가 작성한 게시글인지, 좋아요를 누른 글인지 확인할 수 없다.
+
+   + 이것을 수정하기 위해서는 `like_users = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='like_posts')` 이렇게 작성을 해서 
+
+     `user.like_posts`로 가져온다.
+
+2. 마이그래이션, 마이그레이트 하기
+
+3. `accounts/mypage.html`
+
+   ```html
+   <div class="col-4 d-flex justify-content-between">
+       <!--좋아요-->
+       {% if user in post.like_users.all %}
+           <a href="{% url 'accounts:like' user post.pk%}" style="color: red;"><i class="fas fa-heart fa-lg"></i></a>
+       {% else %}
+           <a href="{% url 'accounts:like' user post.pk%}" style="color: red;"><i class="far fa-heart fa-lg"></i></a>
+       {% endif %}
+       <i class="far fa-comment fa-lg"></i>
+       <i class="far fa-share-square fa-lg"></i>
+   </div>
+   <div class="footer m-0 p-0">
+   	{{ post.like_users.count }}명이 좋아합니다
+    </div>
+   ```
+
+4. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('<int:post_pk>/like/', views.like, name='like'),
+   ]
+   ```
+
+5. `accounts/views.py`
+
+   ```python
+   def like(request, user_name, post_pk):
+       post = get_object_or_404(Post, pk=post_pk)
+       user = request.user
+       # user가 지금 해당 게시글에 좋아요를 한 적이 있는지?
+       if user in post.like_users.all():
+           post.like_users.remove(user)
+       else:
+           post.like_users.add(user)
+       return redirect('accounts:mypage', user_name)
+   ```
+
+   + `if user in post.like_users.all()` 부분을 `post.like_users.filter(pk=user.id).exists()` 함수로 대체 가능하다.
+
+6. `posts/models.py`
+
+   좋아요 수를 체크!
+
+   ```python
+   class Post(models.Model):
+       content = models.TextField()
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+       # users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+       # 윗줄과 같이 작성을 하면
+       # user.post_set.all() - 게시글? 좋아요 한 글? 확인할 수 없다.
+       like_users = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='like_posts')
+       # image = models.ImageField()
+       
+       @property
+       def like_count(self):
+           return self.like_users.count()
+           
+   ```
+
+   아래에 like_count 함수를 만들어준 후,
+
+   
+
+7. `accounts/mypage.html`
+
+   ```html
+   <div class="footer m-0 p-0">
+   	{{ post.like_count }}명이 좋아합니다
+   </div>
+   ```
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
