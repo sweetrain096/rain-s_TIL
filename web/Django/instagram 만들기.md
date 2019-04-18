@@ -1846,7 +1846,46 @@ ctrl + shift + f : 전체 찾기
 
 
 
+## 검색창
 
+1. `_navbar.html`
+
+   ```html
+       <form action="{% url 'accounts:search' %}" class="form-inline my-2 my-lg-0 mx-auto">
+         <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+       </form>
+   ```
+
+2. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+   	...
+       path('search/', views.search, name='search'),
+   ]
+   ```
+
+   + path를 str:user_name보다는 위쪽에 써야한다.
+
+3. `accounts/views.py`
+
+   ```python
+   def search(request):
+       # 1. 내가 만들어놓은 모델
+       # 2. variable routing => 현재 존재하지 않음
+       # 3. form => 존재
+       username = request.GET.get('q')
+       User = get_user_model()
+       user = User.objects.filter(username=username).first()   
+       # first를 쓰지 않으면 쿼리셋이 나오기 때문에 first로 첫번째를 찍어준다.
+       if not user:
+           # messages.warning(request, f'{username}을 찾을 수 없습니다.')
+           return redirect('posts:list')
+       return redirect('accounts:detail', user.user_name)
+   ```
+
+   
 
 
 
