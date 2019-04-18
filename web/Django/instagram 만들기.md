@@ -1342,9 +1342,570 @@
 
 
 
+![Untitled](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\Untitled.jpg)
 
 
+
+
+
+## 08. 좋아요 기능 만들기
+
+1. `posts/model.py`
+
+   ```python
+   # Create your models here.
+   class Post(models.Model):
+       content = models.TextField()
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+       # users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+       # 윗줄과 같이 작성을 하면
+       # user.post_set.all() - 게시글? 좋아요 한 글? 확인할 수 없다.
+       like_users = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='like_posts')
+       # image = models.ImageField()
+       
+       def __str__(self):
+           return f'Post : {self.pk} - {self.content}'
+       
+       def get_absolute_url(self):
+           return reverse('posts:detail', args=[self.pk])
+           # reverse : object가 가야하는데 뒤의 내용을 실제 path로 만드는 역할.
+   
+   ```
+
+   + `users = models.ManyToManyField(settings.AUTH_USER_MODEL)` 와 같이 작성하면 N:M 관계를 사용하여 좋아요를 만들 수 있지만, 이렇게 작성하면 
+
+     `user.post_set.all()` 이렇게 작성할 때 user가 작성한 게시글인지, 좋아요를 누른 글인지 확인할 수 없다.
+
+   + 이것을 수정하기 위해서는 `like_users = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='like_posts')` 이렇게 작성을 해서 
+
+     `user.like_posts`로 가져온다.
+
+2. 마이그래이션, 마이그레이트 하기
+
+3. `accounts/mypage.html`
+
+   ```html
+   <div class="col-4 d-flex justify-content-between">
+       <!--좋아요-->
+       {% if user in post.like_users.all %}
+           <a href="{% url 'accounts:like' user post.pk%}" style="color: red;"><i class="fas fa-heart fa-lg"></i></a>
+       {% else %}
+           <a href="{% url 'accounts:like' user post.pk%}" style="color: red;"><i class="far fa-heart fa-lg"></i></a>
+       {% endif %}
+       <i class="far fa-comment fa-lg"></i>
+       <i class="far fa-share-square fa-lg"></i>
+   </div>
+   <div class="footer m-0 p-0">
+   	{{ post.like_users.count }}명이 좋아합니다
+    </div>
+   ```
+
+4. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('<int:post_pk>/like/', views.like, name='like'),
+   ]
+   ```
+
+5. `accounts/views.py`
+
+   ```python
+   def like(request, user_name, post_pk):
+       post = get_object_or_404(Post, pk=post_pk)
+       user = request.user
+       # user가 지금 해당 게시글에 좋아요를 한 적이 있는지?
+       if user in post.like_users.all():
+           post.like_users.remove(user)
+       else:
+           post.like_users.add(user)
+       return redirect('accounts:mypage', user_name)
+   ```
+
+   + `if user in post.like_users.all()` 부분을 `post.like_users.filter(pk=user.id).exists()` 함수로 대체 가능하다.
+
+6. `posts/models.py`
+
+   좋아요 수를 체크!
+
+   ```python
+   class Post(models.Model):
+       content = models.TextField()
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+       # users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+       # 윗줄과 같이 작성을 하면
+       # user.post_set.all() - 게시글? 좋아요 한 글? 확인할 수 없다.
+       like_users = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='like_posts')
+       # image = models.ImageField()
+       
+       @property
+       def like_count(self):
+           return self.like_users.count()
+           
+   ```
+
+   아래에 like_count 함수를 만들어준 후,
+
+   
+
+7. `accounts/mypage.html`
+
+   ```html
+   <div class="footer m-0 p-0">
+   	{{ post.like_count }}명이 좋아합니다
+   </div>
+   ```
+
+   
+
+
+
+
+
+
+
+## 프로필 만들기 ( 1 : 1 관계 )
+
+1. `accounts/models.py`
+
+   ```python
+   from django.conf import settings
+   
+   from imagekit.models import ProcessedImageField
+   # field 설정
+   from imagekit.processors import ResizeToFill
+   # Create your models here.
+   class Profile(models.Model):
+       user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+       nickname = models.CharField(max_length=30)
+       introduction = models.TextField()
+       image = ProcessedImageField(
+                       processors=[ResizeToFill(150, 150)],
+                       format='JPEG',
+                       options={'quality': 100},
+                   )
+   ```
+
+   + profile이라는 모델 안에 user모델과 1 : 1 관계인 모델을 설정한다.
+
+   + user를 1 : 1 관계 설정
+
+   + 닉네임과 소개글, 프사까지 사용
+
+   + 프로필사진을 넣기 위해서 pilkit과 django-imagekit 추가 설치
+
+     ```bash
+     $ pip install pilkit django-imagekit
+     ```
+
+   + `settings.py` 에 사용하기 설정
+
+     ```python
+     INSTALLED_APPS = [
+         ...
+         'crispy_forms',
+         'imagekit',
+         ...
+     ```
+
+   + 이후 마이그레이션, 마이그레이트
+
+2. `accouts/views.py`
+
+   ```python
+   from .models import Profile
+   
+   @require_http_methods(["GET", "POST"])
+   def signup(request):
+       if request.user.is_authenticated:
+           return redirect('posts:list')
+       if request.method == "POST":
+           user_form = UserCustomCreationForm(request.POST)
+           if user_form.is_valid():
+               user = user_form.save()
+               Profile.objects.create(user=user)
+   ```
+
+   + 프로필 만들기. 회원가입 시 비어있는 객체를 같이 사용하기.
+   + 회원가입 시 user를 저장하는 순간 새로운 Profile 객체를 생성한다.
+
+   
+
+   `accounts/admin.py`
+
+   ```python
+   from django.contrib import admin
+   from .models import Profile
+   
+   # Register your models here.
+   class ProfileAdmin(admin.ModelAdmin):
+       list_display = ('nickname', 'introduction', 'user_id',)
+       
+   admin.site.register(Profile, ProfileAdmin)
+   ```
+
+   
+
+   회원가입을 하면 profile에 user id만 들어있는것을 확인 할 수 있다.
+
+   ![1555461405773](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555461405773.png)
+
+3. `accounts/views.py`
+
+   + mypage에 있는 edit에서 프로필을 수정할것.
+
+   ```python
+   def edit(request, user_name):
+       profile_form = ProfileForm(instance=request.user.profile)
+   ```
+
+   + 이 부분 추가 후 profile form 설정하기.
+
+4. `accounts/forms.py`
+
+   ```python
+   from django import forms
+   from .models import Profile
+   
+   class ProfileForm(forms.ModelForm):
+       class Meta:
+           model = Profile
+           exclude = ('user',)
+           # fields = ['nickname', 'introduction', 'image']
+   ```
+
+   + model = Profile을 사용하기 위해 from .models import Profile 사용
+
+5. `accounts/views.py`
+
+   ```python
+   def edit(request, user_name):
+       if request.method == 'POST':
+           user_form = UserCustomChangeForm(request.POST, instance=request.user)
+           profile_form = ProfileForm(request.POST, 
+                                       request.FILES,
+                                       instance=request.user.profile)
+           if user_form.is_valid():
+               if profile_form.is_valid():
+                   user_form.save()
+                   profile_form.save()
+                   return redirect('accounts:mypage', user_name)
+       else:
+           user_form = UserCustomChangeForm(instance=request.user)
+           profile_form = ProfileForm(instance=request.user.profile)
+   
+       context = {"user_form" : user_form, "profile_form" : profile_form}
+       return render(request, 'accounts/edit.html', context)
+   ```
+
+   + profile_form 에서 `instance=request.user.profile` 가 없으면??? 
+
+     => 계속해서 새로운 프로필을 생성해나간다.
+
+6. `accounts/edit.html`
+
+   ```html
+   {% extends 'base.html' %}
+   
+   {% block body %}
+   <h1>프로필 수정</h1>
+   {% load crispy_forms_tags %}
+   <form method="POST" enctype="multipart/form-data">
+       {% csrf_token %}
+       {{ user_form|crispy }}
+       {{ profile_form|crispy }}
+       <input type="submit" class="button" value="수정!">
+   </form>
+   
+   {% endblock %}
+   ```
+
+   + profile_form 추가하기
+   + Form에 `enctype="multipart/form-data"`가 들어가야지만 vaild가 꼭 들어가야한다.
+
+
+
+
+
+## Follow 기능
+
++ 내가 팔로우 한 사람
++ 나를 팔로우 한 사람 
+
+| id   | username | follow |
+| ---- | -------- | ------ |
+| 1    | 정국     |        |
+| 2    | 오바마   |        |
+| 3    | 동민     |        |
+| 4    | 성민     | 3, 1   |
+
++ 위와 같이 follow를 모두 넣는것은 불가능. => 튜플이나 리스트는 DB에 넣지 않는다.
++ 이것을 막기 위해 follow를 할 수 있는 테이블이 따로 존재.
+
+| 누가 | 누구를 |
+| ---- | ------ |
+| 4    | 3      |
+| 3    | 4      |
+
++ 이렇게 따로 만드는 것이 좋다. 그러나 이것을 따로 건드리는것보다는 User 클래스 안에 follow 컬럼을 만들어야한다.
+
+  + 좋아요 기능을 만들었던것과 유사하다. 좋아요를 만들 때에는 posts 에 ManyToManyField 를 만들어주었지만 이번에는 user가 user를 좋아요 눌러야 하기 때문에 User 모델에 follow 컬럼을 넣어야한다.
+
++ 이 때 사용하는 user에는 내 자신을 넣어야한다. 왜? 내가 팔로우 하거나 내가 팔로잉 당하는것이니까.
+
++ 그런데 User 클래스는 django에서 제공하는 라이브러리를 사용한다. 그러나 우리는 이것을 처음부터 짜서 사용할 수는 없다. 그렇기 때문에 django에서 제공하는 함수(?)를 상속받아서 사용하는 것이 좋다. 이 때 상속받는 것이 `AbstractUser` 를 상속받는다. 이것과 유사하게 받는 것이 `forms.ModelForm`이다. forms에서 ModelForm을 상속받아서 사용할 때 하는것과 유사하게 User 클래스를 상속받기 위해서는 `AbstractUser`를 상속받는 것이다.
+
++ 왜 `AbstractUser`를 받는가?
+
+  + django에서 기본적으로 제공하는 이메일이나 패스워드, 회원가입 등을 사용할 수 있는 User form 이다. 
+
+  + 상속받을 수 있는 User와 같은 것 들 중에 가장 많이 만들어진 것을 사용해오는 것이다.
+
+  + 그러나 class User를 상속받지는 않는다. User 조차도 껍데기 역할이다. 알맹이를 가장 가까운 것은 AbustracUser이다.
+
+    ![ì¤í¬ë¦°ì·, 2017-07-06 23-30-56](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\3iEnbH5.png)
+
+
+
+**이렇게 언제 User를 상속받을 지 모르기 때문에 아래와 같이 미리 설정해주는것이 좋다.**
+
+```python
+# models.py
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    pass
 ```
 
-```
+
+
+
+
+
+
+1. `accounts/models.py`
+
+   ```python
+   from djnago.contrib.auth.models import AbstractUser
+   
+   # Create your models here.
+   class User(AbstractUser):
+       followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followings')
+   
+   ```
+
+   + `User(AbstractUser)` : user 상속을 해야한다.
+   + `settings.AUTH_USER_MODEL` 이렇게 가져왔을 때 User 클래스를 직접 가져오는 것이 아니라 변수처럼 가져오는 것이라 아래처럼 settings.py에 내용을 수정해오기 가능. 
+   + 처음 시작을 할 때 비워놓더라도 User 클래스를 하나 만들어놓고 시작하는것이 좋다. 왜냐하면 이것을 미리 만들지 않고 나중에 상속받으려고 한다면 나중에 마이그레이션 및 db를 모두 삭제해야하는 경우가 발생한다.
+
+2. `settings.py`
+
+   ```python
+   AUTH_USER_MODEL = 'accounts.User'
+   ```
+
+3. 이렇게 사용하기 위해서는 `UserCreationForm`과 `UserChangeForm`을 forms.py에서 `UserCustomCreationForm` 과 `UserCustomChangeForm`으로 사용해야만 한다.
+
+4. #### mypage를 detail로 변환하기
+
+   + why? 내 자신 페이지 뿐만 아니라 다른 사람의 페이지를 볼 수 있게 해야한다.
+
+   1. `accounts/urls.py`
+
+      ```python
+      urlpatterns = [
+          path('signup/', views.signup, name="signup"),
+          path('login/', views.login, name="login"),
+          path('logout/', views.logout, name="logout"),
+          path('<str:user_name>/', views.detail, name="detail"),
+      ```
+
+   2. `accounts/views.py`
+
+      ```python
+      def detail(request, user_name):
+          User = get_user_model()
+          user = get_object_or_404(User, username=user_name)
+          posts = user.post_set.order_by('-id')
+          comment_form = CommentForm()
+          for post in posts:
+              post.comments = post.comment_set.all()
+              # print(post.comments)
+          context = {'user_info' : user, 'posts' : posts, 'comment_form' : comment_form}
+          
+          return render(request, 'accounts/detail.html', context)
+      ```
+
+   3. `accounts/mypage.html`을 `accounts/detail.html`로 수정한 후 관련 내용을 모두 수정한다.
+
+5. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('<str:user_name>/follow/', views.follow, name="follow"),
+   ```
+
+   + follow를 할 수 있는 view 만들기 위함
+
+6. `accounts/views.py`
+
+   ```python
+   def follow(request, user_name):
+       User = get_user_model()
+       user = get_object_or_404(User, username = user_name)
+       
+       if request.user in user.followers.all():
+           user.followers.remove(request.user)
+       else:
+           user.followers.add(request.user)
+           
+       return redirect('accounts:detail', user_name)
+   ```
+
+   + 그 페이지의 user를 가져오기 위해 User 모델을 만들어 그 안에 읽어온 현재 사이트의 오브젝트를 user에 가져온다.
+   + request.user(현재 사용자)가 user(페이지 사용자)의 팔로워 집합에 있으면, 삭제. 없으면, 추가.
+
+7. `accounts/detail.html`
+
+   ```html
+   <div class="col-3">
+       {% if user != user_info %}
+           {% if user in user_info.followers.all %}
+           <a href="{% url 'accounts:follow' user_info %}">unfollow</a>
+           {% else %}
+           <a href="{% url 'accounts:follow' user_info %}">follow</a>
+           {% endif %}
+       {% endif %}
+   </div>
+   ```
+
+   위와 같은 방법으로 follow와 unfollow를 바꾼다.
+
+   
+
+   
+
+   
+
+   
+
+8. `posts/views.py`
+
+   ```python
+   @login_required
+   def list(request):
+       # 내가 팔로우 한 글만 보기
+       posts = Post.objects.filter(user__in=request.user.followings.all()).order_by('-id')
+       comment_form = CommentForm()
+       for post in posts:
+           post.comments = post.comment_set.all()[:2]
+           # print(post.comments)
+       context = {'posts' : posts, 'comment_form' : comment_form}
+       
+       return render(request, 'posts/list.html', context)
+   ```
+
+   + 내가 팔로우 한 글만 보기. 
+   + `user__in=request.user.followings.all()` : user가 포함하고 있는 내용이 request.user(현재 로그인 유저)가 팔로우 한 모든 유저들의 내용을 가져오는 것.
+
+9. `posts/views.py`
+
+   ```python
+   from django.db.models import Q
+   @login_required
+   def list(request):
+       posts = Post.objects.filter(
+                           Q(user__in=request.user.followings.values('id'))
+                           | Q(user=request.user.id)
+                           ).order_by('-pk')
+       comment_form = CommentForm()
+       for post in posts:
+           post.comments = post.comment_set.all()[:2]
+           # print(post.comments)
+       context = {'posts' : posts, 'comment_form' : comment_form}
+       
+       return render(request, 'posts/list.html', context)
+   ```
+
+   + 팔로우 한 글 + 내가 쓴 글까지 확인하기
+   + Q 라는 함수(?)를 import. 이 때의 Q는 아마도 Query의 Q...?
+   + user.followings.values('id') => 가져오는것은 id만 가져오게된다. 그럼 가져오는 내용이 더 적어지게 된다.
+   + 내가 팔로우 하는 사람의 id 및, 나의 글(id) 까지 가져오는데, 이 경우 or로 묶어야 한다. (원래 + 는 OR ㅋㅋㅋㅋ) 이 경우 `|`로 묶어줄 수 있다.
+
+
+
+ctrl + shift + f : 전체 찾기
+
+
+
+
+
+
+
+
+
+## 검색창
+
+1. `_navbar.html`
+
+   ```html
+       <form action="{% url 'accounts:search' %}" class="form-inline my-2 my-lg-0 mx-auto">
+         <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+       </form>
+   ```
+
+2. `accounts/urls.py`
+
+   ```python
+   urlpatterns = [
+   	...
+       path('search/', views.search, name='search'),
+   ]
+   ```
+
+   + path를 str:user_name보다는 위쪽에 써야한다.
+
+3. `accounts/views.py`
+
+   ```python
+   def search(request):
+       # 1. 내가 만들어놓은 모델
+       # 2. variable routing => 현재 존재하지 않음
+       # 3. form => 존재
+       username = request.GET.get('q')
+       User = get_user_model()
+       user = User.objects.filter(username=username).first()   
+       # first를 쓰지 않으면 쿼리셋이 나오기 때문에 first로 첫번째를 찍어준다.
+       if not user:
+           # messages.warning(request, f'{username}을 찾을 수 없습니다.')
+           return redirect('posts:list')
+       return redirect('accounts:detail', user.user_name)
+   ```
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
