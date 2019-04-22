@@ -6,6 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="04.css">
+    <style>
+    .hi {
+        border: 1px solid cornflowerblue;
+    }
+    </style>
 </head>
 <body>
     <!-- 기본적으로 width는 부모의 영향을 받는다.
@@ -20,6 +25,7 @@
     <div class="square">
         <p>안녕 1번째줄</p>
         <p>높이는 자식의 영향을 받아요</p>
+        <p>아아아아아아아아</p>
     </div>
     <div class="square2">
         <p>컨텐츠 영역100*100</p>
@@ -30,7 +36,7 @@
     </div>
     <br>
     <div class="square2 padding-10 border-box">
-        <p>100*100 (padding 포함)</p>
+        <p>100*100 (padding 포함(인데 사이즈가 어떻게 되는거지????))</p>
     </div>
     <!-- 블록은 기본적으로 남은 너비를 오른쪽에 붙인다.
         margin-left: auto; -> 왼쪽에 남은 너비를 붙인다.(오른쪽 정렬)
@@ -45,13 +51,15 @@
     <div class="square2 margin-50">
         <p>100*100 margin 50</p>
     </div>
-    <div class="square2" style="margin: auto">
+    <!-- <div class="square2" style="margin: auto"> -->
+    <div class="square2 center">
         <p>가운데 정렬</p>
     </div>
-    <div class="square2" style="margin-left: auto">
+    <!-- <div class="square2" style="margin-left: auto"> -->
+    <div class="square2 right" >
         <p>오른쪽 정렬</p>
     </div>
-    <div class="square2">
+    <div class="square2 hi">
         <p></p>
     </div>
     <br>
