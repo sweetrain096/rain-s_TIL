@@ -1182,6 +1182,21 @@ urlpatterns = [
 
    + DB의 컬럼과, 어떠한 타입으로(글자 제한이나 어떠한 타입 정의 등) 정의할 것인지에 대해 `django.db.models`를 활용해서 `Board` 클래스를 만든다.
 
+   + class Meta: 를 사용할 수 있다.
+
+     ```python
+     class Board(models.Model):
+         title = models.CharField(max_length=10)
+         content = models.TextField()
+         created_at = models.DateTimeField(auto_now_add=True)
+         updated_at = models.DateTimeField(auto_now=True)
+         
+         class Meta:
+             ordering = ['-title']
+     ```
+
+     + order는 기본적으로 order_by로 할 수 있으나, class를 만들 때에 사용할 수 도 있다. 위와 같이 Meta 태그를 걸어서 title 의 역순. 내림차순으로 정렬할 수 있다.
+
 6. bash창
 
    ```bash

@@ -1465,7 +1465,7 @@
 
 
 
-## 프로필 만들기 ( 1 : 1 관계 )
+## 09. 프로필 만들기 ( 1 : 1 관계 )
 
 1. `accounts/models.py`
 
@@ -1628,7 +1628,7 @@
 
 
 
-## Follow 기능
+## 10. Follow 기능
 
 + 내가 팔로우 한 사람
 + 나를 팔로우 한 사람 
@@ -1846,7 +1846,7 @@ ctrl + shift + f : 전체 찾기
 
 
 
-## 검색창
+## 11. 검색창
 
 1. `_navbar.html`
 
@@ -1893,9 +1893,293 @@ ctrl + shift + f : 전체 찾기
 
 
 
+## 12. 해쉬태그
+
++ #이 있으면 해쉬태그로 만들어진다. 이 경우 post가 create 되는 과정에서 만들어진다.
++ db에 어떻게 저장?  tag 모델에 post의 id와 content기 M : N으로 저장될것.
 
 
 
+### 해쉬태그 만들기
+
+1. `posts/models.py`
+
+   ```python
+   class Hashtag(models.Model):
+       content = models.TextField(unique=True)
+       
+   class Post(models.Model):
+       content = models.TextField()
+       user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+       like_users = models.ManyToManyField(settings.AUTH_USER_MODEL,related_name='like_posts')
+       hashtags = models.ManyToManyField(Hashtag, blank=True, related_name='posts')
+   
+   ```
+
+   + hashtag 모델을 만든 후 unique를 True 로 해준다. 해쉬태그들을 겹치지 않게 하나로 묶어주는 역할을 한다.
+   + hashtags를 M : N으로 가져오게된다.
+   + makemigrations & migrate
+
+2. `posts/views.py`
+
+   ```python
+   from .models import Post, Comment, Hashtag
+   
+   def create(request):
+       if request.method == 'POST':
+           post_form = PostForm(request.POST)
+           if post_form.is_valid():
+               post = post_form.save(commit=False)
+               post.user = request.user
+               post.save()
+               files = request.FILES.getlist('file')
+               for file in files:
+                   request.FILES['file'] = file
+                   image_form = ImageForm(files=request.FILES)
+                   if image_form.is_valid():
+                       image = image_form.save(commit=False)
+                       image.post = post
+                       image.save()
+               for word in post.content.split():
+                   if word[0] == '#':
+                       hashtag, is_created = Hashtag.objects.get_or_create(content=word)
+                       # 만들어지면 : (hashtag object, True)
+                       # 가져와지면 : (hashtag object, False)
+                       post.hashtags.add(hashtag)
+                       # post의 hashtags에 현재 hashtag를 넣는다.
+   ```
+
+   + `for word in post.content.split():`로 내용을 분리한 뒤 맨 앞이 '#'인 내용을 가져온다. 
+   + `hashtag, is_created = Hashtag.objects.get_or_create(content=word)` :
+     + Hashtag의 objects에서 content가 word인 내용이 있으면 가져오기. 없으면 새로 만들기. 이 때 만들어지면 hashtag object 와 True가, 가져오게되면 hashtag object와 False가 튜플로 리턴된다.
+
+3. `posts.urls.py`
+
+   ```python
+       path('hashtags/<int:hashtag_pk>/', views.hashtag, name='hashtag'),
+   ]
+   
+   ```
+
+4. `views.py`
+
+   ```python
+   def hashtag(request, hashtag_pk):
+       # 해시태그 해당하는 pk 가져와서
+       tag = get_object_or_404(Hashtag, pk=hashtag_pk)
+       # 템플릿 출력 : 해당 해시태그가 있는 글들 - 제목만
+       posts = tag.posts.all()
+       print(posts)
+       comment_form = CommentForm()
+       context = {'posts' : posts, 'tag' : tag, 'comment_form' : comment_form}
+       return render(request, 'posts/hashtag.html', context)
+   ```
+
+5. `posts/hashtag.html`
+
+   ```html
+   {% for post in posts %}
+   
+       <!--사진리스트-->
+       <div id="size" class="col-4 my-3">
+           <a href="{% url 'posts:detail' post.pk %}" data-toggle="modal" data-target="#Modal{{post.pk}}">
+               <div id="index_img" style="background-image:url({{ post.image_set.first.file.url }}); width:100%; height:0%; padding-bottom: 100%; background-position:center;">
+               {{post.pk}} : {{post.content}}
+               </div>
+           </a>
+       </div>
+   {% endfor %}
+   ```
+
+
+
+### 해쉬태그 수정하기
+
+1. `views.py`
+
+   ```python
+   @login_required
+   def edit(request, post_pk):
+       post = get_object_or_404(Post, pk=post_pk)
+       if request.method == 'POST':
+           post_form = PostForm(request.POST, instance=post)
+           if post_form.is_valid():
+               # post.content = post_form.cleaned_data.get('content')
+               post = post_form.save()
+               post.hashtags.clear()
+               for word in post.content.split():
+                   if word.startswith('#'):
+                       hashtag, is_created = Hashtag.objects.get_or_create(content=word)
+                       post.hashtags.add(hashtag)
+               
+               return redirect('posts:list')
+   ```
+
+   + `post.hashtags.clear()`로 모든것을 지우고 새롭게 만든다.
+
+
+
+### 해쉬태그 링크걸기
+
+1. `posts/templatetags/hashtag_link.py`
+
+   ```python
+   from django import template
+   
+   register = template.Library()
+   
+   @register.filter
+   def hashtag_link(post):
+       # post object 가 들어올 때 실행
+       content = post.content
+       hashtags = post.hashtags.all()
+       
+       for hashtag in hashtags:
+           content = content.replace(hashtag.content, f'<a href="/posts/hashtags/{hashtag.pk}/">{hashtag.content}</a>')
+           
+       return content
+       
+   ```
+
+   + template library를 사용하여 해쉬태그 링크 함수를 만들것. 
+   + post object의 content와 hasgtag들을 담아놓은 후 만약 해쉬태그가 있다면 내용 부분에 해쉬태그로 대체한다.
+   + 바꾼 content를 리턴한다.
+
+   
+
+2. `posts/hashtag.html`
+
+   ```html
+   <div class="col-10 pl-0">
+       <strong><a href="{% url 'accounts:detail' post.user %}" style="color: black;">{{ post.user }}</a></strong>
+       {% load hashtag_link %}
+       {{ post|hashtag_link|safe}}
+   </div>
+   ```
+
+   + `{% load hashtag_link %}` : load 파일명
+   + `{{ post|hashtag_link|safe}}` : 해당하는 request(post) | 함수명 | safe를 해야지만 링크로 표시된다.
+
+3. 정규표현식으로 사용할것인가?
+
+   + 여기서는 조금 힘들다.
+   + 정규표현식 : 주소를 표시하는 방식. 문자열에서 패턴을 찾는다. 
+
+
+
+
+
+
+
+
+
+
+
+## 13. [소셜로그인(카카오)](<https://developers.kakao.com/>)
+
+1. 카카오 설정
+
+   1. 로그인 및 앱 만들고 생성된 앱의 rest API 키를 적어두기
+   2. 설정>일반>플랫폼추가>웹>사이트 도메인에 django 주소 redirect Path에 `accounts/kakao/login/callback/` 후 저장
+   3. 설정>고급>코드생성>생성 코드 적어두기 | 상태 ON>적용
+   4. 사용자관리>개인정보프로필 ON>카카오계정ON
+
+2. OAuth 설정. 
+
+   + 설명 : <https://d2.naver.com/helloworld/24942>
+
+   
+
+   
+
+   
+
+3. c9
+
+   1. bash
+
+      ```bash
+      $ pip install django-allauth
+      ```
+
+      + oauth에서 사용하는 여러 계정 사용
+      + [django-allauth](<https://django-allauth.readthedocs.io/en/latest/installation.html>)
+
+   2. `settings.py`
+
+      ```python
+      AUTHENTICATION_BACKENDS = (
+      
+          # Needed to login by username in Django admin, regardless of `allauth`
+          'django.contrib.auth.backends.ModelBackend',
+      
+          # `allauth` specific authentication methods, such as login by e-mail
+          'allauth.account.auth_backends.AuthenticationBackend',
+      
+      )
+      ```
+
+   3. `settings.py`
+
+      ```python
+      INSTALLED_APPS = [
+          ...
+          'django.contrib.sites',
+          'allauth',
+          'allauth.account',
+          'allauth.socialaccount',
+          'allauth.socialaccount.providers.kakao',
+      ]
+      ```
+
+      `'django.contrib.sites',` 때문에 기본 site 아이디를 넣어주어야한다.
+
+   4. `settings.py`
+
+      ```python
+      SITE_ID = 1
+      ```
+
+   5. `urls.py` settings.py와 같은 위치에 있는 urls.py인것이 중요
+
+      ```python
+      urlpatterns = [
+          ...
+          path('accounts/', include('allauth.urls')),
+      ]
+      ```
+
+      + accounts/와 중복되어도 괜찮다.
+
+   6. `bash`
+
+      ```bash
+      $ python manage.py migrate
+      ```
+
+      + makemigrations 는 kakao에서 나온다.
+
+   7. `admin 페이지`
+
+      + 소셜계정>소셜어플리케이션> 제공자/이름 작성
+      + 클라이언트 아이디 : kakao의 rest API 키
+      + 비밀키 : kakao의 고급>코드
+      + sites의 이용가능한 sites의 아래 페이지를 오른쪽으로 옮기기
+      + 저장하기
+
+      ![1555916728437](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555916728437.png)
+
+   8. `accounts/login.html`
+
+      ```django
+      {% block body %}
+      {% load socialaccount %}
+      원래 form
+      <a href="{% provider_login_url 'kakao' method='oauth2' %}">카카오 로그인</a>
+      {% endblock %}
+      ```
+
+   9. 
 
 
 

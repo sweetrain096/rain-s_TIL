@@ -420,7 +420,113 @@ Out[60]: <QuerySet [<Comment: Comment object (1)>, <Comment: Comment object (2)>
 
 
 
+### 추가) 친구들 중 제일 높은 평점?
 
+```python
+# views.py
+from django.db.models import Prefetch
+
+def detail(request, user_pk):
+    User = get_user_model()
+    user = User.objects.get(pk=user_pk)
+    followings = user.followings.prefetch_related(
+    			Prefetch('score_set'),
+    			query_set=Score.objects.order_by('-value'),
+    		to_attr='score_set_value_order')
+    context = {'picked_user' : user, 'followings' : followings }
+    return render(request, 'accounts/detail.html', context)
+
+```
+
+```html
+<!--detail.html-->
+
+	<p>내 친구가 좋아하는 영화</p>
+    {% for user_following in followings %}
+        <p>{{user_following.score_set_value_order.0.movie.title }}</p>
+        <p>{{user_following.score_set_value_order.0.stars }}</p>
+    {% endfor %}
+```
+
+ 반복적인 쿼리를 막는 방법.
+
+first 대신에 0을 가져와야한다. 위에서 만들어 온 것은 queryset일 때에는 first가 가능하지만 prefetch_related를 해사 가져오게 되면 리스트가 넘어오기 때문에 0을 가져와야한다.
+
+first.movie.title일 때, movie에서 movie에 관련한 쿼리를 모두 가져와야하기 때문에 반복된다. 이것을 막기
+
+
+
+```python
+# views.py
+from django.db.models import Prefetch
+
+def detail(request, user_pk):
+    User = get_user_model()
+    user = User.objects.get(pk=user_pk)
+    followings = user.followings.prefetch_related(
+    			Prefetch('score_set',
+    			queryset=Score.objects.select_related('movie').order_by('-value'),
+    		to_attr='score_set_value_order'))
+    context = {'picked_user' : user, 'followings' : followings }
+    return render(request, 'accounts/detail.html', context)
+
+```
+
+
+
++ `query_set=Score.objects.select_related('movie').order_by('-value'),` : select_related 에서 movie를 한번에 체크해서 가져온다. 
+
+```html
+{% for user_follow in followings %}
+    <p>{{ user_follow.max_value }}</p>
+    <p>{{ user_follow.max_movie }}</p>
+{% endfor %}
+```
+
+이렇게 가져온다.
+
+
+
+```python
+from django.db.models import Prefetch, Count
+from movies.models import Score
+
+def detail(request, user_pk):
+    User = get_user_model()
+    user = get_object_or_404(User.objects.annotate(
+                                followers_count=Count('followers'),
+                                followings_count=Count('followings')
+                                ), pk=user_pk)
+    followings = user.followings.prefetch_related(
+                                            Prefetch('score_set',
+                                            queryset=Score.objects.select_related('movie').order_by('-value'),
+                                            to_attr='score_set_value_order'
+                                            ))
+    context = {'user_info': user, 'followings': followings}
+    return render(request, 'accounts/detail.html', context)
+
+```
+
+user에서 annotate를 사용하기.
+
+follower의 수와 following 한 사람의 수를 미리 컬럼으로 가져와서 만들어준다.
+
+
+
+```html
+<p>팔로잉 : {{ user_info.followings_count }}</p>
+<p>팔로워 : {{ user_info.followers_count }}</p>
+```
+
+이렇게 가져올 수 있다.
+
+
+
+
+
++ annotate : 컬럼을 추가해서 값을 넣어놓는 것.
++ prefetch_related : 1 : N / M : N -> N 개를 미리 가져올 때 (JOIN table)
++ select_related : 1 : N -> 1개를 미리 가져올 때 (JOIN)
 
 
 
