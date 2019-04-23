@@ -2243,3 +2243,1051 @@ post로 들어오게 되면 제대로 삭제.
   + 내가 만든 파일(home.css)
   + 외부에서 가져온 파일(bootstrap.min.css) => 라이브러리를 가져다가 쓰기만 한다.
 + MEDIA : 클라이언트(사용자)가 업로드 한 파일
+
+
+
+## [TDD(Test-driven development) : TEST Code 작성하기](<https://docs.djangoproject.com/en/2.2/intro/tutorial05/>)
+
+> TDD(Test-driven development) : 테스트 주도 개발. 매우 짧은 개발 사이클을 반복하는 소프트웨어 개발 프로세스 중 하나. 요구사항을 검증하는 자동화된 테스트케이스를 작성. 그 후, 그 테스트케이스를 통과하기 위한 최소한의 코드를 생성.
+
++ TDD를 한다. == 테스트코드를 작성한다.
++ When testing, more is better[¶](https://docs.djangoproject.com/en/2.2/intro/tutorial05/#when-testing-more-is-better)
++ 각각의 동작을 모두 분리하게 사용. 
++ 테스트 코드에서 하는 모든 작업은 실제 DB에 영향을 미치지 않는다.
+
+
+
+> + given, when, then
+>
+>   어떤 상황이 주어지면, 어떤 상황이 벌어지면, 어떤 동작을 실행시켜야 한다.
+
+
+
+
+
+1. 설치
+
+   ```bash
+   $ pip install django_test_plus
+   ```
+
+2. 선생님꺼 clone
+
+3. django_test 프로젝트에서 실행시킬것.
+
+4. migrate
+
+   ```bash
+   $ python manage.py makemigrations
+   $ python manage.py migrate
+   ```
+
+5. `boards/test.py`
+
+   ```python
+   from test_plus.test import TestCase
+   from django.conf import settings
+   
+   class SettingsTest(TestCase):
+       # class 이름은 중요하지 않는다. 중요한것은 상속받는것.
+       
+       # 1. settings 값 확인
+       def test_01_settings_locale(self):
+           # def 이름이 test여야만 실행이 된다.
+           self.assertEqual(settings.USE_I18N, True)
+           # settings.py에 있는 USE_I18N이 True인지 확인하기
+           
+   ```
+
+   1. settings의 값을 확인한다.  저장 후 실행을 확인해본다.
+
+   ```bash
+   $ python manage.py test boards
+   Creating test database for alias 'default'...
+   System check identified no issues (0 silenced).
+   .
+   ----------------------------------------------------------------------
+   Ran 1 test in 0.001s
+   
+   OK
+   Destroying test database for alias 'default'...
+   ```
+
+   + 실행시키는 방법은 python manage.py test `app 이름`
+
+6. `boards/tests.py`
+
+   ```python
+       def test_01_settings_locale(self):
+           # def 이름이 test여야만 실행이 된다.
+           self.assertEqual(settings.USE_I18N, True)
+           # settings.py에 있는 USE_I18N이 True인지 확인하기
+           self.assertEqual(settings.TIME_ZONE, 'UTC')
+           
+   ```
+
+   만약 내가 Asia/Seoul로 설정해놨으면 
+
+   ```bash
+   ======================================================================
+   FAIL: test_01_settings_locale (boards.tests.SettingsTest)
+   ----------------------------------------------------------------------
+   Traceback (most recent call last):
+     File "/home/ubuntu/workspace/django_test/boards/tests.py", line 12, in test_01_settings_locale
+       self.assertEqual(settings.TIME_ZONE, 'UTC')
+   AssertionError: 'Asia/Seoul' != 'UTC'
+   - Asia/Seoul
+   + UTC
+   
+   
+   ----------------------------------------------------------------------
+   Ran 1 test in 0.001s
+   
+   FAILED (failures=1)
+   Destroying test database for alias 'default'...
+   ```
+
+7. `boards/tests.py`
+
+   ```python
+   from .models import Board
+   class BoardModelTest(TestCase):
+       def test_01_model(self):
+           board = Board.objects.create(title='테스트', content='내용', user_id=1)
+           self.assertEqual(str(board), f'Board{board.pk}')
+           
+   ```
+
+   + `self.assertEqual(str(board), f'Board{board.pk}')`
+   + `self.assertEqual(a, b)` : a와 b가 같은지를 확인 같으면 OK로 넘어가지만 달라지면 failed를 띄운다.
+
+
+
+
+
+### crud 오류 검증
+
+#### 1. Create
+
+1. `boards/test.py`
+
+   ```python
+   from .forms import BoardForm
+   class BoardViewCreateTest(TestCase):
+       def test_01_get(self):
+           # get요청을 보낼 때
+           response = self.get_check_200('boards:create')
+           # 요청을 보낸다. boards:create url로 가서 200이 들어오는지까지 체크
+           # self.assertContains(response, '<form')
+           # 요청 받은 response 안에 <form 으로 시작하는 폼의 시작이 들어있는지 체크
+           self.assertIsInstance(response.context['form'], BoardForm)
+   ```
+
+   + `self.assertContains(response, '<form')` 부분을 사용하려고 했지만 완벽한 코드는 아니다. 때문에 instance를 사용.
+
+   ```bash
+   ======================================================================
+   FAIL: test_01_get (boards.tests.BoardViewCreateTest)
+   ----------------------------------------------------------------------
+   Traceback (most recent call last):
+     File "/home/ubuntu/workspace/django_test/boards/tests.py", line 24, in test_01_get
+       response = self.get_check_200('boards:create')
+     File "/home/ubuntu/.pyenv/versions/django-venv/lib/python3.6/site-packages/test_plus/test.py", line 232, in get_check_200
+       self.response_200(response)
+     File "/home/ubuntu/.pyenv/versions/django-venv/lib/python3.6/site-packages/test_plus/test.py", line 177, in response_200
+       self.assertEqual(response.status_code, 200)
+   AssertionError: 302 != 200
+   
+   ----------------------------------------------------------------------
+   Ran 3 tests in 0.016s
+   
+   FAILED (failures=1)
+   Destroying test database for alias 'default'...
+   ```
+
+   302 error는 여러가지이유가 있지만 redirect에서 걸리는 경우가 많다.
+
+   여기에서는 login required에서 튕겨나갔다.
+
+2. `boards/test.py`
+
+   ```python
+   from .forms import BoardForm
+   class BoardViewCreateTest(TestCase):
+       def test_01_get(self):
+           # get요청을 보낼 때
+           self.user = self.make_user(username='test', password='aszx1234')
+           # with를 사용하여 with 안에서만 작동시키기. 여기선, 블록 안에서만 로그인.
+           with self.login(username='test', password='aszx1234'):
+               response = self.get_check_200('boards:create')
+               # 요청을 보낸다. boards:create url로 가서 200이 들어오는지까지 체크
+               # self.assertContains(response, '<form')
+               # 요청 받은 response 안에 <form 으로 시작하는 폼의 시작이 들어있는지 체크
+               self.assertIsInstance(response.context['form'], BoardForm)
+               # response.context안에 있는 딕셔너리 키로 form이 있는데 그 form이 
+               # 우리가 구별하려고 하는 BoardForm 과 같은지 확인한다.
+               
+               
+   ```
+
+   + user를 하나 만든 후, with로 로그인 상태를 만들어준다. with 블록을 나가면 로그인은 끝난다.
+
+3. boardform이 제대로 생성되는지 확인하기
+
+4. `boards/tests.py`
+
+   ```python
+   class BoardModelTest(TestCase):
+   	def test_02_modelform_with_data(self):
+           data = {'title': 'test', 'content': 'test'}
+           self.assertEqual(BoardForm(data).is_valid(), True)
+           
+       def test_03_modelform_without_title(self):
+           data = {'content': 'test'}
+           self.assertEqual(BoardForm(data).is_valid(), False)
+       
+       def test_04_modelform_without_content(self):
+           data = {'title': 'test'}
+           self.assertEqual(BoardForm(data).is_valid(), False)
+   ```
+
+   02번이 내용과 제목이 제대로 들어왔을때 valid하면 true로 체크
+
+   03번과 04번은 둘 중 하나만 들어왔을 때 invalid한것과 false를 체크.
+
+5. view create에서 생성할 때 매번 회원 만들고 로그인하기 힘들기 때문에 한번에 만들어준다.
+
+   ```python
+   class BoardViewCreateTest(TestCase):
+       def setUp(self):
+           # 아래 모든 def를 실행할 때 한번씩 실행하게 만든다.
+           # Given
+           self.user = self.make_user(username='test', password='aszx1234')
+           # user를 사용할 때 def에서는 self.user로 사용한다.
+       
+       def test_01_get(self):
+           # get요청을 보낼 때
+           # When
+           # with를 사용하여 with 안에서만 작동시키기. 여기선, 블록 안에서만 로그인.
+           with self.login(username='test', password='aszx1234'):
+               response = self.get_check_200('boards:create')
+               # 요청을 보낸다. boards:create url로 가서 200이 들어오는지까지 체크
+               # self.assertContains(response, '<form')
+               # 요청 받은 response 안에 <form 으로 시작하는 폼의 시작이 들어있는지 체크
+               # Then
+               self.assertIsInstance(response.context['form'], BoardForm)
+               # response.context안에 있는 딕셔너리 키로 form이 있는데 그 form이 
+               # 우리가 구별하려고 하는 BoardForm 과 같은지 확인한다.
+               
+       def test_02_login_required(self):
+           self.assertLoginRequired('boards:create')
+           # 로그인 체크
+   ```
+
+   + `def setUp(self):`으로 class에 들어오는 모든 경우 만들어준다.
+
+   위 코드를 Given, When, Then으로 볼 수 있는데, 위에서 확인 가능.
+
+   
+
+6. 글 작성
+
+   ```python
+       def test_03_post(self):
+           # given
+           data = {'title': '제목작성', 'content': '내용없음'}
+           # when
+           with self.login(username='test', password='aszx1234'):
+               self.post('boards:create', data=data)
+               # then
+               self.response_302()
+   
+   ```
+
+   + `self.response_302()` : 리다이렉트로 잘 들어왔는지 체크
+
+
+
+
+
+#### 2. read (detail)
+
+1. board 글 읽기
+
+   ```python
+   class BoardViewDetailTest(TestCase):
+       def setUp(self):
+           self.user = self.make_user(username='test', password='aszx1234')
+           
+       def test_01_get(self):
+           board = Board.objects.create(
+                                   title = '제목',
+                                   content = '내용',
+                                   user = self.user
+                                   )
+           self.get_check_200('boards:detail', board_pk=board.pk)
+   ```
+
+   + board를 하나 만든 후, 그 board의 pk 를 따라 글 읽기
+
+   
+
+   
+
+2. 응답받은것의 내용이 제대로 있는지 확인
+
+   ```python
+   class BoardViewDetailTest(TestCase):
+   	def test_02_contain_board(self):
+           board = Board.objects.create(
+                                   title = '제목',
+                                   content = '내용',
+                                   user = self.user
+                                   )
+           response = self.get_check_200('boards:detail', board_pk=board.pk)
+           self.assertResponseContains(board.title, html=False)
+           self.assertResponseContains(board.content, html=False)
+           # 응답받은 것에 내가 원하는 board title, board content를 각각 잘 가지고 있는지
+           # 체크를 하는것이다. 그러나 내가 가져오는 값이 html의 값은 아닌것을 정해준다.
+   ```
+
+   + html=False를 하지 않고 True를 해도 값을 가져오긴 한다. html에도 역시 존재하기 때문
+
+3. 응답하는 페이지가 내가 원하는 html 페이지인지 확인
+
+   ```python
+       def test_03_template(self):
+           board = Board.objects.create(
+                                   title = '제목',
+                                   content = '내용',
+                                   user = self.user
+                                   )
+           response = self.get_check_200('boards:detail', board_pk=board.pk)
+           self.assertTemplateUsed(response, 'boards/detail.html')
+   ```
+
+4. board 반복 제거
+
+   ```python
+   class BoardViewDetailTest(TestCase):
+       def setUp(self):
+           self.user = self.make_user(username='test', password='aszx1234')
+           # given
+           self.board = Board.objects.create(
+                                   title = '제목',
+                                   content = '내용',
+                                   user = self.user
+                                   )
+           
+       def test_01_get(self):
+           # when then
+           self.get_check_200('boards:detail', board_pk=self.board.pk)
+           
+       def test_02_contain_board(self):
+           # when
+           response = self.get_check_200('boards:detail', board_pk=self.board.pk)
+           # then
+           self.assertResponseContains(self.board.title, html=False)
+           self.assertResponseContains(self.board.content, html=False)
+           # 응답받은 것에 내가 원하는 board title, board content를 각각 잘 가지고 있는지
+           # 체크를 하는것이다. 그러나 내가 가져오는 값이 html의 값은 아닌것을 정해준다.
+           
+       def test_03_template(self):
+           # when
+           response = self.get_check_200('boards:detail', board_pk=self.board.pk)
+           # then
+           self.assertTemplateUsed(response, 'boards/detail.html')
+   ```
+
+   
+
+
+
+
+
+#### 3. query 확인(template)
+
+1. d
+
+   ```python
+   class BoardViewIndexTest(TestCase):
+       def setUp(self):
+           self.user = self.make_user(username='test', password='aszx1234')
+           # given
+           self.board = Board.objects.create(
+                                   title = '제목',
+                                   content = '내용',
+                                   user = self.user
+                                   )
+           
+       def test_01_boards_queryset(self):
+           Board.objects.create(
+                           title = '제목1',
+                           content = '내용1',
+                           user = self.user
+                           )
+           # board 여러개로 확인하기위해 한개 더 생성
+           boards = Board.objects.order_by('-pk')
+           response = self.get_check_200('boards:index')
+           self.assertQuerysetEqual(response.context['boards'], map(repr, boards))
+           # 우리가 가져온 boards와 응답을 통해 들어온 response의 boards 를 비교
+           # map에서 repr로 수정. str로 출력이 되면 board1 board2 이런식으로 출력되기 때문에
+           # 우리가 원하는대로 출력시키기 위해서는 repr 을 사용한다.
+           
+   ```
+
+2. template이 원하는 것이 맞는지 확인
+
+   ```python
+       def test_02_template(self):
+           # when
+           response = self.get_check_200('boards:index')
+           # then
+           self.assertTemplateUsed(response, 'boards/index.html')
+   ```
+
+   
+
+
+
+#### 4. 삭제
+
+1. get요청으로 삭제하러 들어왔는가?
+
+   ```python
+   class BoardViewDeleteTest(TestCase):
+       def setUp(self):
+           # given
+           self.user = self.make_user(username='test', password='aszx1234')
+           self.board = Board.objects.create(
+                                   title = '제목',
+                                   content = '내용',
+                                   user = self.user
+                                   )
+           
+       def test_01_delete_get(self):
+           # when
+           with self.login(username='test', password='aszx1234'):
+               self.get('boards:delete', board_pk = self.board.pk)
+               self.response_405()
+           
+   ```
+
+   + get요청으로 들어온 self의 response가 405인가를 확인하기.
+   + 405 : method Not Allowed. post로 받아야 하는데 get으로 받아서 메소드 오류
+
+2. 글 삭제
+
+   ```python
+       def test_02_post_302(self):
+           with self.login(username='test', password = 'aszx1234'):
+               self.post('boards:delete', board_pk = self.board.pk)
+               self.response_302()
+   ```
+
+   돌아가야 하는 곳으로 리다이렉트 시켜준다.
+
+3. 글 삭제 확인
+
+   ```python
+       def test_03_delete(self):
+           with self.login(username='test', password = 'aszx1234'):
+               self.post('boards:delete', board_pk = self.board.pk)
+               self.assertEqual(Board.objects.all().count(), 0)
+   ```
+
+   + 마지막 체크를 해버리는 방법은 여러가지가 있다. 
+   + 여기서는 board를 맨 위에서 하나 만들어주었고, 글을 삭제하게 되면 objects가 없어지기 때문에 count를 0으로 체크한다.
+
+
+
+
+
+## [rest API](<https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html>)
+
+>REST API : HTTP Metod + URI(URL)을 잘 합쳐서 주소를 만든다.
+>
+>> 우리는 rest 서버를 만드는것을 하는것이다. 위에서 했던것처럼 web 어플리케이션을 만드는 것이 아니다.
+>
+>
+>
+>우리가 CRUD를 직접 만들지 않아도 사용 할 수 있게 대응된다.
+>
+>C : POST
+>
+>R : GET
+>
+>U : PUT
+>
+>D : DELETE
+
++ 현재 html에서 사용할 수 있는것은 POST, GET. 그러나 다른 http method를 사용해서 다양한 요청을 보낼 수 있다. 
+
+> REST란
+>
+> + repersentational State Transter의 약자
+>   + 자원을 이름(자원의 표현)으로 구분하여 해당 자원의 상태(정보)를 주고 받는 모든것을 의미
+>   + 자원의 표현 / 자원의 상태 전달.
+> + 장점 : HTTP 프로토콜의 인프라를 그대로 사용하므로 REST API 사용을 위한 별도의 인프라를 구축할 필요가 없다.
+> + 단점 : 표준 존재 X
+> + 개념 : 
+>   + HTTP URI(Uniform Resource Identifier)를 통해 자원을 명시하고, HTTP Method(POST, GET, PUT, DELETE)를 통해 해당 자원에 대한 CRUD Operation을 적용하는것을 의미.
+
+
+
+
+
+### 기본 조작
+
+1. project 생성
+
+   `$ django-admin startproject music_api`
+
+2. restapi 설치
+
+   `$ pip install djangorestframework`
+
+3. `settings.py`
+
+   ```python
+   INSTALLED_APPS = [
+       ...
+       'rest_framework',
+   ]
+   
+   ```
+
+   
+
+4. app 생성
+
+   `$ python manage.py startapp musics`
+
+5. `settings.py`
+
+   ```python
+   INSTALLED_APPS = [
+       ...
+       'rest_framework',
+       'musics',
+   ]
+   ```
+
+   
+
+6. `musics/models.py`
+
+   ```python
+   from django.db import models
+   
+   # Create your models here.
+   class Artist(models.Model):
+       name = models.TextField()
+       
+       def __str__(self):
+           return self.name
+           
+   class Music(models.Model):
+       title = models.TextField()
+       artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+       
+       def __str__(self):
+           return self.title
+           
+   class Comment(models.Model):
+       content = models.TextField()
+       music = models.ForeignKey(Music, on_delete=models.CASCADE)
+   ```
+
+7. `musics/admin.py`
+
+   ```python
+   from django.contrib import admin
+   from .models import Artist, Music
+   # Register your models here.
+   admin.site.register(Artist)
+   admin.site.register(Music)
+   ```
+
+8. migrations/migrate/createsuperuser
+
+   ```bash
+   $ python manage.py makemigrations
+   $ python manage.py migrate
+   $ python manage.py createsuperuser
+   ```
+
+9. admin에 들어가서 알아서 데이터 추가하기
+
+10. `urls.py`
+
+    ```python
+    from django.urls import path, include
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('api/v1/', include('musics.urls')),
+    ]
+    ```
+
+11. `musics/views.py`
+
+    ```python
+    from django.shortcuts import render
+    from rest_framework.decorators import api_view
+    # api로 이루어진 view 파일을 만들기위해 함수 불러오기
+    from .modles import Music
+    # Create your views here.
+    
+    @api_view(['GET'])
+    # get 요청을 받는다. required get과 같은 역할. 그것의 api버전
+    def music_list(request):
+        musics = Music.objects.all()
+        return 
+    ```
+
+12. `musics/serializers.py`
+
+    ```python
+    from rest_framework import serializers
+    
+    from .models import Music
+    
+    class MusicSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Music
+            fields = ['id', 'title', 'artist']
+    ```
+
+    + 사용하는 방법이 model form과 아주 유사하다.
+
+13. `musics/views.py`
+
+    ```python
+    from django.shortcuts import render
+    from rest_framework.decorators import api_view
+    from rest_framework.response import Response
+    # api로 이루어진 view 파일을 만들기위해 함수 불러오기
+    from .models import Music
+    from .serializers import MusicSerializer
+    # Create your views here.
+    
+    @api_view(['GET'])
+    # get 요청을 받는다. required get과 같은 역할. 그것의 api버전
+    def music_list(request):
+        musics = Music.objects.all()
+        serializer = MusicSerializer(musics, many=True)
+        return Response(serializer.data)
+    ```
+
+    + 여러개의 목록이 있기 때문에 many=True를 해준다. 이 경우, 가져오는 내용이 리스트 안의 딕셔너리로 생성이 된다.
+    + serializer는 우리가 사용하기 쉽게 결과값을 만드는 역할을 한다. like 리스트나 딕셔너리.
+
+    ![1555996765417](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555996765417.png)
+
+    ![1555996782301](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555996782301.png)
+
+    이런식으로 자동으로 만들어진다. artist는 pk값이 들어간다.
+
+    
+
+    
+
+14. postman으로 확인해보기
+
+    ![1555997790482](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555997790482.png)
+
+    ![1555997807772](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555997807772.png)
+
+    
+
+15. `musics/urls.py`
+
+    ```python
+    urlpatterns = [
+        path('musics/', views.music_list),
+        path('musics/<int:music_pk>/', views.music_detail),
+    ]
+    ```
+
+16. `musics/views.py`
+
+    ```python
+    @api_view(['GET'])
+    def music_detail(request, music_pk):
+        music = get_object_or_404(Music, pk=music_pk)
+        serializer = MusicSerializer(music)
+        return Response(serializer.data)
+    ```
+
+    ![1555998026624](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555998026624.png)
+
+    
+
+### API 명세 만들기
+
++ [swagger](<https://swagger.io/>)
+
+
+
+1. 설치하기
+
+   ```bash
+   $ pip install django-rest-swagger
+   ```
+
+2. `settings.py`
+
+   ```python
+   INSTALLED_APPS = [
+       ...
+       'rest_framework',
+       'rest_framework_swagger',
+       'musics',
+   ]
+   ```
+
+3. `musics/urls.py`
+
+   ```python
+   from django.urls import path
+   from rest_framework_swagger.views import get_swagger_view
+   from . import views
+   
+   urlpatterns = [
+       path('docs/', get_swagger_view(title='음악 정보 API')),
+       path('musics/', views.music_list),
+       path('musics/<int:music_pk>/', views.music_detail),
+   ]
+   ```
+
+   + ![1555998544964](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555998544964.png)
+
+4. 상세 설명 (docs)
+
+   `musics/views.py`
+
+   ```python
+   def music_list(request):
+       '''
+       음악 정보 출력
+       '''
+       musics = Music.objects.all()
+       serializer = MusicSerializer(musics, many=True)
+       return Response(serializer.data)
+   
+   @api_view(['GET'])
+   def music_detail(request, music_pk):
+       '''
+       음악 상세 보기
+       '''
+       music = get_object_or_404(Music, pk=music_pk)
+       serializer = MusicSerializer(music)
+       return Response(serializer.data)
+   ```
+
+   ![1555998882207](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555998882207.png)
+
+   설명이 생성된다.
+
+
+
+#### 가수 리스트 생성하기
+
+1. `musics/urls.py`
+
+   ```python
+       ...
+       path('artists/', views.artist_list),
+   ]
+   ```
+
+2. `musics/views.py`
+
+   ```python
+   from .models import Music, Artist
+   @api_view(['GET'])
+   def artist_list(request):
+       '''
+       가수 리스트 출력
+       '''
+       artists = Artist.objects.all()
+   ```
+
+3. `musics/serializers.py`
+
+   ```python
+   from .models import Music, Artist
+   
+   class MusicSerializer(serializers.ModelSerializer):
+       class Meta:
+           model = Music
+           fields = ['id', 'title', 'artist']
+   
+   class ArtistSerializer(serializers.ModelSerializer):
+       class Meta:
+           model = Artist
+           fields = ['id', 'name']
+           # fields = '__all__'
+   ```
+
+4. `musics/views.py`
+
+   ```python
+   from .serializers import MusicSerializer, ArtistSerializer
+   
+   @api_view(['GET'])
+   def artist_list(request):
+       '''
+       가수 리스트 출력
+       '''
+       artists = Artist.objects.all()
+       serializer = ArtistSerializer(artists, many=True)
+       return Response(serializer.data)
+   ```
+
+   
+
+#### 가수의 노래 목록 포함시키기
+
+1. `musics/serializers.py`
+
+   ```python
+   class ArtistSerializer(serializers.ModelSerializer):
+       musics = MusicSerializer(source='music_set', many=True, read_only=True)
+       class Meta:
+           model = Artist
+           fields = '__all__'
+   ```
+
+   + musics를 만들 때 read_only를 실행시켜 읽을수만 있게 한다.
+
+   musics라는 이름으로 데이터를 딕셔너리 형태 변환하여 보내준다.
+
+   ![1555999547321](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1555999547321.png)
+
+
+
+#### 가수 detail 만들기
+
+1. `musics/urls.py`
+
+   ```python
+   urlpatterns = [
+       ...
+       path('artists/', views.artist_list),
+       path('artists/<int:artist_pk>/', views.artist_detail),
+   ]
+   ```
+
+2. `musics/views.py`
+
+   ```python
+   @api_view(['GET'])
+   def artist_detail(request, artist_pk):
+       '''
+       아티스트 상세
+       '''
+       artist = get_object_or_404(Artist, pk=artist_pk)
+       serializer = ArtistSerializer(artist)
+       return Response(serializer.data)
+   ```
+
+3. 가수목록에서는 노래를 빼자 => 하나로 공유했던 serializer를 분리한다.
+
+4. `musics/serializers.py`
+
+   ```python
+   class ArtistDetailSerializer(serializers.ModelSerializer):
+       musics = MusicSerializer(source='music_set', many=True, read_only=True)
+       class Meta:
+           model = Artist
+           # fields = ['id', 'name']
+           fields = '__all__'
+           
+   class ArtistSerializer(serializers.ModelSerializer):
+       class Meta:
+           model = Artist
+           # fields = ['id', 'name']
+           fields = '__all__'
+   ```
+
+   
+
+5. `musics/views.py`
+
+   ```python
+   from .serializers import MusicSerializer, ArtistSerializer, ArtistDetailSerializer
+   
+   
+   def artist_detail(request, artist_pk):
+       '''
+       아티스트 상세
+       '''
+       artist = get_object_or_404(Artist, pk=artist_pk)
+       serializer = ArtistDetailSerializer(artist)
+       return Response(serializer.data)
+   ```
+
+6. 목록에서 몇 곡 불렀는지 확인하기
+
+   `musics/serializers.py`
+
+   ```python
+   class ArtistSerializer(serializers.ModelSerializer):
+       music_count = serializers.IntegerField(source = 'music_set.count')
+       class Meta:
+           model = Artist
+           # fields = ['id', 'name']
+           fields = '__all__'
+   
+   ```
+
+   + views에서 처리를 하는 것이 아니라 serializer에서 해결한다.
+
+
+
+
+
+#### 댓글 작성
+
+1. `musics/urls.py`
+
+   ```python
+       path('musics/<int:music_pk>/comments/', views.comment_create),
+   ]
+   ```
+
+2. `musics/serializers.py`
+
+   ```python
+   from .models import Music, Artist, Comment
+   
+   class CommentSerializer(serializers.ModelSerializer):
+       class Meta:
+           model = Comment
+           fields = ['id', 'content']
+   ```
+
+3. `musics/veiws.py`
+
+   ```python
+   from .serializers import MusicSerializer, ArtistSerializer, ArtistDetailSerializer, CommentSerializer
+   
+   @api_view(['POST'])
+   def comment_create(request, music_pk):
+       '''
+       댓글 생성
+       '''
+       serializer = CommentSerializer(data=request.data)
+       if serializer.is_valid():
+           serializer.save(music_id=music_pk)
+           return Response(serializer.data)
+   ```
+
+   ![1556002077821](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1556002077821.png)
+
+   
+
+4. `musics/views.py`
+
+   ```python
+   @api_view(['POST'])
+   def comment_create(request, music_pk):
+       '''
+       댓글 생성
+       '''
+       music = get_object_or_404(Music, pk=music_pk)
+       serializer = CommentSerializer(data=request.data)
+       if serializer.is_valid(raise_exception=True):
+           serializer.save(music = music)
+           return Response(serializer.data)
+   ```
+
+   + `raise_exception=True` 를 넣어주면 valid 하지 못한 것이 들어올 때 사용자 잘못이라는 에러를  표시해준다. 만약 이부분이 없이 넘어오는 값이 invalid 하면 505 에러가 나며 서버. 즉 내가 잘못한 것으로 된다.
+
+   + `raise_exception=True`일 때
+
+     ![1556002401428](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1556002401428.png)
+
+   + 아닐때
+
+     ![1556002430995](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1556002430995.png)
+
+     
+
+
+
+
+
+#### 댓글 수정/삭제
+
++ 수정은 PUT 삭제는 DELETE 요청으로 보낼것이기에 같은 함수 안에 요청으로 분기를 나눠 사용할 수 있다.
+
+1. `musics/urls.py`
+
+   ```python
+       path('musics/<int:music_pk>/comments/<int:comment_pk>/', views.comment_update_delete),
+   ]
+   ```
+
+2. `musics/views.py`
+
+   ```python
+   from .models import Music, Artist, Comment
+   
+   @api_view(['DELETE'])
+   def comment_update_delete(request, music_pk, comment_pk):
+       '''
+       댓글 삭제
+       '''
+       comment = get_object_or_404(Comment, pk=comment_pk)
+       comment.delete()
+       return Response({'message': f'음악 {music_pk}의 댓글이 삭제되었습니다.'})
+   ```
+
+   ![1556002789792](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1556002789792.png)
+
+3. `musics/views.py`
+
+   ```python
+   @api_view(['DELETE', 'PUT'])
+   def comment_update_delete(request, music_pk, comment_pk):
+       '''
+       댓글 삭제 / 수정
+       '''
+       comment = get_object_or_404(Comment, pk=comment_pk)
+       if request.method == 'PUT':
+           serializer = CommentSerializer(data=request.data, instance=comment)
+           if serializer.is_valid(raise_exception=True):
+               serializer.save()
+               return Response({'message': '성공적으로 수정되었습니다.'})
+       else:
+           comment.delete()
+           return Response({'message': f'음악 {music_pk}의 댓글이 삭제되었습니다.'})
+   ```
+
+   + 수정과 삭제를 구분하기 위해 method를 통해 분기를 나누고 사용
+
+   ![1556003144039](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1556003144039.png)
+
+4. 
+
+
+
+
+
+### CRUD 정리
+| list | musics/            | GET    |
+| ---- | ------------------ | ------ |
+| C    | musics/            | POST   |
+| R    | musics/{music_pk}/ | GET    |
+| U    | musics/{music_pk}/ | PUT    |
+| D    | musics/{music_pk}/ | DELETE |
+
+
+
+
+
+
+
+

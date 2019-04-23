@@ -2193,3 +2193,195 @@ ctrl + shift + f : 전체 찾기
 
 
 
+
+
+
+
+
+
+## 14. django signal
+
++ 모델에 어떤 상황이 일어날 때 => 일어나기 전/ 일어난 후 에 어떤 동작을 실행시키고싶다.
++ django.dispath가 가지고 있는 receiver라는 것을 사용하겠다.
++ 어떤 모델이 저장/삭제될 때 어떤 동작을 해주고싶은데 그것을 코드 사이에 끼워넣기에는 우리가 카카오에서 가져오는 것 들에서 하기 어렵기 때문에
++ signal을 이용하여 어떤 동작을 할것인지 정하는것이다.
++ my모델이 들어올 때 리시버가 받겠다. 아래에 있는 함수 선언을 하는 부분이 받을것.
+
+1. `accounts/signals.py` 생성
+
+   ```python
+   from django.db.models.signals import post_save
+   from django.dispatch import receiver
+   
+   from django.conf import settings
+   from .models import Profile
+   @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+   def create_user_profile(instance, created, **kwargs):
+       if created:
+           Profile.objects.get_or_create(user=instance)
+   # django가 신호를 보내서 받아온다. 
+   # 나는 지금 instance와 created라는 변수가 필요해. 나머지는 키워드 아규먼트로 받아온다.
+   ```
+
+   + `@receiver(post_save, sender=settings.AUTH_USER_MODEL)`
+
+     : post_save 저장하는 함수로 가져오는 것. 보내는 것은 settings.AUTH_USER_MODEL을 받아서 아래의 함수 created_user_profile을 실행시킨다.
+
+     [receiver](<https://docs.djangoproject.com/en/2.2/ref/signals/#django.db.models.signals.post_save>) 에 존재하는 다양한 변수들 중 우리가 필요한 instance와 created인 불리언 값을 저장할 것. 
+
+   + 우리는 새롭게 크리에이트 될 때 프로필을 생성한다.
+
+   + sender가 보내는 애. sender에서 보낸걸 아래에 있는 함수가 받아서 실행시킨다.
+
+2. `accounts/app.py`
+
+   ```python
+   from django.apps import AppConfig
+   
+   
+   class AccountsConfig(AppConfig):
+       name = 'accounts'
+       def ready(self):
+           from .signals import create_user_profile
+   ```
+
+   + app이 실행시킬 때 시그널이 실행이 되어야한다. 우리가 사용한 템플릿들은 모두 앱 실행시 자동으로 사용이 가능하지만, 시그널 같은 경우는 app method에 등록을 해주어야만 사용이 가능하다.
+   + ready가 시그널과 관련된 함수. 공식문서에는 signals과 app에서 사용하는 부분을 합치게 되는데 우리는 signals.py와 app.py를 분리해서 사용한다. 
+
+3. `settings.py`
+
+   ```python
+   INSTALLED_APPS = [
+       ...
+       'posts',
+       # 'accounts',
+       'accounts.apps.AccountsConfig',
+   ]
+   ```
+
+   + accounts 앱 대신에 우리가 위에서 사용하기로 한 app.py에 사용한 AccountsConfig를 사용한다.
+
+4. `accounts/views.py`
+
+   ```python
+   @require_http_methods(["GET", "POST"])
+   def signup(request):
+       if request.user.is_authenticated:
+           return redirect('posts:list')
+       if request.method == "POST":
+           user_form = UserCustomCreationForm(request.POST)
+           if user_form.is_valid():
+               user = user_form.save()
+               # Profile.objects.create(user=user)
+               auth_login(request, user)
+               return redirect('posts:list')
+   ```
+
+   + signup에서 profile.objects.create(user=user)를 하지 않는다. 그 후 회원가입을 해본다.
+
+   + 이 때 auth_login부분이 settings.py에서 막힌 부분이 있기 때문에 수정해준다.
+
+   + ```python
+     # settings.py
+     
+     AUTHENTICATION_BACKENDS = (
+     
+         # Needed to login by username in Django admin, regardless of `allauth`
+         'django.contrib.auth.backends.ModelBackend',
+     
+         # `allauth` specific authentication methods, such as login by e-mail
+         # 'allauth.account.auth_backends.AuthenticationBackend',
+     
+     )
+     ```
+
+   + 맨 아랫줄을 사용하지 않기 때문에 주석처리한다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
