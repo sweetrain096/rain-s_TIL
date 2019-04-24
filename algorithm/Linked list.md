@@ -3,8 +3,13 @@
 ## 1. 연결 리스트(Linked List) ?
 
 + 일반적인 Array List와는 다르게 각 요소간의 연결(link)를 이용해서 리스트를 구현하는 것. 
++ 단방향 연결 리스트 / 양방향 연결 리스트 / 환형 연결 리스트 세가지 종류가 존재한다.
 
 ![img](C:\Users\student\Desktop\rain\rain-s_TIL\algorithm\img\2939.png)
+
+
+
+
 
 ### [Array List vs Linked List](<https://opentutorials.org/module/1335/8821>)
 
@@ -44,7 +49,9 @@
 
   
 
-## 2. linked list 구조체 만들고 사용하기
+## 2. 단일 linked list 
+
+### 1. 구조체 만들고 사용하기
 
 1. 구조체 만들기
 
@@ -170,7 +177,7 @@
 
 
 
-## 3. 노드 추가 함수 만들기
+### 2. 노드 추가 함수 만들기
 
 1. 추가 함수 만들기
 
@@ -262,7 +269,9 @@
 
 
 
-## 4. 삭제 함수 만들기
+### 3. 삭제 함수 만들기
+
+
 
 1. 연결 노드 삭제 함수 만들기
 
@@ -343,4 +352,96 @@
    ```
 
    
+
+
+
+
+
+
+
+## 3. 환형 linked list
+
++ 환형 연결리스트의 특징은 가장 끝. 즉 tail 위치가 head와 같은것이다.
++ tail이 되는 부분을 head에 연결해준다.
+
+
+
++ 관련문제
+  + [조세퍼스문제](<https://www.acmicpc.net/problem/1158>)
+
+
+
+
+
+### 1. 조세퍼스문제
+
+```c
+#include <stdio.h>
+#include "malloc.h"
+int n, k;
+int wp, rp;
+
+typedef struct node {
+	int data;
+	struct node *next;
+}node;
+node *head;
+node *tail;
+
+void init_node(node *t) {
+	t->data = NULL;
+	t->next = NULL;
+}
+void insert_node() {
+	int i;
+	node *t = (node*)malloc(sizeof(node));
+	t->data = 1;
+	head = t;
+	for (i = 2; i <= n; i++) {
+		t->next = (node*)malloc(sizeof(node));
+		t = t->next;
+		t->data = i;
+	}
+	tail = t;
+	t->next = head;
+}
+
+void delete_next(node *t) {
+	node *d;
+	d = t->next;
+	if (d == NULL) {
+		return 0;
+	}
+	t->next = t->next->next;
+	free(d);
+}
+
+void start() {
+	insert_node();
+	node *t;
+	t = tail;
+	printf("<");
+	while (t != t->next) {
+		for (int i = 0; i < k - 1; i++) {
+			t = t->next;
+		}
+		printf("%d, ", t->next->data);
+		//if (t != t->next)printf(", ");
+		delete_next(t);
+	}
+	printf("%d>", t->data);
+}
+
+int main() {
+	freopen("1158_input.txt", "r", stdin);
+	scanf("%d %d", &n, &k);
+	//printf("%d %d", n, k);
+	start();
+	return 0;
+}
+```
+
+
+
+
 
