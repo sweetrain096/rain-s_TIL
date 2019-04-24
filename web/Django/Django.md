@@ -2737,6 +2737,12 @@ post로 들어오게 되면 제대로 삭제.
 
 
 
++ 자원 + 행위 + 표현 => 자원 : URI / 행위 : GET/POST/PUT/DELETE / 표현 : JSON
+
+
+
+
+
 ### 기본 조작
 
 1. project 생성
@@ -2835,7 +2841,7 @@ post로 들어오게 되면 제대로 삭제.
     from django.shortcuts import render
     from rest_framework.decorators import api_view
     # api로 이루어진 view 파일을 만들기위해 함수 불러오기
-    from .modles import Music
+    from .models import Music
     # Create your views here.
     
     @api_view(['GET'])
@@ -3168,7 +3174,7 @@ post로 들어오게 되면 제대로 삭제.
            fields = ['id', 'content']
    ```
 
-3. `musics/veiws.py`
+3. `musics/views.py`
 
    ```python
    from .serializers import MusicSerializer, ArtistSerializer, ArtistDetailSerializer, CommentSerializer
@@ -3283,6 +3289,93 @@ post로 들어오게 되면 제대로 삭제.
 | R    | musics/{music_pk}/ | GET    |
 | U    | musics/{music_pk}/ | PUT    |
 | D    | musics/{music_pk}/ | DELETE |
+
+
+
+
+
+
+
+
+
+
+
+
+
+## movie api 사용해보기
+
+
+
+[themoviedb](<https://www.themoviedb.org/>)
+
+settings>API>Create 
+
+발급 후 `API Key (v3 auth)` 따로 적어서 저장해놓기
+
+
+
+postman 켜놓기
+
+
+
+the movie db의 우상단에 API 클릭 > API Documentation의 링크로 들어가기
+
+
+
+가장 순위가 높은 영화 찾기
+
+
+
+
+
+### 댓글 달기
+
+1. post요청을 보내기 위해서는 token을 발급받아야한다.
+
+   `request_token`를 받는다.
+
+   `https://api.themoviedb.org/3/authentication/token/new?` 뒤에 api 키를 붙여 포스트맨으로 GET요청을 보내면 발급받을 수 있다..
+
+   `https://themoviedb.org/authenticate/{{request_token}}` 을 사이트로 들어가서 accept?를 눌러서 허용.
+
+2. session id를 가져와야한다.
+
+   `Create Session`에서 사용할 주소를 가져온 후 `https://api.themoviedb.org/3/authentication/session/new?` 뒤에 api키를 붙여 넣고, 1번에서 만들어 놓은 `request_token`을 가져온다.
+
+   가져오는 것이 application/json으로 가져와야 하기 때문에 
+
+   ![1556066366489](C:\Users\student\Desktop\rain\project\img\1556066366489.png)
+
+   이런식으로 가져온다. 
+
+   꼭 `""` 으로 묶어서 가져와야 하며, "request_token" : "토큰~~~~" 을 사용하여 딕셔너리로 묶어 post 요청을 보낸다. 
+
+   정상 작동을 하면 success : true, session id가 넘어오게 된다.
+
+
+
+### 
+
+
+
+
+
+
+
+api key : 7fb3aed649f9be5b13b1a72db2a5e8e6
+
+request_token : 8252753cd4ef3022ee7d0715133e016b3c09d19c
+
+session_id : b273872174c929bcd16036cb3b2006f009c319e8
+
+
+
+
+
+
+
+
+
 
 
 
