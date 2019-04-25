@@ -3379,6 +3379,7 @@ session_id : b273872174c929bcd16036cb3b2006f009c319e8
 ## validator
 
 + forms.py에서 가져와서 검증을 하는것이 아니라 model을 만들 때 부터 검증될 수 있는 제한. 나이 제한, 이메일 제한 등을 걸어주는것.
++ custom 한 validator를 만들 수도 있다. 주로 forms.py에서 설정해주지 않고 models.py에서 설정을 해서 넘겨주게 된다.
 
 ```python
 # home/models.py
