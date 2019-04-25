@@ -1687,7 +1687,7 @@ class User(AbstractUser):
 1. `accounts/models.py`
 
    ```python
-   from djnago.contrib.auth.models import AbstractUser
+   from django.contrib.auth.models import AbstractUser
    
    # Create your models here.
    class User(AbstractUser):

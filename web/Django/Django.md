@@ -3376,6 +3376,24 @@ session_id : b273872174c929bcd16036cb3b2006f009c319e8
 
 
 
+## validator
+
++ forms.py에서 가져와서 검증을 하는것이 아니라 model을 만들 때 부터 검증될 수 있는 제한. 나이 제한, 이메일 제한 등을 걸어주는것.
+
+```python
+# home/models.py
+from django.core.validators import MinValueValidator, EmailValidator
+
+# Create your models here.
+class Person(models.Model):
+    name = models.CharField(max_length=50)
+    age = models.IntegerField(validators=[MinValueValidator(19, message="미성년자 가입 불가")])
+    eamil = models.CharField(max_length=100, validators=[EmailValidator(message="이메일 형식을 맞춰주세요")])
+    
+```
+
+![1556171057780](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\1556171057780.png)
+
 
 
 
