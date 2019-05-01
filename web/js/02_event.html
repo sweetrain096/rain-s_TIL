@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .bg {
+            background-color: #F7F7F7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 900px;
+            /* min-height: 100vh; */
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="bg">
+        <sapn id="imgs">
+            <img id="dino" width="100px" heigth="100px" src="https://is4-ssl.mzstatic.com/image/thumb/Purple118/v4/88/e5/36/88e536d4-8a08-7c3b-ad29-c4e5dabc9f45/AppIcon-1x_U007emarketing-sRGB-85-220-0-6.png/246x0w.jpg" alt="dino">
+            <img id="fire" width="110px" heigth="70px" src="fire.png" style="display:none; ">
+        </sapn>
+    </div>
+
+    <script>
+        let y = 0
+        let x = 0
+        let dinoW = 100
+        let dinoH = 100
+        let fireW = 110
+        let fireH = 70
+        const bgDiv = document.querySelector('.bg')
+        // 무엇을
+        const dinoImage = document.querySelector('#dino')
+        const imgs = document.querySelector('#imgs')
+        const fire = document.querySelector('#fire')
+        // 언제
+        dinoImage.addEventListener('click', function(e){
+            // 실행
+            console.log(e)
+            bgDiv.append('크앙!')
+        })
+
+        document.addEventListener('keydown', function(e){
+            console.log(e)
+            if (e.keyCode === 38){
+                console.log('위로갑니당')
+                y -= 30
+                imgs.style.marginTop = `${y}px`
+            }
+            else if (e.keyCode === 40){
+                console.log('아래로갑니당')
+                y += 30
+                imgs.style.marginTop = `${y}px`
+            }
+            else if (e.keyCode === 39){
+                console.log('오른쪽으로갑니당')
+                x -= 30
+                imgs.style.marginRight = `${x}px`
+            }
+            else if (e.keyCode === 37){
+                console.log('왼쪽으로갑니당')
+                x += 30
+                imgs.style.marginRight = `${x}px`
+            }
+            else if (e.keyCode === 32){
+                console.log('쩜쁘!')
+                imgs.style.marginTop = `${y-30}px`
+                setTimeout(function(){
+                    imgs.style.marginTop = `${y + 30}px`
+                }, 300)
+
+            }
+            else if (e.keyCode === 90){
+                if (fire.style.display === 'inline'){
+                    fire.style.display = 'none'
+                }
+                else fire.style.display = 'inline'
+            }
+            else if (e.keyCode === 66){
+                dinoW *= 1.5
+                dinoH *= 1.5
+                fireW *= 1.5
+                fireH *= 1.5
+                dinoImage.style.width = `${dinoW}px`
+                dinoImage.style.height = `${dinoH}px`
+                fire.style.width = `${fireW}px`
+                fire.style.height = `${fireH}px`
+            }
+            else if (e.keyCode === 83){
+                dinoW = 100
+                dinoH = 100
+                fireW = 110
+                fireH = 70
+                dinoImage.style.width = '100px'
+                dinoImage.style.height = '100px'
+                fire.style.width = '110px'
+                fire.style.height = '70px'
+            }
+        })
+
+    </script>
+</body>
+</html>

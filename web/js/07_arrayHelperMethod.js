@@ -1,14 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<h1>Hello World</h1>    
-<script>
     // 1. 배열 반복하면서 출력
     const avengers = ['캡틴아메리카', '토르', '헐크', '아이언맨', '블랙위도우', '블랙팬서', '앤트맨', '스파이더맨', '캡틴마블', '닥터스트레인지']
     // for (const a of avengers){
@@ -50,35 +39,18 @@
         {type: 'juice', name: 'orange'},
         {type: 'juice', name: 'mango'}
     ]
-    // const nonCaffeine = drinks.filter(drink => drink.type !=='caffeine').map(obj => obj.name)
-    const nonCaffeine = drinks.filter(function(drink){
-        drink.type !== 'caffeine'
-    })
+    const nonCaffeine = drinks.filter(drink => drink.type !=='caffeine').map(obj => obj.name)
     console.log(nonCaffeine)
 
 
     // 4. reduce
     const reduceNum = [1, 5, 6]
-    // const reduceResult = reduceNum.reduce((acc, num) => acc += num*10, 0)
-    const reduceResult = reduceNum.reduce(function(acc, num){
-        return acc += num*10
-    }, 0)
+    const reduceResult = reduceNum.reduce((acc, num) => acc += num*10, 0)
     console.log(reduceResult)
 
 
     // 5. find
     const dc = ['슈퍼맨', '배트맨', '아쿠아맨', '조커']
-    // const badguy = dc.find(name => name === '조커')
-    const badguy = dc.find(function(name){
-        return name === '조커'
-    })
+    const badguy = dc.find(name => name === '조커')
     console.log(badguy)
 
-    document.addEventListener('copy', function(e){
-        console.log(e)
-        e.preventDefault()
-        alert('철컹철컹합니다 복사 금지!!!!')
-    })
-</script>
-</body>
-</html>

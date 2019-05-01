@@ -68,6 +68,16 @@ script는 body 태그 위에서 사용.
 
 
 
+### 선택자 가져오기
+
++ 선택자. 태그를 가져올 때에는 `querySelector` 를 사용할 수 있다.
+
+```js
+let header = document.querySelector('h1')
+```
+
+
+
 
 
 ### 돔 조작
@@ -235,6 +245,37 @@ document.write(message)
 
 
 
+조건문 줄이기
+
+```js
+const checkLongStr = string => {
+    if (string.length > 10) return true
+    else false
+}
+```
+
+->
+
+```js
+const checkLongStr = string => {
+    return string.length > 10 ? true : false
+}
+```
+
+->
+
+```js
+const checkLongStr = string => (string.length > 10 ? true : false)
+```
+
+
+
+
+
+
+
+
+
 ### 반복문
 
 1. while
@@ -272,6 +313,177 @@ document.write(message)
    ```
 
    let 과 const는 같은 결과를 리턴하지만, let은 값을 변경 가능하고, const는 불가하다.
+
+
+
++ 복습
+
+  1. 배열 반복하면서 출력
+
+     ```js
+     const avengers = ['캡틴아메리카', '토르', '헐크', '아이언맨', '블랙위도우', '블랙팬서', '앤트맨', '스파이더맨', '캡틴마블', '닥터스트레인지']
+     ```
+
+  2. for of
+
+     ```js
+         for (const a of avengers){
+             console.log(a)
+         }
+     ```
+
+  3. forEach
+
+     ```js
+         avengers.forEach( heroName => console.log(heroName))
+     ```
+
+  4. forEach
+
+     ```js
+         avengers.forEach( function (heroName){
+             console.log(heroName)
+         })
+     ```
+
+     
+
+
+
+### map
+
++ 각각을 계산/함수식 해서 각각의 결과를 출력
+
+```js
+const numbers = [1, 2, 3]
+```
+
+
+
+1. 숫자를 문자열로 변환
+
+   ```js
+   const strNumbers = numbers.map(number => String(number))
+   console.log(strNumbers)
+   ```
+
+2. 숫자 제곱
+
+   ```js
+   const squreNumbers = numbers.map(number => number**2)
+   console.log(squreNumbers)
+   ```
+
+
+
++ 거속시
+
+  ```js
+      const seulgi = [
+          {'velocity': 40, 'time': 50},
+          {'velocity': 100, 'time': 60},
+          {'velocity': 20, 'time': 100}
+      ]
+      const distances = seulgi.map(function(one){
+          result = one.velocity * one.time
+          return result
+      })
+      console.log(distances)
+      const distances2 = seulgi.map(obj => obj.velocity * obj.time)
+      console.log(distances2)
+  ```
+
++ 배열을 const로 사용하는 이유?
+  + 배열 주소 자체는 일정하게 유지되나, 안의 메모리만 커졌다 줄어들었다 가능하기 때문에 const로 사용 가능하다.
+
+
+
+### filter
+
++ 결과 중에서 특정한 값믄 뽑아내기
+
++ 짝수만 뽑기
+
+  ```js
+      const nums = [1, 5, 6, 8]
+      const evenNums = nums.filter(num => num%2 === 0)
+      console.log(evenNums)
+  ```
+
++ 카페인 없는것만 뽑기
+
+  ```js
+      const drinks = [
+          {type: 'caffeine', name: 'cold brew'},
+          {type: 'caffeine', name: 'green tea'},
+          {type: 'juice', name: 'orange'},
+          {type: 'juice', name: 'mango'}
+      ]
+      const nonCaffeine = drinks.filter(drink => drink.type !=='caffeine')
+      console.log(nonCaffeine)
+  ```
+
+  위의 결과는 오브젝트가 나오게 된다. 여기서 이름만 뽑으려면?
+
+  ```js
+  const nonCaffeine = drinks.filter(drink => drink.type !=='caffeine').map(obj => obj.name)
+      console.log(nonCaffeine)
+  ```
+
+  이렇게 map을 연결해서 출력할 수 있다.
+
+
+
+### reduce
+
++ 관리를 해서 줄여나가는것?
++ **여러가지를 계산해서 하나의 값을 만들고싶을 때. **
++ initial value를 지정해주지 않으면 시작이 1번 인덱스부터이다. 맨 끝에 ,0을 써서 지정해야지만 0번부터 시작
++ sum으로 묶는것. 계산한 값을 하나로 리턴. 
++ forEach와 다른 점? => 특정한 변수(let) 하나에 계속 값을 변화시키는 것이 아니라 하나의 값에 입력.
+
+
+
++ 배열의 값을 *10 한 값을 모두 sum
+
+  ```js
+      const reduceNum = [1, 5, 6]
+      const reduceResult = reduceNum.reduce((acc, num) => acc += num*10, 0)
+      console.log(reduceResult)
+  => 120
+  ```
+
+  ```js
+      const reduceNum = [1, 5, 6]
+      const reduceResult = reduceNum.reduce(function(acc, num){
+          return acc += num*10
+      }, 0)
+      console.log(reduceResult)
+  ```
+
+  
+
+### find
+
++ 찾기 위한 것 중 첫번째 하나만 뽑아내기
+
++ 조커 찾아내기
+
+  ```js
+      const dc = ['슈퍼맨', '배트맨', '아쿠아맨', '조커']
+      const badguy = dc.find(name => name === '조커')
+      console.log(badguy)
+  ```
+
+  ```js
+      const dc = ['슈퍼맨', '배트맨', '아쿠아맨', '조커']
+      const badguy = dc.find(function(name){
+          return name === '조커'
+      })
+      console.log(badguy)
+  ```
+
+  
 
 
 
@@ -651,6 +863,461 @@ vietnam('민지')
 ### 비동기적
 
 [비동기적 자바스크립트](<https://hudi.kr/%EB%B9%84%EB%8F%99%EA%B8%B0%EC%A0%81-javascript-%EC%8B%B1%EA%B8%80%EC%8A%A4%EB%A0%88%EB%93%9C-%EA%B8%B0%EB%B0%98-js%EC%9D%98-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%B2%98%EB%A6%AC-%EB%B0%A9%EB%B2%95/>)
+
+![img](https://hudi.kr/wp-content/uploads/2018/03/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C3.png)
+
++ stack : 함수 - return 시 가장 안쪽(재귀로 치면 가장 마지막)에 있는 것을 먼저 실행
++ Queue : 콜백함수 - 실행되어야 하는 것을 순서대로 쌓고 먼저 쌓인것을 먼저 실행시킨다. 아래에서 axios에서 then에서 실행되는 것을 이 큐에 넣어놓고 실행시킨다.
+
+[루프 돌려보는 사이트](<http://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D)
+
+
+
+
+
+## EventListener
+
++ arrow function을 사용하지 않는다.
++ python의 self와 같은 역할을 event에서 사용할 수 없다. js에서는 view 또는 window 오브젝트를 가리키기 때문에 사용불가하다.
+
+1. event.html
+
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <title>Document</title>
+       <style>
+           .bg {
+               background-color: #F7F7F7;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               min-height: 100vh;
+           }
+       </style>
+   </head>
+   <body>
+       <div class="bg">
+           <img id="dino" width="100px" heigth="100px" src="https://is4-ssl.mzstatic.com/image/thumb/Purple118/v4/88/e5/36/88e536d4-8a08-7c3b-ad29-c4e5dabc9f45/AppIcon-1x_U007emarketing-sRGB-85-220-0-6.png/246x0w.jpg" alt="dino">
+       </div>
+   
+       <script>
+       </script>
+   </body>
+   </html>
+   ```
+
+   
+
+2. 공룡을 클릭할 때 알림 메세지
+
+   ```js
+   // 무엇을
+   const dinoImage = document.querySelector('#dino')
+   // 언제
+   dinoImage.addEventListener('click', function(){
+       // 실행
+       alert('크앙!')
+   })
+   ```
+
+3. 공룡 클릭 시 옆에 글자뜨기
+
+   ```js
+   // 무엇을
+   const dinoImage = document.querySelector('#dino')
+   // 언제
+   dinoImage.addEventListener('click', function(e){
+       // 실행
+       console.log(e)
+       const bgDiv = document.querySelector('.bg')
+       bgDiv.append('크앙!')
+   })
+   ```
+
+   ![1556677045015](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556677045015.png)
+
+   + function이 실행될 때 e라는 로그를 확인해보면 어떤 이벤트와 관련된 내용이 나온다. callback 함수를 확인해보면 어떠한 오브젝트. 이벤트와 관련된 정보가 넘어오게 된다.
+
+4. 키보드 조작
+
+   ```js
+           document.addEventListener('keydown', function(e){
+               console.log(e)
+           })
+   ```
+
+   + 키보드를 누르는 모든 상황을 log로 뽑아볼 수 있다.
+
+     ![1556677588237](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556677588237.png)
+
+     여기에서 keyCode로 내가 어디로 눌렀는지 확인 가능하다.
+
+   1. 아래로 이동
+
+      ```js
+              document.addEventListener('keydown', function(e){
+                  if (e.keyCode === 38){
+                      console.log('위로갑니당')
+                      dinoImage.style.marginBottom = '30px'
+                  }
+              })
+      ```
+
+      + 한번만 가능
+      + 이동하는 것을 이미지의 css style을 준다.
+
+      1. 계속 이동
+
+         ```js
+         let y = 0
+         
+         document.addEventListener('keydown', function(e){
+             // console.log(e)
+             if (e.keyCode === 38){
+                 console.log('위로갑니당')
+                 y -= 30
+                 dinoImage.style.marginTop = `${y}px`
+             }
+         })
+         ```
+
+         + 위로 올라가며 체크
+
+   2. 상하좌우 이동
+
+      ```js
+      document.addEventListener('keydown', function(e){
+          console.log(e)
+          if (e.keyCode === 38){
+              console.log('위로갑니당')
+              y -= 30
+              dinoImage.style.marginTop = `${y}px`
+          }
+          else if (e.keyCode === 40){
+              console.log('아래로갑니당')
+              y += 30
+              dinoImage.style.marginTop = `${y}px`
+          }
+          else if (e.keyCode === 39){
+              console.log('오른쪽으로갑니당')
+              x -= 30
+              dinoImage.style.marginRight = `${x}px`
+          }
+          else if (e.keyCode === 37){
+              console.log('왼쪽으로갑니당')
+              x += 30
+              dinoImage.style.marginRight = `${x}px`
+          }
+      })
+      ```
+
+      
+
+5. 추가. 복사 금지
+
+   ```js
+   document.addEventListener('copy', function(e){
+       console.log(e)
+       e.preventDefault()
+       alert('철컹철컹합니다 복사 금지!!!!')
+   })
+   ```
+
+   `e.preventDefault()` : 복사를 하려고 할 때 이전에 복사한 것으로 남게된다.
+
+   
+
+
+
+
+
+## [엑시오스(axios)](<https://github.com/axios/axios>)
+
+> axios : Promise based HTTP client for the browser and node.js
+>
+> > + 비동기적 : 정지된 사이트에서 원하는 부분만 갔다가 돌아오기
+> > + 동기적 : 갔다가 새로운 곳으로 갔다가 돌아옴
+
+
+
++ 사용법 :
+
+  + Using cdn 부분을 body 닫는태그 위에 넣기
+
+    ```
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    ```
+
++ 요청을 보낼 곳 : [dog api](<https://dog.ceo/>)
+
+
+
+console
+
++ ```js
+  axios.get('https://dog.ceo/api/breeds/image/random')
+  ```
+
+  + ![1556685733508](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556685733508.png)
+  + promise : 약속이 되면 정보를 받을것이라는 뜻(?)
+
++ 만약 약속된 대로 잘 들어오면 정보를 받는 방법
+
+  ```js
+  axios.get('https://dog.ceo/api/breeds/image/random').then(response => console.log(response))
+  ```
+
+  ![1556685792947](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556685792947.png)
+
+  정보가 원하는대로 들어오게 되면 출력된다.
+
++ 이 경우 우리가 필요한 것은 data 안에 들어있는 message인데, 이것이 url의 주소이다.
+
+  
+
++ **js의 순서** => [블로킹(blocking)과 논블로킹(non blocking)](<https://nodejs.org/ko/docs/guides/blocking-vs-non-blocking/>)
+
+  + ```js
+    const dogImageUrl = axios.get('https://dog.ceo/api/breeds/image/random')
+    		.then(response => response.data.message)
+    		.then(url => console.log(1))
+    console.log(2)
+    console.log(dogImageUrl)
+    console.log(3)
+    ```
+
+    + ![1556686343176](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556686343176.png)
+    + 실행 결과를 보면 2번이 먼저 출력이 되는것을 확인 할 수 있다. `axios`에서 요청을 보내는 중에 promise가 리턴되면, 요청이 들어올 때 then으로 들어오는 것들을 순서대로 해주겠다는 것을 약속해준다.
+    + 따라서 2가 출력된 후 dogImageUrl이 요청되어서 값이 생기게 되면 그것이 출력되고 3번이 출력된 후, promise로 약속된 내용을 하나씩 수행하는 것이다.
+    + 위에서 볼 수 있듯 순서가 꼬일 수 있기 때문에, 우리가 원하는대로 순서를 지키기 위해서는 then안에서 순서대로 실행시키면 된다.
+
+  + ```js
+    const dogImageUrl = axios.get('https://dog.ceo/api/breeds/image/random')
+    .then(response => response.data.message)
+    .then(url => {
+        //실행할 부분
+    })
+    ```
+
++ 함수로 만들기
+
+  ```js
+  const getDogImage = function() {
+      axios.get('https://dog.ceo/api/breeds/image/random')
+      .then(response => response.data.message)
+      .then(url => {
+          console.log(2)
+          console.log(url)
+          return url
+      })
+  } 
+  ```
+
++ 이미지 띄우기
+
+  ```js
+  const getDogImage = function() {
+      axios.get('https://dog.ceo/api/breeds/image/random')
+      .then(response => response.data.message)
+      .then(url => {
+          const imageTag = document.createElement('img')
+          imageTag.src = url
+          const animal = document.querySelector('#animals')
+          animal.append(imageTag)
+      })
+  } 
+  ```
+
+  + imageTag라는 상수에 img 태그인 요소를 생성한 후,
+
+    imageTag의 src를 가져온 url로 넣어주기.
+
+    이후 animals라는 id를  querySelector 가져와 그 부분에 imageTag를 넣어준다.
+
++ 버튼을 누를 때 이미지 띄우기(EventListener)
+
+  ```html
+  <button id='dog'>멍멍이 내놔!</button>
+  ```
+
+  ```js
+  const dogButton = document.querySelector("#dog")
+  const getDogImage = function() {
+      axios.get('https://dog.ceo/api/breeds/image/random')
+      .then(response => response.data.message)
+      .then(url => {
+          const imageTag = document.createElement('img')
+          imageTag.src = url
+          const animal = document.querySelector('#animals')
+          animal.append(imageTag)
+      })
+  }
+  dogButton.addEventListener('click', getDogImage)
+  ```
+
+  + 위와 같이 요청을 보내게 되는 요청은 `XHR` 요청이다.
+  + ![1556688057504](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556688057504.png)
+  + 버튼을 한 번 누를 때 마다 XHR 요청이 반복해서 쌓이게 되며, 이 방식은 구글 등에서 검색을 할 때 자동 추천 검색기능과 같은 방식으로 사용되게 된다.
+
+
+
+
+
+## django 에서 사용하기 (좋아요/팔로우)
+
+1. `base.html`
+
+   ```django
+       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+       {% block script %}
+       {% endblock %}
+   </body>
+   ```
+
+   body 닫는 태그 위에 block script 태그를 만들어주고 위에 [axios](<https://github.com/axios/axios>)의 cdn 코드를 적어준다.
+
+2. `accounts/detail.html`
+
+   ```html
+   <i class="{% if user in post.like_users.all %} fas {% else %} far {% endif %} fa-heart fa-lg like-button" style="color: rgb(237, 73, 86);"></i>
+   
+   
+   {% block script %}
+   <script>
+       
+   </script>
+   {% endblock %}
+   ```
+
+   좋아요 태그를 if 문부터 모두 제거한 후 하나로 만들어준다. 최하단에서 부르기 위해 클래스 안에 like-button으로 이름을 만들어준다. => id는 하나밖에 못가져오기 때문에 사용한다.
+
+   이후 최하단에 base에서 만든 block을 적어준다.
+
+3. `accounts/detail.html`의 js
+
+   ```js
+   const likeButtons = document.querySelectorAll('.like-button')
+   likeButtons.forEach(function(button) {
+       button.addEventListener('click', function(e){
+           console.log(e)
+           const userName = e.target.dataset.name
+           const postId = e.target.dataset.id
+           axios.get(`/accounts/${userName}/${postId}/like/`)
+           .then(function(response){
+               console.log(response)
+           })
+       })
+   })
+   ```
+
+   + 여러개의 좋아요 버튼을 가져온 후 forEach로 하나씩 버튼을 가져와 이벤트리스너를 만들어준다.
+   + 클릭을 하는 이벤트가 발생 시 리턴되는 상황을 e로 리턴시킨다.
+
+   ![1556696087035](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556696087035.png)
+
+   + 하트 클릭 시 이벤트 발생  => `console.log(e)`
+   + 관련 데이터 출력 => `console.log(response)`
+
+   
+
+4. `accounts/views.py`
+
+   ```python
+   from django.http import JsonResponse
+   
+   
+   def like:
+       ...
+       if post.like_users.filter(pk=user.id).exists():
+           post.like_users.remove(user)
+           is_like = False
+       else:
+           post.like_users.add(user)
+           is_like = True
+       return JsonResponse({'is_like': is_like, 'count': post.like_users.count()})
+   ```
+
+5. `accounts/detail.html`의 js
+
+   ```js
+   const likeButtons = document.querySelectorAll('.like-button')
+   likeButtons.forEach(function(button) {
+       button.addEventListener('click', function(e){
+           console.log(e)
+           const userName = e.target.dataset.name
+           const postId = e.target.dataset.id
+           axios.get(`/accounts/${userName}/${postId}/like/`)
+           .then(function(response){
+               console.log(response)
+               if (response.data.is_like){
+                   e.target.classList.remove('far')
+                   e.target.classList.add('fas')
+               }
+               else{
+                   e.target.classList.remove('fas')
+                   e.target.classList.add('far')
+               }
+           })
+       })
+   })
+   ```
+
+6. 몇명 좋아요 했는지 표시
+
+   `accounts/detail.html`
+
+   ```django
+   <strong>{{ post.like_users.first }}</strong>님 외 <strong><span id="like-count-{{post.pk}}">{{ post.like_count|add:"-1" }}</span>명</strong>이 좋아합니다
+   
+   ```
+
+   부분에서 몇명인지 표시하는 부분을 span으로 묶어서 id 설정
+
+7. `accounts/detail.html`의 js
+
+   ```js
+   const likeButtons = document.querySelectorAll('.like-button')
+   likeButtons.forEach(function(button) {
+       button.addEventListener('click', function(e){
+           console.log(e)
+           const userName = e.target.dataset.name
+           const postId = e.target.dataset.id
+           axios.get(`/accounts/${userName}/${postId}/like/`)
+           .then(function(response){
+               const likeCount = document.querySelector(`#like-count-${postId}`)
+               
+               likeCount.innerText = response.data.count - 1
+               
+               console.log(response)
+               if (response.data.is_like){
+                   e.target.classList.remove('far')
+                   e.target.classList.add('fas')
+               }
+               else{
+                   e.target.classList.remove('fas')
+                   e.target.classList.add('far')
+               }
+           })
+       })
+   })
+   ```
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

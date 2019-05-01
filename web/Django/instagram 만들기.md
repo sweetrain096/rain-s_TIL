@@ -2359,7 +2359,146 @@ ctrl + shift + f : 전체 찾기
 
 
 
+## 15. javascript로 (좋아요/팔로우)
 
+1. `base.html`
+
+   ```django
+       <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+       {% block script %}
+       {% endblock %}
+   </body>
+   ```
+
+   body 닫는 태그 위에 block script 태그를 만들어주고 위에 [axios](<https://github.com/axios/axios>)의 cdn 코드를 적어준다.
+
+2. `accounts/detail.html`
+
+   ```html
+   <i class="{% if user in post.like_users.all %} fas {% else %} far {% endif %} fa-heart fa-lg like-button" style="color: rgb(237, 73, 86);"></i>
+   
+   
+   {% block script %}
+   <script>
+       
+   </script>
+   {% endblock %}
+   ```
+
+   좋아요 태그를 if 문부터 모두 제거한 후 하나로 만들어준다. 최하단에서 부르기 위해 클래스 안에 like-button으로 이름을 만들어준다. => id는 하나밖에 못가져오기 때문에 사용한다.
+
+   이후 최하단에 base에서 만든 block을 적어준다.
+
+3. `accounts/detail.html`의 js
+
+   ```js
+   const likeButtons = document.querySelectorAll('.like-button')
+   likeButtons.forEach(function(button) {
+       button.addEventListener('click', function(e){
+           console.log(e)
+           const userName = e.target.dataset.name
+           const postId = e.target.dataset.id
+           axios.get(`/accounts/${userName}/${postId}/like/`)
+           .then(function(response){
+               console.log(response)
+           })
+       })
+   })
+   ```
+
+   + 여러개의 좋아요 버튼을 가져온 후 forEach로 하나씩 버튼을 가져와 이벤트리스너를 만들어준다.
+   + 클릭을 하는 이벤트가 발생 시 리턴되는 상황을 e로 리턴시킨다.
+
+   ![1556696087035](C:\Users\student\Desktop\rain\rain-s_TIL\web\Django\img\C%5CUsers%5Cstudent%5CDesktop%5Crain%5Crain-s_TIL%5Cweb%5Cjs%5Cimg%5C1556696087035.png)
+
+   + 하트 클릭 시 이벤트 발생  => `console.log(e)`
+   + 관련 데이터 출력 => `console.log(response)`
+
+   
+
+4. `accounts/views.py`
+
+   ```python
+   from django.http import JsonResponse
+   
+   
+   def like:
+       ...
+       if post.like_users.filter(pk=user.id).exists():
+           post.like_users.remove(user)
+           is_like = False
+       else:
+           post.like_users.add(user)
+           is_like = True
+       return JsonResponse({'is_like': is_like, 'count': post.like_users.count()})
+   ```
+
+5. `accounts/detail.html`의 js
+
+   ```js
+   const likeButtons = document.querySelectorAll('.like-button')
+   likeButtons.forEach(function(button) {
+       button.addEventListener('click', function(e){
+           console.log(e)
+           const userName = e.target.dataset.name
+           const postId = e.target.dataset.id
+           axios.get(`/accounts/${userName}/${postId}/like/`)
+           .then(function(response){
+               console.log(response)
+               if (response.data.is_like){
+                   e.target.classList.remove('far')
+                   e.target.classList.add('fas')
+               }
+               else{
+                   e.target.classList.remove('fas')
+                   e.target.classList.add('far')
+               }
+           })
+       })
+   })
+   ```
+
+6. 몇명 좋아요 했는지 표시
+
+   `accounts/detail.html`
+
+   ```django
+   <strong>{{ post.like_users.first }}</strong>님 외 <strong><span id="like-count-{{post.pk}}">{{ post.like_count|add:"-1" }}</span>명</strong>이 좋아합니다
+   
+   ```
+
+   부분에서 몇명인지 표시하는 부분을 span으로 묶어서 id 설정
+
+7. `accounts/detail.html`의 js
+
+   ```js
+   const likeButtons = document.querySelectorAll('.like-button')
+   likeButtons.forEach(function(button) {
+       button.addEventListener('click', function(e){
+           console.log(e)
+           const userName = e.target.dataset.name
+           const postId = e.target.dataset.id
+           axios.get(`/accounts/${userName}/${postId}/like/`)
+           .then(function(response){
+               const likeCount = document.querySelector(`#like-count-${postId}`)
+               
+               likeCount.innerText = response.data.count - 1
+               
+               console.log(response)
+               if (response.data.is_like){
+                   e.target.classList.remove('far')
+                   e.target.classList.add('fas')
+               }
+               else{
+                   e.target.classList.remove('fas')
+                   e.target.classList.add('far')
+               }
+           })
+       })
+   })
+   ```
+
+   
 
 
 
