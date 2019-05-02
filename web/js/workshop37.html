@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        img {
+            width : 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <button id='post'>post</button>
+    <h1>list</h1>
+    <p></p>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const getButton = document.querySelector("#get")
+        getButton.addEventListener('click', function(e){
+            // console.log(e)
+            axios.get('http://13.125.249.144:8080/ssafy/daejeon/1/posts/')
+            .then(function(response){
+                // console.log(response)
+                const list = response.data.posts
+                // console.log(list)
+                list.forEach(one => {
+                    console.log(one)
+                    document.write(`${one.id}, ${one.title}, ${one.content}`)
+                    document.write('<br />')
+                    })
+                
+            })
+        })
+        // const post = function() {
+        //     axios.get('http://13.125.249.144:8080/ssafy/daejeon/1/posts/')
+            
+        //     .then(response => response.data.message)
+        //     .then(url => { // 윗줄 response가 리턴되고, 이것을 url로 가져온다.
+        //         const imageTag = document.createElement('img')
+        //         imageTag.src = url
+        //         const animal = document.querySelector('#animals')
+        //         animal.append(imageTag)
+        //     })
+        // }
+        // dogButton.addEventListener('click', getDogImage)
+    </script>
+</body>
+</html>

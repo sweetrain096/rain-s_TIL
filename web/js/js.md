@@ -394,6 +394,7 @@ const numbers = [1, 2, 3]
   ```
 
 + 배열을 const로 사용하는 이유?
+
   + 배열 주소 자체는 일정하게 유지되나, 안의 메모리만 커졌다 줄어들었다 가능하기 때문에 const로 사용 가능하다.
 
 
@@ -864,6 +865,8 @@ vietnam('민지')
 
 [비동기적 자바스크립트](<https://hudi.kr/%EB%B9%84%EB%8F%99%EA%B8%B0%EC%A0%81-javascript-%EC%8B%B1%EA%B8%80%EC%8A%A4%EB%A0%88%EB%93%9C-%EA%B8%B0%EB%B0%98-js%EC%9D%98-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%B2%98%EB%A6%AC-%EB%B0%A9%EB%B2%95/>)
 
++ 비동기 : 페이지 전체 중 우리가 원하는 일부만 요청을 받고 업데이트
+
 ![img](https://hudi.kr/wp-content/uploads/2018/03/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C3.png)
 
 + stack : 함수 - return 시 가장 안쪽(재귀로 치면 가장 마지막)에 있는 것을 먼저 실행
@@ -1080,6 +1083,8 @@ console
 
 + **js의 순서** => [블로킹(blocking)과 논블로킹(non blocking)](<https://nodejs.org/ko/docs/guides/blocking-vs-non-blocking/>)
 
+  ![blocking non blockingì ëí ì´ë¯¸ì§ ê²ìê²°ê³¼](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\building-a-nonblocking-rest-api-in-less-than-30-minutes-11-638.jpg)
+
   + ```js
     const dogImageUrl = axios.get('https://dog.ceo/api/breeds/image/random')
     		.then(response => response.data.message)
@@ -1167,6 +1172,8 @@ console
 
 
 ## django 에서 사용하기 (좋아요/팔로우)
+
+### 좋아요
 
 1. `base.html`
 
@@ -1281,12 +1288,16 @@ console
    ```js
    const likeButtons = document.querySelectorAll('.like-button')
    likeButtons.forEach(function(button) {
+       // 이벤트가 발생하면
        button.addEventListener('click', function(e){
            console.log(e)
            const userName = e.target.dataset.name
            const postId = e.target.dataset.id
+           // 장고 서버로 요청을 보내고
            axios.get(`/accounts/${userName}/${postId}/like/`)
+           // 성공하면, response에 장고에서 보낸 내용이 담겨있고, (JSON)
            .then(function(response){
+               // 실제 모습처럼 그린다. 새롭게( 원래 있던 내용 위에 덮어씌우게 된다.)(실제 로딩되었을때의 화면과 동일)
                const likeCount = document.querySelector(`#like-count-${postId}`)
                
                likeCount.innerText = response.data.count - 1
@@ -1305,15 +1316,305 @@ console
    })
    ```
 
+8. 'XX님 외' 몇 명 으로 수정하기
+
+   `accounts/views.py`
+
+   ```python
+   @login_required
+   def like(request, user_name, post_pk):
+       post = get_object_or_404(Post, pk=post_pk)
+       user = request.user
+       if post.like_users.filter(pk=user.id).exists():
+           post.like_users.remove(user)
+           is_like = False
+       else:
+           post.like_users.add(user)
+           is_like = True
+       if post.like_users.count():
+           first_user = f'{post.like_users.first()}님 외 '
+       else:
+           first_user = ''
+       print(first_user)
+       return JsonResponse({'is_like': is_like, 'count': post.like_users.count(), 'first_user': first_user})
+   
+   ```
+
+   `accounts/detail.html`
+
+   ```html
+   <!--좋아요 수 표시-->
+   <div class="footer m-0 p-0">
+       
+       <span id="like-user-{{post.pk}}">{% if post.like_count == False %}{% else %}<strong>{{ post.like_users.first }}</strong>님 외 {% endif %}</span><strong><span id="like-count-{{post.pk}}">{% if post.like_count == False %}{{ post.like_count }}{% else %}{{ post.like_count|add:"-1" }}{% endif %}</span>명</strong>이 좋아합니다
+       
+   </div>
+   ```
+
+   `accounts/detail.html/js`
+
+   ```js
+   const likeCount = document.querySelector(`#like-count-${postId}`)
+   const likePerson = document.querySelector(`#like-user-${postId}`)
+   if (response.data.count){
+       likeCount.innerText = response.data.count - 1
+   }
+   else likeCount.innerText = response.data.count
+   likePerson.innerText = response.data.first_user
+   console.log(likePerson)
+   ```
+
+
+
+### 팔로우
+
+1. `detail.html`
+
+   ```django
+   {% if user != user_info %}
+   	<button data-name="{{user_info.username}}" class="follow-button" id="follow_check">
+           	{% if user in user_info.followers.all%} unfollow {% else %} follow {% endif %}
+   	</button>
+   {% endif %}
+   ```
+
+   
+
+   `detail.html/js`
+
+   ```js
+   followButton.addEventListener('click', function(e){
+       
+       console.log(e)
+           const userName = e.target.dataset.name
+           axios.get(`/accounts/${userName}/follow/`)
+           .then(function(response){
+               console.log(response)
+               const followCheck = document.querySelector(`#follow_check`)
+               const followerCnt = document.querySelector('#follower_cnt')
+               followCheck.innerText = response.data.follow_check
+               followerCnt.innerText = response.data.follow_count
+               
+           })
+   })
+   ```
+
+   
+
+   `accounts/views.py`
+
+   ```python
+   def follow(request, user_name):
+       User = get_user_model()
+       user = get_object_or_404(User, username = user_name)
+       
+       if request.user in user.followers.all():
+           user.followers.remove(request.user)
+           is_follow = False
+           follow_check = 'follow'
+       else:
+           user.followers.add(request.user)
+           is_follow = True
+           follow_check = 'unfollow'
+           
+       return JsonResponse({'is_follow': is_follow, 'follow_check': follow_check, 'follow_count': user.followers.count()})
+   
+   ```
+
+   + 받을 버튼 명을 follow_check로 보내준다.
+
+   
+
+   ​                           
+
+2. 현재 버튼으로 사용했으나, a태그로도 사용할 수 있다.
+
+   `accounts/detail.html`
+
+   ```html
+   {% if user != user_info %}
+       {% if user in user_info.followers.all %}
+       <a href="{% url 'accounts:follow' user_info %}" id="follow-button">unfollow</a>
+       {% else %}
+       <a href="{% url 'accounts:follow' user_info %}" id="follow-button">follow</a>
+       {% endif %}
+   {% endif %}
+   ```
+
+   
+
+   ```django
+   <div class="follow-count">
+       <div class="col-4">팔로워 <span id='follower_cnt'>{{ user_info.followers.all.count}}</span></div>
+   	<div class="col-4">팔로우 <span id='following_cnt'>{{ user_info.followings.all.count}}</span></div>
+   </div>
+   
+   ```
+
+   
+
+   
+
+   `accounts/detail.html/js`
+
+   ```js
+   const followButton = document.querySelector('#follow-button')
+   followButton.addEventListener('click', function(e){
+       e.preventDefault()	// a태그로 사용하게 되면 a태그의 움직임을 멈추게 한다.
+       const url = e.target.getAttribute('href')// a 태그의 url을 가져온다.
+       axios.get(url)
+           .then(function(response){
+           const followCountDiv = document.querySelector('.follow-count')
+           followCountDiv.children[1].innerText = `팔로워: ${response.data.following_count}`
+           followCountDiv.children[0].innerText = `팔로워: ${response.data.follower_count}`
+           e.target.innerText = response.data.is_follow ? '언팔' : '팔로우'
+       })
+   }
+   ```
+
    
 
 
 
+### 모든 요청을 POST로 바꾸기
+
+1. js
+
+   ```js
+   axios.post(`/accounts/${userName}/follow/`)
+   ```
+
+   로 만들게 되면 
+
+   ![1556763297075](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763297075.png)
+
+   어마무시한 에러가 뜨는데 
+
+   ![1556763311663](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763311663.png)
+
+   CSRF 토큰을 가져와야하는데 이것을 만들기 위해서 form을 만드는것은 너무 힘들다.
+
+   이 때 쿠키를 보면 
+
+   ![1556763341495](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763341495.png)
+
+   csrf 토큰이 존재하기 때문에 이것을 가져올것.
+
+   ![1556763386902](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763386902.png)
+
+   여기에서 우리가 가져오고 싶은 것은 csrftoken. 가져오기
+
+   => axios에는 이것을 가져오는 방법이 존재한다.
+
+   ```js
+   axios.defaults.xsrfCookieName = 'csrftoken'
+   ```
+
+   + 쿠키에 존재하는 csrf토큰을 가져오며, 이것을 header에 넣어야만 한다.
+
+   ```js
+   axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+   // Django에서 csrftoken을 Header에 담을 때 X-CSRFToken 으로 보내라고 했어용
+   ```
+
+   + 이렇게 header에 넣어준다.
+   + 이렇게만 해도 팔로우/언팔로우는 된다
+
+   
+
+   `accounts/views.py`
+
+   ```python
+   @login_required
+   @require_POST
+   def follow(request, user_name):
+       if request.is_ajax():
+           User = get_user_model()
+           user = get_object_or_404(User, username = user_name)
+           
+           if request.user in user.followers.all():
+               user.followers.remove(request.user)
+               is_follow = False
+               follow_check = 'follow'
+           else:
+               user.followers.add(request.user)
+               is_follow = True
+               follow_check = 'unfollow'
+           data = {'is_follow': is_follow, 'follow_check': follow_check, 
+                   'follower_count': user.followers.count(),
+                   'followingCount': user.followings.count()
+                   }
+           # return redirect('accounts:detail', user_name)
+           return JsonResponse(data)
+   ```
+
+   require_POST를 해주자!
+
+   [is_ajax](<https://docs.djangoproject.com/en/2.2/ref/request-response/#django.http.HttpRequest.is_ajax>): Returns `True` if the request was made via an `XMLHttpRequest`, by checking the `HTTP_X_REQUESTED_WITH` header for the string`'XMLHttpRequest'`. Most modern JavaScript libraries send this header. If you write your own `XMLHttpRequest` call (on the browser side), you’ll have to set this header manually if you want `is_ajax()` to work.
+
+   => 위 설명에 맞게 js를 수정
+
+   ```js
+           console.log(e)
+               const userName = e.target.dataset.name
+               axios.defaults.headers.common['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest'
+               axios.defaults.xsrfCookieName = 'csrftoken'
+               axios.defaults.xsrfHeaderName = 'X-CSRFToken' 
+   
+   ```
+
+   common 부분을 넣어주기
+
+   =>but 이건 버전문제? 때문에 안됩니다
+
+   so, `axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'`
+
+   이렇게 수정해주면 바뀝니당
+
+   
+
+   이후 ajax 가 아닌 다른 정보가 들어올 때 400 에러를 띄우기 위해
+
+   `accounts/views.py`
+
+   ```python
+   from django.http import JsonResponse, HttpResponseBadRequest
+   
+   def follow(request, user_name):
+       if request.is_ajax():
+           ...
+           return JsonResponse(data)
+       else:
+           return HttpResponseBadRequest
+   ```
+
+   이렇게 설정해준다.
+
+   
+
+   
+
+   
+
+   
+
+   
+
+   
+
+## [django 에서 사용하기 (댓글 작성/삭제)](<https://www.zerocho.com/category/HTML&DOM/post/59465380f2c7fb0018a1a263>)
+
+### 댓글 작성
 
 
 
 
 
+## [Ajax?](<https://coding-factory.tistory.com/143>)
+
+> Ajax : javaScript의 라이브러리 중 하나이며 Asynchronous Javascript And Xml(비동기식 자바스크립트와 xml)의 약자.
+>
+> 자바스크립트를 사용한 비동기 통신, 클라이언트와 서버간에 XML 데이터를 주고받는 기술.
 
 
 
