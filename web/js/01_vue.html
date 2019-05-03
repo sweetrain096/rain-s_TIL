@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id='app'>
+        <button v-on:click="plus">Count 증가</button>
+        {{message}} - {{count}}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            // element : 실제 Vue와 연결 할 element
+            el: '#app',
+            // app (vue 인스턴스)의 속성을 가지게 된다.
+            data: {
+                message: 'Hello, Vue!',
+                count: 0
+            },
+            methods: {
+                plus: function() {
+                    this.count ++
+                }
+            }
+        })
+    </script>
+</body>
+</html>

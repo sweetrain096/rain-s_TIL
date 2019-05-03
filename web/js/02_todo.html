@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <!-- v-model : data의 newTodo 값이 사용자가 입력하는 값으로 변경됨 -->
+        <input type="text" v-model="newTodo" v-on:keyup.enter="addNewTodo"><br>
+        {{ newTodo }}
+        <button v-on:click="allComplted">All complted</button>
+        <ul>
+            <!-- v-for가 우선,  v-if 가 나중이다.  -->
+            <li v-for="todo in todoList" v-if="! todo.completed">
+                {{ todo.content }} <button v-on:click="complete(todo)">[완료]</button>
+            </li>
+            <li v-else><del>{{ todo.content}}</del><button v-on:click="complete(todo)">[취소]</button></li>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 시작은 새 앱을 만들기
+        const app = new Vue({
+            // 바라봐야 할 지점을 element에 넣기
+            el: '#app',
+            data: {
+                newTodo: '',
+                todoList: [
+                    {
+                        content: '쉬는 시간',
+                        completed: true
+                    },
+                    {
+                        content: '11시 수업 듣기',
+                        completed: false
+                    },
+                    {
+                        content: '밥먹기',
+                        completed: false
+                    },
+                    {
+                        content: '취업특강.....',
+                        completed: false
+                    },
+                    {
+                        content: '스타듀밸리로 귀농하기',
+                        completed: false
+                    }
+                    
+                ]
+            },
+            methods: {
+                complete: function(todo){
+                    todo.completed = !todo.completed
+                },
+                addNewTodo: function(){
+                    // this : vue object(app)
+                    // this.todoList : data's todoList
+                    if (this.todoList){
+                        this.todoList.push({
+                            // this.newTodo : data's newTodo ( 사용자가 입력을 한 값 )
+                            content: this.newTodo,
+                            completed: false
+                        })
+                        this.newTodo = ''
+                    }
+                    
+                },
+                // allComplted: function(){
+                //     this.todoList.forEach(function(todo){
+                //         todo.completed = true
+                //     })
+                // }
+                allComplted: function(){
+                    this.todoList.forEach(todo => {
+                        if (!todo.completed){
+                            this.check(todo)
+                        }
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1624,3 +1624,531 @@ console
 
 
 
+## [Vue.js](<https://kr.vuejs.org/v2/guide/index.html>)
+
++ js와 가장 다른 점? : 명령형. (like django)
+
++ vue와 element와 연결을 한 후, 연결한 vue에서 data라는 object를 만들어 관리를 해준다.
+
++ MVVM 모델 : M / V / VM(view model)
+
+  ​			M / T / V
+
+  ​			M / V / C
+
++ this 쓸 때 약속!!!@!@!@!@!
+
+  1. 모든 함수는 function 키워드로
+  2. 메서드에서 쓰이는 함수 중에 콜백 함수는 arrow function
+  3. 메서드 정의시에는 function 키워드
+
+
+
+### 사용
+
+```
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+```
+
+부분을 body 닫는 태그 위에 작성
+
+
+
+
+
+### hello, vue
+
+`html`
+
+```html
+<div id='app'>
+    {{message}}
+</div>
+```
+
+`js`
+
+```js
+const app = new Vue({
+    // element : 실제 Vue와 연결 할 element
+    el: '#app',
+    // app (vue 인스턴스)의 속성을 가지게 된다.
+    data: {
+        message: 'Hello, Vue!'
+    }
+})
+```
+
++ element : 실제 Vue와 연결 할 element
+
+  
+
+이후 콘솔에서 
+
+```
+app.message = 'bye'
+```
+
+로 사용하면 값이 변경된다.
+
+
+
+### methods 사용하기
+
++ methods는 함수와 유사하다. 이 때에는 값을 넣는것이 아니라 this 및 data에서 정의해준 변수(?)를 가져와 사용할 수 있다.
++ this라는 것을 사용하는데, 이 때의 this는 python의 self와 같은 역할을 한다. 이 때문에 arrow function을 사용할 수 없다.
+  + 우리가 버튼을 누를 때 this가 가리키는 것은 그 버튼이 되길 원한다.
+  + arrow function에서 가리기는 것은 자신의 위. 버튼이 붙어있는 곳. (윈도우가 될 수 도 있다)을 가리키게 된다.
+  + arrow function => lexicial this : 문맥상에서 가져온다.
++ 함수를 만들때에 def 키워드를 사용하지 않는다.
+
+
+
+1. 증가 함수 만들기
+
+   `html`
+
+   ```html
+   <div id='app'>
+       {{message}} - {{count}}
+   
+   </div>
+   ```
+
+   `js`
+
+   ```js
+   const app = new Vue({
+       // element : 실제 Vue와 연결 할 element
+       el: '#app',
+       // app (vue 인스턴스)의 속성을 가지게 된다.
+       data: {
+           message: 'Hello, Vue!',
+           count: 0
+       },
+       methods: {
+           plus: function() {
+               this.count ++
+           }
+       }
+   })
+   ```
+
+2. 버튼을 눌러 만들기
+
+   + v-on과 같은 방식으로 `addEventListener`와 같은 방식을 쉽게 사용할 수 있다.
+
+     ```html
+     <div id='app'>
+         <button v-on:click="plus">Count 증가</button>
+         {{message}} - {{count}}
+     </div>
+     ```
+
+     button에 `v-on:click`을 설정. 
+
+
+
+### todo list
+
+1. to do list 만들어서 출력하기
+
+   `html`
+
+   ```html
+       <div id="app">
+           {{ todoList }}
+       </div>
+   ```
+
+   `js`
+
+   ```js
+           // 시작은 새 앱을 만들기
+           const app = new Vue({
+               // 바라봐야 할 지점을 element에 넣기
+               el: '#app',
+               data: {
+                   todoList: [
+                       '쉬는 시간',
+                       '11시 수업 듣기',
+                       '밥먹기',
+                       '취업특강.....',
+                       '스타듀밸리로 귀농하기'
+                   ]
+               }
+           })
+   ```
+
+   ![1556848160886](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556848160886.png)
+
+2. 반복문 돌리기 => `v-for`
+
+   ```html
+       <div id="app">
+           <ul>
+               <li v-for="todo in todoList">
+                   {{ todo }}
+               </li>
+           </ul>
+       </div>
+   ```
+
+   ![1556848197949](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556848197949.png)
+
+   
+
+3. object로 변경하기
+
+   ```js
+   // 시작은 새 앱을 만들기
+   const app = new Vue({
+       // 바라봐야 할 지점을 element에 넣기
+       el: '#app',
+       data: {
+           todoList: [
+               {
+                   content: '쉬는 시간',
+                   completed: true
+               },
+               {
+                   content: '11시 수업 듣기',
+                   completed: false
+               },
+               {
+                   content: '밥먹기',
+                   completed: false
+               },
+               {
+                   content: '취업특강.....',
+                   completed: false
+               },
+               {
+                   content: '스타듀밸리로 귀농하기',
+                   completed: false
+               }
+               
+           ]
+       }
+   })
+   ```
+
+   ![1556849190331](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849190331.png)
+
+   
+
+4. 내용만 출력
+
+   `html`
+
+   ```html
+   <div id="app">
+       <ul>
+           <li v-for="todo in todoList">
+               {{ todo.content }}
+           </li>
+       </ul>
+   </div>
+   ```
+
+   ![1556849261892](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849261892.png)
+
+5. 완료한 것은 출력하지 않기 => `v-if`
+
+   `html`
+
+   ```html
+   <div id="app">
+       <ul>
+           <li v-for="todo in todoList" v-if="! todo.completed">
+               {{ todo.content }}
+           </li>
+       </ul>
+   </div>
+   ```
+
+6. > v-for 와 v-if가 있게 되면, v-for가 우선,  v-if 가 나중이다. 
+   >
+   > 이 경우 v-for 안에 v-if가 존재하게 된다.
+
+7. v-else
+
+   `html`
+
+   ```html
+   <div id="app">
+       <ul>
+           <!-- v-for가 우선,  v-if 가 나중이다.  -->
+           <li v-for="todo in todoList" v-if="! todo.completed">
+               {{ todo.content }}
+           </li>
+           <li v-else>완료했어요</li>
+       </ul>
+   </div>
+   ```
+
+   ![1556849446041](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849446041.png)
+
+   완료한 것을 완료했다고 띄울 수 있다.
+
+   ```html
+   <div id="app">
+       <ul>
+           <!-- v-for가 우선,  v-if 가 나중이다.  -->
+           <li v-for="todo in todoList" v-if="! todo.completed">
+               {{ todo.content }}
+           </li>
+           <li v-else><del>{{ todo.content}}</del></li>
+       </ul>
+   </div>
+   ```
+
+   ![1556849531178](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849531178.png)
+
+   취소선으로 띄울수도 있다.
+
+8. 완료 버튼을 만들어 한 것으로 체크하기
+
+   `html`
+
+   ```html
+   <div id="app">
+       <ul>
+           <!-- v-for가 우선,  v-if 가 나중이다.  -->
+           <li v-for="todo in todoList" v-if="! todo.completed">
+               {{ todo.content }} <button v-on:click="complete(todo)">[완료]</button>
+           </li>
+           <li v-else><del>{{ todo.content}}</del></li>
+       </ul>
+   </div>
+   ```
+
+   + 버튼에 연결된 함수에 내가 한 것을 반환해준다.
+
+   `js`
+
+   ```js
+   const app = new Vue({
+       // 바라봐야 할 지점을 element에 넣기
+       el: '#app',
+       data: {
+           todoList: [
+               ...
+           ]
+       },
+       methods: {
+           complete: function(todo){
+               todo.completed = true
+           }
+       }
+   })
+   ```
+
+9. 완료한것도 취소하기
+
+   `html`
+
+   ```html
+   <div id="app">
+       <ul>
+           <!-- v-for가 우선,  v-if 가 나중이다.  -->
+           <li v-for="todo in todoList" v-if="! todo.completed">
+               {{ todo.content }} <button v-on:click="complete(todo)">[완료]</button>
+           </li>
+           <li v-else><del>{{ todo.content}}</del><button v-on:click="complete(todo)">[취소]</button></li>
+       </ul>
+   </div>
+   ```
+
+   `js`
+
+   ```js
+   methods: {
+       complete: function(todo){
+           todo.completed = !todo.completed
+       }
+   ```
+
+   + complete에서 받은 completed 값을 반대로 뒤집는다.
+
+10. 새롭게 할 목록 추가받기
+
+    1. 입력받은대로 출력하기
+
+       `js`
+
+       ```js
+       const app = new Vue({
+           // 바라봐야 할 지점을 element에 넣기
+           el: '#app',
+           data: {
+               newTodo: '',
+               ...
+       ```
+
+       `html`
+
+       ```html
+       <input type="text" v-model="newTodo"><br>
+       {{ newTodo }}
+       ```
+
+       + v-model에서 new_Todo라는 값을 가져오는데, 이것은 js의 data에 있는 newTodo가 바뀌는 것이고 그것이 바뀔 때 마다 `{{ newTodo }}`가 계속해서 바뀌어 출력된다.
+
+    2. 입력받은 것을 리스트에 추가하기( enter키 )
+
+       `js`
+
+       ```js
+       methods: {
+           complete: function(todo){
+               todo.completed = !todo.completed
+           },
+           addNewTodo: function(){
+               // this : vue object(app)
+               // this.todoList : data's todoList
+               
+               this.todoList.push({
+                   // this.newTodo : data's newTodo ( 사용자가 입력을 한 값 )
+                   content: this.newTodo,
+                   completed: false
+               })
+               this.newTodo = ''	// newTodo를 빈 문자열을 넘겨주면 입력창이 비워진다.
+           }
+       ```
+
+       `html`
+
+       ```html
+       <div id="app">
+           <!-- v-model : data의 newTodo 값이 사용자가 입력하는 값으로 변경됨 -->
+           <input type="text" v-model="newTodo" v-on:keyup.enter="addNewTodo"><br>
+           {{ newTodo }}
+           <ul>
+       ```
+
+       + `v-on:keyup.enter=""` : 엔터 버튼을 누를 때 발생할 함수를 입력해준다.
+
+11. 모두 다 한번에 완료
+
+    + for
+
+    `html`
+
+    ```html
+    <button v-on:click="allComplted">All complted</button>
+    ```
+
+    `js`
+
+    ```js
+    methods: {
+        ...
+        allComplted: function(){
+            this.todoList.forEach(function(todo){
+                todo.completed = true
+            })
+        }
+    ```
+
+    
+
+    
+
+
+
+
+
+
+
+
+
+### 댕댕이 가져오기
+
+1. 가져오기
+
+   `html`
+
+   ```html
+   <div id="app">
+       <button v-on:click="getDogImage">댕댕이</button>
+       <img v-bind:src="image">
+   </div>
+   ```
+
+   + image를 그냥 출력하면 url이 뜨는데 이걸 img 태그의 src로 바인딩 시키기 위해서는 위와 같이 사용한다.
+
+   `js`
+
+   ```js
+   const getDogImage = function() {
+       axios.get('https://dog.ceo/api/breeds/image/random')
+       .then(response => this.image = response.data.message)
+       
+   }
+   const app = new Vue({
+       el: '#app',
+       data: {
+           image: ''
+       },
+       methods: {
+           getDogImage
+       }
+   })
+   ```
+
+2. 댕댕이 여러마리 가져오기
+
+   `js`
+
+   ```js
+   const getDogImage = function() {
+       axios.get('https://dog.ceo/api/breeds/image/random')
+       .then(response => this.images.push(response.data.message))
+       
+   }
+   const app = new Vue({
+       el: '#app',
+       data: {
+           images: []
+       },
+       methods: {
+           getDogImage
+       }
+   })
+   ```
+
+   `html`
+
+   ```html
+   <div id="app">
+       <button v-on:click="getDogImage">댕댕이</button>
+       <img 
+           v-for="image in images"
+           v-bind:src="image"
+       >
+   </div>
+   ```
+
+3. 댕댕이 마리수 체크하기
+
+4. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
