@@ -3,7 +3,8 @@
 + 브라우저에서 실행되는 언어. os에서 실행되지 않는 언어로 탄생했다. 
 + 수많은 파편화가 진행되었음. 
 + 우리가 사용할 버전은 ES6+ ?
-+ 
+
+  
 
 
 
@@ -92,7 +93,7 @@ let header = document.querySelector('h1')
 
 `html`
 
-```html
+```js
 console.log(name)
 var name = 'rain'
 => undefined
@@ -120,7 +121,55 @@ var name = 'rain'
 
 
 
+```js
+NaN : not a number
+
+- typeof NaN => "number"
+- NaN === NaN => false
+- NaN === 'agewa' => false
+- isNaN(NaN) => true
+- isNaN(0) = >false
+- isNaN('123') => false
+- isNaN('ages') => true
+- Infinity = 무한
+- typeof Infinity => "number"
+- typeof function() {} => function
+- typeof [] => object
+- typeof [1, 2, 3] => object
+- typeof ( () => {} ) => function
+- typeof 'a' => "string"
+- typeof true
+- => "boolean"
+- typeof typeof 1323 => "string"
+- 1 + '1' => '11'	=> 더하기는 문자열
+- 2 * '12' => 24	=> 곱하기는 숫자
+- parseInt('123') => 123
+- parseFloat('1.3') => 1.3
+- String(2) => "2"
+```
+
+
+
+
+
 ### 변수
+
++ var vs cosnt/let
+
+  + var a = 1
+
+    + window.a => 1
+
+  + let b = 2
+
+    + window.b => undefined
+    + let과 const는 어딘가 추상화된 공간에 붙는다.
+
+  + const c = 3
+
+    + const는 선언 시 할당을 해야한다.
+
+      
 
 + 이제 var는 사용하지 않는다. var가 없으면 전역변수.
 
@@ -155,7 +204,7 @@ var name = 'rain'
 
 + var vs let
 
-  ```html
+  ```js
   for (var i = 0; i < 3; i++){
       console.log(i)
   }
@@ -167,7 +216,7 @@ var name = 'rain'
 
   
 
-  ```html
+  ```js
   for (let j = 0; j < 3; j++){
       console.log(j)
   }
@@ -198,7 +247,7 @@ var name = 'rain'
   document.write(`<h1>${name}</h1>`)
   ```
 
-  위 두개의 document.write를 사용.  그러나 아래것은 ES6+ 에서 사용할 수 있다.
+  위 두개의 document.write를 사용.  그러나 아래것(` & $)은 ES6+ 에서 사용할 수 있다.
 
 + input 가능
 
@@ -2132,7 +2181,200 @@ app.message = 'bye'
 
 3. 댕댕이 마리수 체크하기
 
-4. 
+
+
+
+
+
+## v-'??' 디렉티브(Directive)
+
+1. v-on
+
+   ```html
+   <button v-on:click="plus">v-on:clickCount 증가</button>
+   ```
+
+2. 축약형 : @____
+
+   ```html
+   <button @click="plus">@click Count 증가</button>
+   ```
+
+
+
+### v-text, v-html
+
+1. v-html
+
+   `js`
+
+   ```js
+   data: {
+                   message: 'Hello, Vue!',
+                   htmlMessage: '<p>안녕</p>',
+                   count: 0
+               },
+   ```
+
+   `html`
+
+   ```html
+           {{htmlMessage}}
+   ```
+
+   이렇게 작성하면 
+
+   `<p>안녕</p>` 이렇게 출력된다.
+
+   이것을 html 자체로 출력되게 하려면
+
+   `html`
+
+   ```html
+   <span v-html="htmlMessage"></span>
+   ```
+
+   이렇게 작성해준다. v-html은 해당하는 값에 태그가 있으면 html 태그를 표현해준다.
+
+2. v-text
+
+   `html`
+
+   ```html
+   <sapn v-text="message"></sapn>
+   ```
+
+   이 경우, Hello, Vue!가 출력된다.
+
+   이 때 v-text와 v-html의 차이는
+
+   `html`
+
+   ```html
+   <sapn v-text="htmlMessage"></sapn>
+   ```
+
+   를 사용했을 때 
+
+   `<p>안녕</p>` 으로 출력된다.
+
+   
+
+
+
+### v-if, v-else-if, v-else
+
++ 조건에 해당하지 않으면 그리지 않는다.(렌더링 하지 않는다.)
++ v-if는 렌더링을 할지 말지 결정함. html 태그 자체를 보여줄지 말지 결정
+
+`html`
+
+```html
+        <span v-if="count > 5">5보다 큼!</span>
+        <h1 v-else-if="count === 5">5!!!!!!!!!!!</h1>
+        <span v-else>5보다 작거나 같음!</span>
+```
+
+
+
+
+
+
+
+### v-show
+
++ v-show는 랜더링을 무조건 하고, css로 화면에 보여줄지 말지를 결정함
++ 단순히 보여주는 과정
++ 렌더링(그리는) 되는 과정에서 v-if와 다르게 동작한다.
++ 단순히 토글형식으로 사용할 때에는 v-show를 사용한다. 
++ v-if는 위에서 들어오는 값을 파악하고 그리기 때문에 v-show보다 시간이 오래걸린다.
++ 모달과 같은 경우는 v-show. 이 경우는 css로 안보이게 하는것이다. 안보여도 렌더링은 되어있다.
++ 그러나 v-if는 로그인과 같은 경우이다. 조건에 해당하지 않으면 그리지않는다.(렌더링 하지 않는다.)
+
+
+
+
+
+
+
+### v-once
+
+`html`
+
+```html
+<h1 v-once v-text="count"></h1>
+```
+
++ 랜더링 되었을 때의 값. 이후에 data 값이 바뀌더라도 바뀌지 않는다.
+
+
+
+
+
+### v-for
+
+`js`
+
+```js
+data: {
+    message: 'Hello, Vue!',
+    htmlMessage: '<p>안녕</p>',
+    count: 0,
+    isTrue:true,
+    myArray:[
+        '캡틴아메리카',
+        '헐크',
+        '아이언맨'
+    ]
+},
+```
+
+`html`
+
+```html
+        <li v-for='hero in myArray'>
+            {{hero}}
+        </li>
+```
+
+
+
+
+
+### v-bind
+
+`js`
+
+```js
+data: {
+    message: 'Hello, Vue!',
+    htmlMessage: '<p>안녕</p>',
+    count: 0,
+    isTrue:true,
+    myArray:[
+        '캡틴아메리카',
+        '헐크',
+        '아이언맨'
+    ],
+    urlLink: 'https://google.com'
+},
+```
+
+`html`
+
+```html
+<a v-bind:href="urlLink">구글</a>
+```
+
+
+
+v-bind를 사용 하지 않으면? (축약형)
+
+`html`
+
+```html
+<a :href="urlLink">구글</a>
+```
 
 
 
@@ -2144,6 +2386,88 @@ app.message = 'bye'
 
 
 
+### 바인딩 된 태그 찾기
+
+`js`
+
+```js
+const app = new Vue({
+    // element : 실제 Vue와 연결 할 element
+    el: '#app',
+    // app (vue 인스턴스)의 속성을 가지게 된다.
+    data: {
+        message: 'Hello, Vue!',
+        htmlMessage: '<p>안녕</p>',
+        count: 0,
+        isTrue:true,
+        myArray:[
+            '캡틴아메리카',
+            '헐크',
+            '아이언맨'
+        ],
+        urlLink: 'https://google.com'
+    },
+```
+
+우리가 여기에서 설정한 message를 가져오려면 아래와 같이 사용할 수 있다. 그러나 이것은 $data.message의 축약형이다. 이와 같이 $ 표시를 사용해서 가져올 수 있는데, 
+
+![1557189966293](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557189966293.png)
+
+
+
+![1557190118963](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557190118963.png)
+
+app의 모든 태그를 가져오기 위해서는 `app.$el`를 사용한다.
+
+
+
+### v-model
+
+`html`
+
+```html
+        <input v-model="blahblah">
+        {{ blahblah}}<br>
+        {{ blahblah + '!!!!!!!!!!!!!'}}<br>
+        {{blahblah.split('').reverse().join('') }}<br>
+        <br>
+```
+
+`js`
+
+```js
+    data: {
+        blahblah: '',
+```
+
+
+
+select 모델 사용
+
+`html`
+
+```html
+        <select v-model="lunch">
+            <option value="특식!">특식</option>
+            <option value="한식!">한식</option>
+            <option value="가운데!">가운데</option>
+        </select>
+        <h1>{{ lunch }}</h1>
+```
+
+`js`
+
+```js
+    data: {
+        lunch: '뭐먹지',
+        blahblah: '',
+```
+
+![1557191614984](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557191614984.png)![1557191625403](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557191625403.png)
+
+
+
++ 위와 같이 출력되는 것은 option value이다.
 
 
 
@@ -2151,4 +2475,595 @@ app.message = 'bye'
 
 
 
+### computed
+
++ computed : 결과. 계산 값을 받아보기 위해 사용
++ 캐싱을 한다.
++ methods와 다른 점 : methods는 어떠한 동작을 하기 위해 사용된다.
+
+`html`
+
+```html
+        <input v-model="blahblah">
+        {{ blahblah}}<br>
+        {{ blahblah + '!!!!!!!!!!!!!'}}<br>
+        {{blahblah.split('').reverse().join('') }}<br>
+        <br>
+```
+
+![1557191967764](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557191967764.png)
+
+위와 같이 거꾸로 출력되는 것을 저렇게 작성하는것은 좋지 못하다.
+
+js 에서 computed라는 계산 결과값을 저장해두는 것을 사용한다.
+
+
+
+`js`
+
+```js
+// computed : 캐싱! : 미리 계산 해 둔 것을 올려주는것.
+computed: {
+    reverseBlahblah: function(){
+        return this.blahblah.split('').reverse().join('')
+    }
+}
+```
+
+methods 뒤에 붙여서 사용한다. 
+
+`html`
+
+```html
+{{ reverseBlahblah }}
+```
+
+이렇게 사용하면 거꾸로 출력된다.
+
+
+
+
+
+
+
+
+
++ methods vs computed
+
+  `js`
+
+  ```js
+  methods: {
+      plus: function() {
+          this.count ++
+      },
+      today: function() {
+          return new Date()
+      }
+  },
+  // computed : 캐싱! : 미리 계산 해 둔 것을 올려주는것.
+  computed: {
+      reverseBlahblah: function(){
+          return this.blahblah.split('').reverse().join('')
+      },
+      computedToday: function() {
+          return new Date()
+      }
+  ```
+
+  ![1557192311256](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557192311256.png)
+
+  methods는 항상 계산을 새로 한다.
+
+  그러나 computed는 계산을 한 값을 그대로 저장한다. 
+
+  때문에 computed는 한번 계산을 한 후 다시 불러도 그 계산 한 값을 출력한다. 위를 보면 시간이 지난 후에도 computedToday  는 계산한 결과 하나를 저장해놓고 출력한다.
+
+
+
+
+
+
+
+
+
+
+
+## watch
+
++ data가 변하는 것을 지켜본다.
+
+`js`
+
+```js
+    const app = new Vue({
+        el: '#app',
+        data:{
+            title: '무엇이든 물어보세요',
+            question: '',
+            answer: '질문을 해주세요'
+        },
+        watch:{
+            question: function(){
+                console.log(this.question)
+            }
+        }
+    })
+```
+
+`html`
+
+```html
+    <div id='app'>
+        <h1 v-text="title"></h1>
+        <input v-model="question"><br>
+        <h2> {{ answer }} </h2>
+    </div>
+```
+
+![1557193192526](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557193192526.png)![1557193203651](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557193203651.png)
+
+
+
+`html`
+
+```html
+    <div id='app'>
+        <h1 v-text="title"></h1>
+        <input v-model="question"><br>
+        <h2> {{ answer }} </h2>
+        <img v-bind:src="image">
+    </div>
+```
+
+
+
+`js`
+
+```js
+el: '#app',
+data:{
+    title: '무엇이든 물어보세요',
+    question: '',
+    answer: '질문을 해주세요',
+    image: ''
+},
+// data가 변화하는 것을 지켜보는 watch
+methods:{
+    getAnswer: function() {
+        if (this.question[this.question.length-1] === '?') {
+            axios.get('https://yesno.wtf/api')
+                .then(response => {
+                    this.answer = response.data.answer
+                    this.image = response.data.image
+                    console.log(response)
+                })
+        } else{
+            this.answer = '?로 질문을 마무리 해주세요!'
+            return
+        }
+    }
+},
+watch:{
+    question: function() {
+        this.getAnswer()
+
+    }
+}
+```
+
+
+
+
+
+
+
+## 필터 만들기
+
++ computed나 methods 뒤에 붙인다.
+
+`js`
+
+```js
+filters: {
+    answerCapital: function(answer) {
+        // if (answer === 'yes' || answer === 'no') {
+        //     return answer.toUpperCase() + '!!!!!!!!!!'
+        // } else{
+        //     return answer
+        // }
+        return (answer === 'yes' || answer === 'no') ? answer.toUpperCase() + '!!!!!' : answer
+    }
+}
+```
+
++ 주석처리 된 것과 같이 if else를 사용해도 되고, 주석처리 되지 않은 것과 같이 삼항연산자를 사용할 수 도 있다.
++ 삼항연산자
+
+![ì¼í­ì°ì°ìì ëí ì´ë¯¸ì§ ê²ìê²°ê³¼](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\unit20-1.png)
+
+`html`
+
+```html
+        <h2> {{ answer | answerCapital }} </h2>
+```
+
+
+
+
+
+
+
+
+
+## v-model 사용하기
+
+### 완료/미완료 체크박스
+
+1. 기본코드
+
+   `html`
+
+   ```html
+   <div id="app">
+       <ul>
+           <!-- v-for가 우선,  v-if 가 나중이다.  -->
+           <li v-for="todo in todoList" v-if="! todo.completed">
+               {{ todo.content }} <button v-on:click="complete(todo)">[완료]</button>
+           </li>
+           <li v-else><del>{{ todo.content}}</del><button v-on:click="complete(todo)">[취소]</button></li>
+       </ul>
+   </div>
+   ```
+
+2. 클래스 바인딩을 할것이기 때문에 버튼을 먼저 제거한 후, 체크박스로바꾼다. 이 경우에 사용할 모델을 todo.completed로 정한다. => 이 값은 true, false 값이다.
+
+   `html`
+
+   ```html
+   <div id="app">
+       <ul>
+           <li v-for="todo in todoList" v-if="! todo.completed">
+               <input type="checkbox" v-model="todo.completed">
+               {{ todo.content }} 
+           </li>
+           <li v-else><del>{{ todo.content}}</del><button v-on:click="complete(todo)">[취소]</button></li>
+       </ul>
+   </div>
+   ```
+
+3. if 와 else를 하나로 묶어준 후, 클래스에 글씨의 속성을 정해 사용한다.
+
+   `html`
+
+   ```html
+   <ul>
+       <li v-for="todo in todoList" >
+           <input type="checkbox" v-model="todo.completed">
+           <span v-bind:class="{completed: todo.completed}">{{ todo.content }}</span>
+       </li>
+   
+   </ul>
+   ```
+
+   + `v-bind:class="{completed: todo.completed}"` 로 묶어서 사용하기. v-bind에서 사용하는 클래스는 todo.completed로, true or false 값이다. 이 값에 따라 클래스를 사용한다.
+
+   `css`
+
+   ```css
+       .completed {
+           text-decoration: line-through;
+           color: grey;
+           opacity: 0.2;
+       }
+   ```
+
+
+
+### todoList
+
+status 를 사용.
+
+`html`
+
+```html
+<select v-model="status">
+    <option value="all">모두 보기</option>
+    <option value="completed">완료한 것 보기</option>
+    <option value="active">할 일 보기</option>
+</select>
+```
+
+`js`
+
+```js
+data: {
+    newTodo: '',
+    status: 'all',
+    todoList: [
+```
+
+![1557205200877](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557205220542.png)![1557205200877](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557205200877.png)
+
+
+
+선택 한 것을 목록에 적용시키기
+
+`js`
+
+```js
+methods: {
+    ...
+        ,
+    todoListByStatus: function() {
+        // 각각을 확인하면서 status가 completed라면,
+        // completed가 true만 리턴
+        if ( this.status === 'completed' ) {
+            // todoList를 하나씩 돌게 만드는 것이 filter.
+            // filter안에 하나씩 도는 것을 todo로 잡았을 때, todo.completed인 것만 잡아서 리턴.
+            return this.todoList.filter((todo) => todo.completed)
+        }
+        // 각각을 확인하면서 status가 active라면,
+        // completed가 false인 것만 리턴
+        else if (this.status === 'active'){
+            return this.todoList.filter((todo) => !todo.completed)
+        }
+        // all이면
+        // 그대로 리턴
+        else{
+            return this.todoList
+        }
+    }
+```
+
+이 것을 적용을 해야지만 나온다. 적용하기
+
+`html`
+
+```html
+<ul>
+    <!-- <li v-for="todo in todoList" > -->
+    <li v-for="todo in todoListByStatus()">
+        <input type="checkbox" v-model="todo.completed">
+        <span :class="{completed: todo.completed}">{{ todo.content }}</span>
+    </li>
+
+</ul>
+```
+
++ todo in todoList에서 사용할 것을 todoListByStatus() 라는 함수를 사용
++ 그러나 위와 같은 경우에는 completed로 체크를 할 때 다음것에 체크가 남으면서 체크된 내용만 사라지게 되는데 이 버그를 없애기 위해서 각각의 리스트에 id를 설정을 해줘야한다.
+
+
+
+
+
+`js`
+
+```js
+data: {
+    newTodo: '',
+    status: 'all',
+    todoList: [
+        {
+            id: 1,
+            content: '쉬는 시간',
+            completed: true
+        },
+        {
+            id: 2,
+            content: '11시 수업 듣기',
+            completed: false
+        },
+        {
+            id: 3,
+            content: '밥먹기',
+            completed: false
+        },
+        {
+            id: 4,
+            content: '취업특강.....',
+            completed: false
+        },
+        {
+            id: 5,
+            content: '스타듀밸리로 귀농하기',
+            completed: false
+        }
+    ]
+},
+```
+
+
+
+`html`
+
+```html
+<li v-for="todo in todoListByStatus()" v-bind:key="todo.id">
+    <input type="checkbox" v-model="todo.completed">
+    <span :class="{completed: todo.completed}">{{ todo.content }}</span>
+</li>
+```
+
+`v-bind:key="todo.id"`를 넣어서 고유한 값으로 하나씩 만들어야한다.
+
+
+
+`js`
+
+```js
+addNewTodo: function(){
+    // this : vue object(app)
+    // this.todoList : data's todoList
+    if (this.todoList){
+        this.todoList.push({
+            // this.newTodo : data's newTodo ( 사용자가 입력을 한 값 )
+            id: new Date(),
+            content: this.newTodo,
+            completed: false
+        })
+        this.newTodo = ''
+    }
+},
+```
+
++ 새롭게 만드는 것에 id를 만들어줘야한다. 이 때 겹치지 않는 것을 new Data()로 설정한다.
+
+
+
+### localStorage에 저장하기
+
++ 저장하는데를 로컬스토리지로 저장. 이렇게하면 새로고침해도 값이 남아있다.
+
+`js`
+
+```js
+const STORAGE_KEY = 'vue-todo-list' // 완전히 상수처럼 사용할 key값
+const todoStorage = {
+    // 값을 가져온다.
+    fetch: function() {
+        // json이라는 문자열을 사용할 수 있게 parsing 해온다.
+        // 단축평가. || 앞이 false면 뒤에 값으로 초기화 이 경우 비어있는 배열이 넘어온다.
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    },
+    // 값을 저장한다.
+    save: function(todoList) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todoList))
+    }
+}
+```
+
+STORAGE_KEY는 상수처럼 사용할 key값이 된다. 
+
+![1557209683855](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557209683855.png)
+
+
+
+아래에 todoStorage라는 상수를 만들어 fetch와 save라는 함수를 각각 정의한다.
+
+fetch는 값을 가져오는 것. json으로 저장된 것을 parsing 해오고, 
+
+save는 값을 가져와서 stringify 하여 저장한다.
+
+
+
+`js`
+
+```js
+data: {
+    newTodo: '',
+    status: 'all',
+    // 전에 만들었던 리스트들을 모두 지우고 브라우저에 저장한것만 가져온다.
+    todoList: todoStorage.fetch()
+},
+```
+
+todoList에 다른 값을 모두 지우고, todoStorage.fetch() 로 로컬스토리지에 들어있는 값을 파싱해서 가져오고, 
+
+`js`
+
+```js
+watch: {
+    todoList: function() {
+        // 로컬스토리지에 저장 할 것.
+        todoStorage.save(this.todoList)
+    }
+}
+```
+
+이렇게 해서 todoList가 등록되는지 추가되는지, 삭제되는지만 확인해서 값을 저장한다. 
+
+하지만 이 경우, completed가 설정이 되지 않는다. 이것을 설정하기 위해서는 아래처럼 안의 object의 값이 변화하는것을 확인해야한다.
+
+
+
+`js`
+
+```js
+watch: {
+    todoList: {
+        handler: function() {
+        // 로컬스토리지에 저장 할 것.
+        todoStorage.save(this.todoList)
+        },
+        deep: true
+        // deep true가 없다면, 단순히 해당하는 오브젝트([])에 값이 추가되거나 삭제 되는 경우만 watch
+        // deep true 옵션을 통해 오브젝트([]) 안에 있는 오브젝트(nested object)의 변경 사항까지 watch
+    }
+}
+```
+
++ 지켜볼 때 변경되어야 하는 함수를 handler라는 키로 주고, 
++ deep true로 주어야만 해당하는 오브젝트 안의 내용까지 지켜볼 수 있다.
+
+![1557210267601](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557210267601.png)
+
+
+
+![1557210277520](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557210277520.png)
+
+쉬기 항목을 보면 체크가 되어있을 때에는 true, 체크가 해제되면 false로 설정된다.
+
+
+
+
+
+
+
+
+
+
+
+### id 를 date 말고 id로 설정
+
+`js`
+
+```js
+const todoStorage = {
+    // 값을 가져온다.
+    fetch: function() {
+        // json이라는 문자열을 사용할 수 있게 parsing 해온다.
+        // 단축평가. || 앞이 false면 뒤에 값으로 초기화 이 경우 비어있는 배열이 넘어온다.
+        const todoList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+        todoList.forEach( function(todo, index) {
+            todoList.id = index,
+            todoList.uid = (index || 0)
+        })
+        return todoList
+    },
+```
+
++ id와 id를 설정하는 uid를 정한다.
+
+`js`
+
+```js
+addNewTodo: function(){
+    // this : vue object(app)
+    // this.todoList : data's todoList
+    if (this.todoList){
+        this.todoList.push({
+            // this.newTodo : data's newTodo ( 사용자가 입력을 한 값 )
+            id: ++this.todoList.uid,
+            content: this.newTodo,
+            completed: false
+```
+
+
+
+
+
+### 삭제
+
+`js`
+
+```js
+methods: {
+    ...,
+    deleteTodo: function(todo) {
+        this.todoList.splice(this.todoList.indexOf(todo), 1)
+        // this.todoList.indexOf(todo) => 내가 선택한 todo의 인덱스. 
+        // splice(index, 1) => index부터 1개
+    },
+```
 
