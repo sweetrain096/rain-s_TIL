@@ -51,7 +51,7 @@ script는 body 태그 위에서 사용.
 
    이 때의 결과는 크롬의 개발자도구의 console에 뜨게 된다.
 
-   ![1556584963831](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556584963831.png)
+   ![1556584963831](.\img\1556584963831.png)
 
    
 
@@ -83,7 +83,7 @@ let header = document.querySelector('h1')
 
 ### 돔 조작
 
-![1556585278460](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556585278460.png)
+![1556585278460](.\img\1556585278460.png)
 
 변수를 사용하기 위해서는 var 변수명 = 변수내용
 
@@ -212,7 +212,7 @@ NaN : not a number
   console.log(i)
   ```
 
-  ![1556587386033](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556587386033.png)
+  ![1556587386033](.\img\1556587386033.png)
 
   
 
@@ -224,7 +224,7 @@ NaN : not a number
   console.log(j)
   ```
 
-  ![1556587417060](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556587417060.png)
+  ![1556587417060](.\img\1556587417060.png)
 
   
 
@@ -543,7 +543,7 @@ const numbers = [1, 2, 3]
 
 + numbers[-1] : 불가능
 
-+ ![1556590769256](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556590769256.png)
++ ![1556590769256](.\img\1556590769256.png)
 
 + length 가능
 
@@ -555,7 +555,7 @@ const numbers = [1, 2, 3]
 
 + pop에는 무엇을 넣어도 맨 뒤에거 하나만 빠진다.
 
-+ ![1556591056664](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556591056664.png)
++ ![1556591056664](.\img\1556591056664.png)
 
 + 
 
@@ -563,9 +563,9 @@ const numbers = [1, 2, 3]
   | --------------------------------------- | ------------------------------------ |
   | unshift : 앞에서 넣는것 : 리턴 - 길이   | push : 뒤에서 넣는 것. 리턴-길이     |
 
-+ ![1556591211138](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556591211138.png)
++ ![1556591211138](.\img\1556591211138.png)
 
-+ 정렬 : sort()
++ 정렬 : sort() => 문자열처럼 1, 13, 2, 24, 3, ... 이런식으로 정렬된다. 자기 자신이 정렬된다.
 
 + slice : 시작값, 끝 인덱스
 
@@ -609,9 +609,9 @@ const numbers = [1, 2, 3]
 
   
 
-+ ![1556592368521](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556592368521.png)
++ ![1556592368521](.\img\1556592368521.png)
 
-+ ![1556592421379](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556592421379.png)
++ ![1556592421379](.\img\1556592421379.png)
 
 + json으로 넘겨줬던 데이터를 사용하기 위해 다시 만지려면 json parse를 사용하여 원래 만들어 놓은 let 형식으로 돌려놓는다.
 
@@ -673,7 +673,7 @@ const numbers = [1, 2, 3]
 
   + 이 경우, add 3은 존재하지 않는다고 나온다.
 
-    ![1556600072792](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556600072792.png)
+    ![1556600072792](.\img\1556600072792.png)
 
     따라서 add3 부분을 없애버릴 수 있다.
 
@@ -704,7 +704,7 @@ const numbers = [1, 2, 3]
   let greeting = name => `${name}, 안녕!`
   ```
 
-  ![1556600319511](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556600319511.png)
+  ![1556600319511](.\img\1556600319511.png)
 
   + 인자가 하나인 경우 () 생략 가능
   + 단순 리턴인 경우, {} 및 리턴 키워드 생략 가능
@@ -764,7 +764,7 @@ const numbers = [1, 2, 3]
   => 25
   ```
 
-  
+  + 이 경우에는 myNum2가 하나의 상수가 되어버리고 끝난다.
 
 
 
@@ -989,7 +989,7 @@ vietnam('민지')
    })
    ```
 
-   ![1556677045015](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556677045015.png)
+   ![1556677045015](.\img\1556677045015.png)
 
    + function이 실행될 때 e라는 로그를 확인해보면 어떤 이벤트와 관련된 내용이 나온다. callback 함수를 확인해보면 어떠한 오브젝트. 이벤트와 관련된 정보가 넘어오게 된다.
 
@@ -1003,7 +1003,7 @@ vietnam('민지')
 
    + 키보드를 누르는 모든 상황을 log로 뽑아볼 수 있다.
 
-     ![1556677588237](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556677588237.png)
+     ![1556677588237](.\img\1556677588237.png)
 
      여기에서 keyCode로 내가 어디로 눌렀는지 확인 가능하다.
 
@@ -1090,6 +1090,8 @@ vietnam('민지')
 
 > axios : Promise based HTTP client for the browser and node.js
 >
+> XHR(XML Http Request)를 보내주고 그 결과를 promise 객체로 반환해주는 라이브러리
+>
 > > + 비동기적 : 정지된 사이트에서 원하는 부분만 갔다가 돌아오기
 > > + 동기적 : 갔다가 새로운 곳으로 갔다가 돌아옴
 
@@ -1113,16 +1115,17 @@ console
   axios.get('https://dog.ceo/api/breeds/image/random')
   ```
 
-  + ![1556685733508](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556685733508.png)
+  + ![1556685733508](.\img\1556685733508.png)
   + promise : 약속이 되면 정보를 받을것이라는 뜻(?)
 
 + 만약 약속된 대로 잘 들어오면 정보를 받는 방법
 
   ```js
-  axios.get('https://dog.ceo/api/breeds/image/random').then(response => console.log(response))
+  axios.get('https://dog.ceo/api/breeds/image/random')
+      .then(response => console.log(response))
   ```
 
-  ![1556685792947](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556685792947.png)
+  ![1556685792947](.\img\1556685792947.png)
 
   정보가 원하는대로 들어오게 되면 출력된다.
 
@@ -1132,7 +1135,7 @@ console
 
 + **js의 순서** => [블로킹(blocking)과 논블로킹(non blocking)](<https://nodejs.org/ko/docs/guides/blocking-vs-non-blocking/>)
 
-  ![blocking non blockingì ëí ì´ë¯¸ì§ ê²ìê²°ê³¼](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\building-a-nonblocking-rest-api-in-less-than-30-minutes-11-638.jpg)
+  ![blocking non blockingì ëí ì´ë¯¸ì§ ê²ìê²°ê³¼](.\img\building-a-nonblocking-rest-api-in-less-than-30-minutes-11-638.jpg)
 
   + ```js
     const dogImageUrl = axios.get('https://dog.ceo/api/breeds/image/random')
@@ -1143,7 +1146,7 @@ console
     console.log(3)
     ```
 
-    + ![1556686343176](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556686343176.png)
+    + ![1556686343176](.\img\1556686343176.png)
     + 실행 결과를 보면 2번이 먼저 출력이 되는것을 확인 할 수 있다. `axios`에서 요청을 보내는 중에 promise가 리턴되면, 요청이 들어올 때 then으로 들어오는 것들을 순서대로 해주겠다는 것을 약속해준다.
     + 따라서 2가 출력된 후 dogImageUrl이 요청되어서 값이 생기게 되면 그것이 출력되고 3번이 출력된 후, promise로 약속된 내용을 하나씩 수행하는 것이다.
     + 위에서 볼 수 있듯 순서가 꼬일 수 있기 때문에, 우리가 원하는대로 순서를 지키기 위해서는 then안에서 순서대로 실행시키면 된다.
@@ -1213,7 +1216,7 @@ console
   ```
 
   + 위와 같이 요청을 보내게 되는 요청은 `XHR` 요청이다.
-  + ![1556688057504](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556688057504.png)
+  + ![1556688057504](.\img\1556688057504.png)
   + 버튼을 한 번 누를 때 마다 XHR 요청이 반복해서 쌓이게 되며, 이 방식은 구글 등에서 검색을 할 때 자동 추천 검색기능과 같은 방식으로 사용되게 된다.
 
 
@@ -1272,7 +1275,7 @@ console
    + 여러개의 좋아요 버튼을 가져온 후 forEach로 하나씩 버튼을 가져와 이벤트리스너를 만들어준다.
    + 클릭을 하는 이벤트가 발생 시 리턴되는 상황을 e로 리턴시킨다.
 
-   ![1556696087035](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556696087035.png)
+   ![1556696087035](.\img\1556696087035.png)
 
    + 하트 클릭 시 이벤트 발생  => `console.log(e)`
    + 관련 데이터 출력 => `console.log(response)`
@@ -1535,21 +1538,21 @@ console
 
    로 만들게 되면 
 
-   ![1556763297075](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763297075.png)
+   ![1556763297075](.\img\1556763297075.png)
 
    어마무시한 에러가 뜨는데 
 
-   ![1556763311663](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763311663.png)
+   ![1556763311663](.\img\1556763311663.png)
 
    CSRF 토큰을 가져와야하는데 이것을 만들기 위해서 form을 만드는것은 너무 힘들다.
 
    이 때 쿠키를 보면 
 
-   ![1556763341495](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763341495.png)
+   ![1556763341495](.\img\1556763341495.png)
 
    csrf 토큰이 존재하기 때문에 이것을 가져올것.
 
-   ![1556763386902](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556763386902.png)
+   ![1556763386902](.\img\1556763386902.png)
 
    여기에서 우리가 가져오고 싶은 것은 csrftoken. 가져오기
 
@@ -1829,7 +1832,7 @@ app.message = 'bye'
            })
    ```
 
-   ![1556848160886](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556848160886.png)
+   ![1556848160886](.\img\1556848160886.png)
 
 2. 반복문 돌리기 => `v-for`
 
@@ -1843,7 +1846,7 @@ app.message = 'bye'
        </div>
    ```
 
-   ![1556848197949](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556848197949.png)
+   ![1556848197949](.\img\1556848197949.png)
 
    
 
@@ -1882,7 +1885,7 @@ app.message = 'bye'
    })
    ```
 
-   ![1556849190331](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849190331.png)
+   ![1556849190331](.\img\1556849190331.png)
 
    
 
@@ -1900,7 +1903,7 @@ app.message = 'bye'
    </div>
    ```
 
-   ![1556849261892](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849261892.png)
+   ![1556849261892](.\img\1556849261892.png)
 
 5. 완료한 것은 출력하지 않기 => `v-if`
 
@@ -1936,7 +1939,7 @@ app.message = 'bye'
    </div>
    ```
 
-   ![1556849446041](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849446041.png)
+   ![1556849446041](.\img\1556849446041.png)
 
    완료한 것을 완료했다고 띄울 수 있다.
 
@@ -1952,7 +1955,7 @@ app.message = 'bye'
    </div>
    ```
 
-   ![1556849531178](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1556849531178.png)
+   ![1556849531178](.\img\1556849531178.png)
 
    취소선으로 띄울수도 있다.
 
@@ -2042,7 +2045,7 @@ app.message = 'bye'
        {{ newTodo }}
        ```
 
-       + v-model에서 new_Todo라는 값을 가져오는데, 이것은 js의 data에 있는 newTodo가 바뀌는 것이고 그것이 바뀔 때 마다 `{{ newTodo }}`가 계속해서 바뀌어 출력된다.
+       + v-model에서 newTodo라는 값을 가져오는데, 이것은 js의 data에 있는 newTodo가 바뀌는 것이고 그것이 바뀔 때 마다 `{{ newTodo }}`가 계속해서 바뀌어 출력된다.
 
     2. 입력받은 것을 리스트에 추가하기( enter키 )
 
@@ -2411,11 +2414,11 @@ const app = new Vue({
 
 우리가 여기에서 설정한 message를 가져오려면 아래와 같이 사용할 수 있다. 그러나 이것은 $data.message의 축약형이다. 이와 같이 $ 표시를 사용해서 가져올 수 있는데, 
 
-![1557189966293](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557189966293.png)
+![1557189966293](.\img\1557189966293.png)
 
 
 
-![1557190118963](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557190118963.png)
+![1557190118963](.\img\1557190118963.png)
 
 app의 모든 태그를 가져오기 위해서는 `app.$el`를 사용한다.
 
@@ -2463,7 +2466,7 @@ select 모델 사용
         blahblah: '',
 ```
 
-![1557191614984](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557191614984.png)![1557191625403](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557191625403.png)
+![1557191614984](.\img\1557191614984.png)![1557191625403](.\img\1557191625403.png)
 
 
 
@@ -2491,7 +2494,7 @@ select 모델 사용
         <br>
 ```
 
-![1557191967764](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557191967764.png)
+![1557191967764](.\img\1557191967764.png)
 
 위와 같이 거꾸로 출력되는 것을 저렇게 작성하는것은 좋지 못하다.
 
@@ -2551,7 +2554,7 @@ methods 뒤에 붙여서 사용한다.
       }
   ```
 
-  ![1557192311256](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557192311256.png)
+  ![1557192311256](.\img\1557192311256.png)
 
   methods는 항상 계산을 새로 한다.
 
@@ -2601,7 +2604,7 @@ methods 뒤에 붙여서 사용한다.
     </div>
 ```
 
-![1557193192526](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557193192526.png)![1557193203651](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557193203651.png)
+![1557193192526](.\img\1557193192526.png)![1557193203651](.\img\1557193203651.png)
 
 
 
@@ -2680,7 +2683,7 @@ filters: {
 + 주석처리 된 것과 같이 if else를 사용해도 되고, 주석처리 되지 않은 것과 같이 삼항연산자를 사용할 수 도 있다.
 + 삼항연산자
 
-![ì¼í­ì°ì°ìì ëí ì´ë¯¸ì§ ê²ìê²°ê³¼](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\unit20-1.png)
+![ì¼í­ì°ì°ìì ëí ì´ë¯¸ì§ ê²ìê²°ê³¼](.\img\unit20-1.png)
 
 `html`
 
@@ -2783,7 +2786,7 @@ data: {
     todoList: [
 ```
 
-![1557205200877](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557205220542.png)![1557205200877](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557205200877.png)
+![1557205200877](.\img\1557205220542.png)![1557205200877](.\img\1557205200877.png)
 
 
 
@@ -2935,7 +2938,7 @@ const todoStorage = {
 
 STORAGE_KEY는 상수처럼 사용할 key값이 된다. 
 
-![1557209683855](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557209683855.png)
+![1557209683855](.\img\1557209683855.png)
 
 
 
@@ -2996,11 +2999,11 @@ watch: {
 + 지켜볼 때 변경되어야 하는 함수를 handler라는 키로 주고, 
 + deep true로 주어야만 해당하는 오브젝트 안의 내용까지 지켜볼 수 있다.
 
-![1557210267601](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557210267601.png)
+![1557210267601](.\img\1557210267601.png)
 
 
 
-![1557210277520](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557210277520.png)
+![1557210277520](.\img\1557210277520.png)
 
 쉬기 항목을 보면 체크가 되어있을 때에는 true, 체크가 해제되면 false로 설정된다.
 

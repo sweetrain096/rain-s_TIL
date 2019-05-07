@@ -28,7 +28,8 @@
         // data가 변화하는 것을 지켜보는 watch
         methods:{
             getAnswer: function() {
-                if (this.question[this.question.length-1] === '?') {
+                // if (this.question[this.question.length-1] === '?') {
+                if (this.question.slice(-1) === '?') {
                     axios.get('https://yesno.wtf/api')
                         .then(response => {
                             this.answer = response.data.answer
