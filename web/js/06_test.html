@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <button @click="plus">plus</button>
+        <h1>count: {{ count }}</h1>
+        <p v-if="count > 5">5보다 크다</p>
+        <p v-else-if="count === 5">5!</p>
+        <p v-else>5보다 작다</p>
+        <input v-model="inputText">
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const userName = prompt('너 누구니?')
+        const message = `<h1>${userName}</h1>`
+        document.write(message)
+
+        const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        const evenNums = nums.filter(num => num % 2 === 0)
+        console.log(evenNums)
+        const app = new Vue({
+            el: '#app',
+            data: {
+                count: 0,
+                inputText: ''
+            },
+            methods: {
+                plus: function() {
+                    this.count ++
+                }
+            }
+        })
+    </script>
+</body>
+</html>
