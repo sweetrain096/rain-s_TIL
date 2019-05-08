@@ -3070,3 +3070,748 @@ methods: {
     },
 ```
 
+
+
+
+
+## [파이어베이스(firebase)](<https://firebase.google.com/?hl=ko>)
+
++ db 파일을 만들어서 데이터베이스를 만들어야 하는데, 이것을 편하게 해준다. 
++ 브라우저에서 todo app이 저장된 위치? => 위에서까지는 브라우저 안에 있는 로컬스토리지. 이렇게 되면 다른사람들은 각각의 스토리지를 쓰고 공유가 안된다.
++ DB를 firebase(구글에서 제공)라는 클라우드 서비스를 통해서 사용(저장 및 관리). ([PaaS(Platform as a Service)](<https://azure.microsoft.com/ko-kr/overview/what-is-paas/>))
++ NoSQL을 사용할것.
+
+
+
+### 프로젝트 생성
+
+1. 프로젝트 추가
+
+2. 위치 => 대한민국, cloud firestore 위치 : asia-northeast1
+
+3. 만들기
+
+4. 만들어 진 후 개발 -> Database -> Realtime Database
+
+5. 만들기 -> 테스트 모드로 시작 -> 사용설정
+
+   데이터 베이스 작성된것
+
+   상단 url이 databaseURL이 될 것
+
+   ![1557281688769](.\img\1557281688769.png)
+
+6. DB는 key, value로 만들어지고, 스키마가 없이 key-value가 이어서 붙는 언어를 NoSQL라고 부른다.
+
+   + severless : 서버 없이 간단한 동작
+
+
+
+### [vue와 firebase 바인딩](<https://github.com/vuejs/vuefire>)
+
+1. 우리가 사용할 것은 v1. 왼쪽 위 Branch에서 v1으로 설정 [[링크](<https://github.com/vuejs/vuefire/tree/v1>)]
+
+2. 글의 1번 내용의 head 안의 firebase부터 head 닫는태그 전까지 복사
+
+   ```html
+     <!-- Firebase -->
+     <script src="https://gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+     <!-- VueFire -->
+     <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
+   ```
+
+3. 2번 내용을 head 닫는 태그 위에 올려놓는다. => 랜더링을 위해 head 안에 넣는다.
+
+4. 2번 내용의 firebase 버전을 5.8로 올린다.
+
+   ```html
+       <!-- Firebase -->
+       <script src="https://gstatic.com/firebasejs/5.8.0/firebase.js"></script>
+   ```
+
+   
+
+
+
+### [firebase 문서](<https://firebase.google.com/docs/?authuser=0>) + [vuefire문서](<https://github.com/vuejs/vuefire/tree/v1>)
+
++ firebase 사이트에서 우상단 문서로 가기 눌러도 가능
+
+
+
+#### 설정
+
+1. 웹 시작하기
+
+2. 맨 처음 코드 script를 head 붙여넣기
+
+   ```html
+   <script>
+     // Initialize Firebase
+     // TODO: Replace with your project's customized code snippet
+     var config = {
+       apiKey: "<API_KEY>",
+       authDomain: "<PROJECT_ID>.firebaseapp.com",
+       databaseURL: "https://<DATABASE_NAME>.firebaseio.com",
+       projectId: "<PROJECT_ID>",
+       storageBucket: "<BUCKET>.appspot.com",
+       messagingSenderId: "<SENDER_ID>",
+     };
+     firebase.initializeApp(config);
+   </script>
+   ```
+
+   여기서 우리는 apiKey, databaseURL, projectId 세개만 남기고 지우기
+
+   ```html
+           var config = {
+             apiKey: "<API_KEY>",
+             databaseURL: "https://<DATABASE_NAME>.firebaseio.com",
+             projectId: "<PROJECT_ID>",
+           };
+           firebase.initializeApp(config);
+   ```
+
+3. 프로젝트 생성시 만든 databaseURL과, projectID, 웹API키를 넣기
+
+   ![1557282424272](.\img\1557282424272.png)
+
+   좌측상단 톱니바퀴 -> 프로젝트 설정에 들어가면 볼 수 있다.
+
+   ```html
+       <script>
+           // Initialize Firebase
+           // TODO: Replace with your project's customized code snippet
+           const config = {
+             apiKey: "dsagewagewfasfsa",
+             databaseURL: "https://vue-project-rain.firebaseio.com/",
+             projectId: "vue-project-rain",
+           };
+           firebase.initializeApp(config);
+       </script>
+   ```
+
+   + var는 불편하니까 const
+
+4. `js`
+
+   storage와 관련된 것은 firebase로 이동하면서 필요가 없어지므로 주석처리
+
+   ```js
+           // const STORAGE_KEY = 'vue-todo-list' // 완전히 상수처럼 사용할 key값
+           // const todoStorage = {
+           //     // 값을 가져온다.
+           //     fetch: function() {
+           //         // json이라는 문자열을 사용할 수 있게 parsing 해온다.
+           //         // 단축평가. || 앞이 false면 뒤에 값으로 초기화 이 경우 비어있는 배열이 넘어온다.
+           //         const todoList = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+           //         todoList.forEach( function(todo, index) {
+           //             todoList.id = index,
+           //             todoList.uid = (index || 0)
+           //         })
+           //         return todoList
+           //     },
+           //     // 값을 저장한다.
+           //     save: function(todoList) {
+           //         localStorage.setItem(STORAGE_KEY, JSON.stringify(todoList))
+           //     }
+           // }
+   ```
+
+
+
+#### 값 넣기
+
+1. [vuefire](<https://github.com/vuejs/vuefire/tree/v1#usage>) 사용법과 비교하면서 js 파일 수정하기
+
+   ```js
+   const app = new Vue({
+       // 바라봐야 할 지점을 element에 넣기
+       el: '#app',
+       data: {
+           newTodo: '',
+           status: 'all',
+           // 전에 만들었던 리스트들을 모두 지우고 브라우저에 저장한것만 가져온다.
+           // todoList: todoStorage.fetch()
+           // 위에서 사용한것은 storage. 필요없으니까 아래의 firebase로 대체.
+       },
+       firebase: {
+           todoList: db.ref('todoList')
+       },
+           methods: {
+           complete: function(todo){
+               todo.completed = !todo.completed
+           },
+           addNewTodo: function(){
+               // this : vue object(app)
+               // this.todoList : data's todoList
+               if (this.todoList){
+                   this.$firebaseRefs.todoList.push({
+                   // this.todoList.push({
+                       // this.newTodo : data's newTodo ( 사용자가 입력을 한 값 )
+                       id: Date.now(),
+                       content: this.newTodo,
+                       completed: false
+                   })
+                   this.newTodo = ''
+               }
+           },
+   ```
+
+   + firebase: { } 안에 todoList를 만들어준다. 이 경우 새로운 리스트를 만들기 위해 db.ref를 사용한다. 
+
+     + 위의 경우 data에서 만든 todoList는 주석처리한다.
+
+   + 새롭게 todoList를 만들경우 addNewTodo라는 method를 사용할텐데 이 경우, 추가하는 방법
+
+     ```js
+     // add an item to the array
+     vm.$firebaseRefs.anArray.push({
+       text: 'hello'
+     })
+     ```
+
+     내용을 참고하여 변경한다. 위에서 vm은 vue model. 우리가 사용하는것에서 this가 vue를 잡고 있기 때문에 this를 잡고, 이후 $표시는 그대로 쓴 뒤에 anArray 대신에 우리가 만든 todoList를 넣어주면 된다.
+
+   + 위에서 id를 특정한 uid로 만들어 지정해주었는데 그것을 삭제하고 우선은 Date.now()로 설정해준다.
+
+   ![1557283216291](.\img\1557283216291.png)
+
+   ![1557283251968](.\img\1557283251968.png)
+
+   + 새롭게 만들어 등록하면 위와 같이 만들어진다.
+   + ![1557283518209](.\img\1557283518209.png)
+   + 내용을 더 포함한 후 열어보면 안에 key와 value로 값이 엮여있다.
+   + 위와 같은 형태가 NoSQL의 형태이다.
+
+   
+
+   
+
+#### 삭제
+
++ firebase에 있는 값을 삭제하는것.
+
+1. [vuefire](<https://github.com/vuejs/vuefire/tree/v1#usage>) 사용법과 비교하면서 js 파일 수정하기
+
+   + contributing 상단의 
+
+     ```js
+      // Vue instance methods
+      deleteItem: function (item) {
+        this.$firebaseRefs.items.child(item['.key']).remove()
+      },
+     ```
+
+     부분을 확인하면서 수정
+
+   ```js
+       methods: {
+           complete: function(todo){
+               todo.completed = !todo.completed
+           },
+           addNewTodo: function(){
+               ...
+           },
+           deleteTodo: function(todo) {
+               // this.todoList.splice(this.todoList.indexOf(todo), 1)
+             this.$firebaseRefs.todoList.child(todo['.key']).remove()
+           },
+   ```
+
+   + deleteTodo에서 function(todo)로 받는 todo의 key를 가진 child를 뽑아 제거하기.
+
+
+
+#### 값 수정
+
+1. data의 completed를 수정해주어야한다.
+
+   + 원래는 input checkbox의 v-model로 연결되어 묶여있었는데, 그것은 우리가 가져온 firebase의 값을 수정하는것은 아니다. 이것을 구현하는 함수를 만들어야한다.
+
+   + contributing 상단의
+
+     ```js
+      updateItem: function (item) { 
+        // create a copy of the item
+        const copy = {...item}
+        // remove the .key attribute
+        delete copy['.key']
+        this.$firebaseRefs.items.child(item['.key']).set(copy)
+      } 
+     ```
+
+     확인하면서 수정
+
+     위에서 ...item 부분은
+
+     ```js
+     const sum = (x, y, z) => x + y + z
+     const nums = [1, 2, 3]
+     console.log(sum(...nums))	// 6
+     ```
+
+     위와 같은 내용이다.
+
+   ```js
+           updateTodo: function(todo) {
+               const copy = {...todo}  // todo 안의 내용을 key: value로 찢어서 넣는것
+               delete copy['.key']
+               this.$firebaseRefs.todoList.child(todo['.key']).set(copy)
+           },
+   ```
+
+   + 위와 같이 수정 후, 위로 올라가 checkbox에 들어간 내용을 수정해줘야한다.
+
+   ```html
+   <li v-for="todo in todoListByStatus()" v-bind:key="todo.id">
+       <!-- <input type="checkbox" v-model="todo.completed"> -->
+       <input type="checkbox" v-model="todo.completed" @change="updateTodo(todo)">
+       <span :class="{completed: todo.completed}">{{ todo.content }}</span>
+       <button @click="deleteTodo(todo)">삭제</button>
+   </li>
+   ```
+
+   + v-model뒤의 @change를 넣어서 클릭 될 때 값이 변경된다는 것을 보내준다. 
+
+   ![1557285463888](.\img\1557285463888.png)![1557285486328](.\img\1557285486328.png)
+
+   + 체크를 하면 completed가 true로 변경된다.
+
+
+
+
+
+### chat
+
+1. 기본 설정 모두 head 닫는 태그 위에 넣기
+
+   ```html
+   <!-- vue -->
+   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+   <!-- Firebase -->
+   <script src="https://gstatic.com/firebasejs/5.8.0/firebase.js"></script>
+   <!-- VueFire -->
+   <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
+   <script>
+       // Initialize Firebase
+       // TODO: Replace with your project's customized code snippet
+       const config = {
+           apiKey: "AIzaSyCOuJap_L5SjhJkF2dfLrkfVePcZoWsSsw",
+           databaseURL: "https://vue-project-rain.firebaseio.com/",
+           projectId: "vue-project-rain",
+       };
+       firebase.initializeApp(config);
+       const db = firebase.database()
+   </script>
+   ```
+
+2. message 모델 설정해서 엔터 칠 때 입력받기
+
+   ```html
+       <div id="app">
+           <input v-model="newMessage"  @keyup.enter="createMessage">
+           <ul>
+               <li v-for="message in messages">
+                   <strong>{{ message.username }}</strong> : {{message.content}}
+               </li>
+           </ul>
+   
+       </div>
+   ```
+
+   ```js
+       const app = new Vue({
+           el: '#app',
+           data: {
+               messages: [
+                   {'username': 'rain', 'content': '힘드네요... 집에가고싶오..'},
+                   {'username': '심심이', 'content': '졸리다...'}
+               ],
+               newMessage: ''
+           },
+           methods: {
+               createMessage: function() {
+                   if (this.newMessage){
+                       this.messages.push({
+                           username: '기본',
+                           content: this.newMessage
+                       })
+                       this.newMessage = ''
+                   }
+               }
+           }
+       })
+   ```
+
+3. 회원가입/로그인 만들기. 현재 정보가 없을 경우에 로그인/ 정보 있을경우 글쓰기 가능
+
+   ```js
+       const app = new Vue({
+           el: '#app',
+           data: {
+               messages: [
+                   ...
+               ],
+               currentUser: {
+                   uid: '',
+                   email: '',
+                   username: ''
+               },
+               newMessage: ''
+           },
+           ...
+       })
+   ```
+
+   + currentUser 넣기
+
+4. Firebase -> Authentication
+
+   기본 이메일/비밀번호만 설정
+
+5. [firebaseui-web](<https://github.com/firebase/firebaseui-web>)
+
+   CDN 복사 -> VueFire 아래에 붙여넣기
+
+   ```html
+       <!-- VueFire -->
+       <script src="https://unpkg.com/vuefire/dist/vuefire.js"></script>
+       <!-- firebaseui-web -->
+       <script src="https://cdn.firebase.com/libs/firebaseui/3.6.0/firebaseui.js"></script>
+       <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.6.0/firebaseui.css" />
+   ```
+
+   
+
+   + ui를 그리기 위한 configration?을 하고 뭔갈 한다는데....
+   + 
+
+6. [초기화](<https://github.com/firebase/firebaseui-web#starting-the-sign-in-flow>)
+
+   ```html
+         // Initialize the FirebaseUI Widget using Firebase.
+         var ui = new firebaseui.auth.AuthUI(firebase.auth());
+         // The start method will wait until the DOM is loaded.
+         ui.start('#firebaseui-auth-container', uiConfig);
+       </script>
+     </head>
+     <body>
+       <!-- The surrounding HTML is left untouched by FirebaseUI.
+            Your app may use that space for branding, controls and other customizations.-->
+       <h1>Welcome to My Awesome App</h1>
+       <div id="firebaseui-auth-container"></div>
+     </body>
+   ```
+
+   위를 보고 따라하기
+
+   ```html
+       <div id="app">
+           <div id="firebaseui-auth-container"></div>
+   ```
+
+   `js`
+
+   ```js
+           const config = {
+               apiKey: "wawfa3 wa",
+               databaseURL: "https://vue-project-rain.firebaseio.com/",
+               projectId: "vue-project-rain",
+           };
+           firebase.initializeApp(config);
+           const db = firebase.database()
+           const auth = firebase.auth()
+           const ui = new firebaseui.auth.AuthUI(auth)
+           ui.start('#firebaseui-auth-container')
+   ```
+
+   위에서 만든 config 아래에 auth, ui 등을 넣은 후, ui.start인데, 이것은 ui를 그리게 시작하는것.
+
+   이것을 vue에서 시킨다.
+
+   그렇기때문에 맨 마지막 ui.start를 주석처리
+
+   
+
+7. [email과 password](<https://github.com/firebase/firebaseui-web#handling-anonymous-user-upgrade-merge-conflicts>)
+
+   ```js
+   ui.start('#firebaseui-auth-container', {
+     // Whether to upgrade anonymous users should be explicitly provided.
+     // The user must already be signed in anonymously before FirebaseUI is
+     // rendered.
+     autoUpgradeAnonymousUsers: true,
+     signInSuccessUrl: '<url-to-redirect-to-on-success>',
+     signInOptions: [
+       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+       firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+       firebase.auth.EmailAuthProvider.PROVIDER_ID,
+       firebase.auth.PhoneAuthProvider.PROVIDER_ID
+     ],
+     callbacks: {
+       signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+         // Process result. This will not trigger on merge conflicts.
+         // On success redirect to signInSuccessUrl.
+         return true;
+       },
+   ```
+
+   보고
+
+   `js`
+
+   ```js
+   methods: {
+       createMessage: ...,
+       initUI: function() {
+           ui.start('#firebaseui-auth-container', {
+               signInoptions: [
+                   firebase.auth.EmailAuthProvider.PROVIDER_ID
+               ],
+               callbacks: {
+                   signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+                       this.currentUser.uid = authResult.user.uid
+                       this.currentUser.email = authResult.user.email
+                       this.currentUser.username = authResult.user.displayName
+                       return false
+                   }
+               }
+           })
+       }
+   ```
+
+   함수를 생성해준다. callbacks 안에 성공했을때의 결과를 어디에 넣을것인지 지정.
+
+   signInoptions에 옵션을 설정해주고 콜백
+
+   return false를 하는 이유
+
+   ```js
+   // ...
+   signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+     // If a user signed in with email link, ?showPromo=1234 can be obtained from
+     // window.location.href.
+     // ...
+     return false;
+   }
+   ```
+
+   
+
+8. [mounted](<https://vuejs.org/v2/api/#mounted>)라는 설정을 methods 위에 넣어줍니다.
+
+   + mounted : mount가 됨과 동시에 한번 실행
+   + 인스턴스가 마운트 된 후 호출 `el`되며 새로 작성된 인스턴스 로 대체됩니다 `vm.$el`. 루트 인스턴스가 문서 내 요소에 마운트되어 있으면 호출 `vm.$el`될 때 문서에 포함됩니다 `mounted`.
+
+   ```js
+   // 실제로 실행됨(mount됨)과 동시에 실행되는 함수
+   mounted: function(){
+       this.initUI()
+   },
+   ```
+
+   + 이 경우에는 화면이 들어가자마자 로그인창이 뜬다.
+
+   ![1557294027520](.\img\1557294027520.png)
+
+   로그인을 하지 않은 경우에도 댓글을 쓸 수 있게 보인다. 이것을 방지하기 위해 v-if로 분기 정리
+
+   ```html
+       <div id="app">
+           <div v-if="currentUser.uid">
+               <ul>
+                   <li v-for="message in messages">
+                       <strong>{{ message.username }}</strong> : {{message.content}}
+                   </li>
+               </ul>
+               <input v-model="newMessage"  @keyup.enter="createMessage">
+           </div>
+           <div v-else>
+               <div id="firebaseui-auth-container"></div>
+           </div>
+       </div>
+   ```
+
+   ![1557294158036](.\img\1557294158036.png)
+
+   이 경우 Autentication에 들어가보면 추가되어있다.
+
+   ![1557294491394](.\img\1557294491394.png)
+
+9. user가 로그인 했을 때 해야할 작업을 적고, 새로고침을 할 경우(새로 불러올 때 마다) Auth에 있는 user 정보를 currentUser에 정보를 넣고, 아닌 경우에만 로그인창을 띄우기
+
+   ```js
+   mounted: function(){
+       auth.onAuthStateChanged((user) =>{
+           if (user) {
+               this.currentUser.uid = user.uid
+               this.currentUser.email = user.email
+               this.currentUser.username = user.displayName
+           }
+           this.initUI()
+       })
+   },
+   ```
+
+10. 이제 로그인 한 사람의 이름이 userid가 되게
+
+    ```js
+    methods: {
+        createMessage: function() {
+            if (this.newMessage){
+                this.messages.push({
+                    username: this.currentUser.username,
+                    content: this.newMessage
+                })
+                this.newMessage = ''
+            }
+        }
+    ```
+
+11. 내용을 data의 firebase에 저장
+
+    ```js
+    data: {
+        // messages: [
+        //     {'username': 'rain', 'content': '힘드네요... 집에가고싶오..'},
+        //     {'username': '심심이', 'content': '졸리다...'}
+        // ],
+        currentUser: {
+            uid: '',
+            email: '',
+            username: ''
+        },
+        newMessage: '',
+    
+    },
+    firebase: {
+        messages: db.ref('messages')
+    },
+    ```
+
+12. push
+
+    ```js
+    methods: {
+        createMessage: function() {
+            if (this.newMessage){
+                this.$firebaseRefs.messages.push({
+                    username: this.currentUser.username,
+                    content: this.newMessage
+                })
+                this.newMessage = ''
+            }
+        },
+    ```
+
+13. 내가 쓴것과 다른사람이 쓴 것을 다른 모양으로 보이게
+
+    ```css
+    .chat {
+        border: 1px solid white;
+        background-color: salmon;
+    }
+    .my-chat {
+        margin-left: auto;
+        background-color: wheat;
+    }
+    ```
+
+    ```html
+    <div id="app">
+        <div v-if="currentUser.uid">
+            <ul>
+                <div v-for="message in messages" :class="{'chat': true, 'my-chat': currentUser.username === message.username}">
+                    <strong>{{ message.username }}</strong> : {{message.content}}
+                </div>
+            </ul>
+            <input v-model="newMessage"  @keyup.enter="createMessage">
+        </div>
+        <div v-else>
+            <div id="firebaseui-auth-container"></div>
+        </div>
+    </div>
+    ```
+
+    `:class="{'chat': true, 'my-chat': currentUser.username === message.username}"` 
+
+    클래스를 바인딩해서 사용. chat이 true면 chat. 아니면, currentUser.username이 true면 my-chat 클래스 사용
+
+
+
+
+
+### 로그아웃
+
+1. ㅇ
+
+2. ㅇ
+
+3. ㅇ
+
+4. 로그아웃 함수
+
+   ```js
+   methods: {
+       ...,
+       logout: function() {
+           this.currentUser = {
+               uid: '',
+               email: '',
+               displayName: ''
+           }
+           auth.signOut()
+       }
+   ```
+
+5. [node 설치](<https://nodejs.org/ko/>)
+
+   + LTS버전 설치
+
+   + 설치 한 후 배포를 위해 node를 설치한다.
+
+   + 확인 위해 bash에서 $node -v => 버전명 출력
+
+   + python 에서는 pip가 있었듯 node에는 npm이 존재.
+
+   + ![1557297707748](.\img\1557297707748.png)
+
+   + `firebase login --interactive`
+
+     bash창에 입력 후 로그인
+
+     `$ firebase init` => 여기서 힘드니까 cmd로 넘어가기
+
+     ![1557298227305](.\img\1557298227305.png)
+
+     database와 hosting
+
+     ![1557298454573](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557298454573.png)
+
+     enter 후
+
+     ![1557298494246](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557298494246.png)
+
+     
+
+     
+
+6. 파일 하나만 hosting 하기 위해서 사용하던 파일 하나만 chat 디렉토리를 만들어서 이동시킨 후 파일 이름을 `index.html`로 변경
+
+7. cmd에서 지정해둔 폴더를 찾아가면 index.html이 존재하는데 그것을 6번에서 만든 index.html로 덮어씌운다.
+
+   그리고 나서 deploy
+
+   ![1557298522621](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557298522621.png)
+
+8. 하고 나서 firebase의 hosting을 가보면 기본 도메인 `<https://vue-project-rain.firebaseapp.com/?mode=select>` 로 들어갈 수 있다.
+
+
+
+
+
+
+
+
+
