@@ -3813,5 +3813,322 @@ methods: {
 
 
 
+## vue django
+
++ music api를 만들기
++ c9에서 django에서 만들었던것을 만들것.
++ vue-resource(X) : 사용하지 말기 => axios 계속 사용하면 된다.
+
+
+
+`https://django-intro-sweetrain.c9users.io/api/v1/musics/` 로 만든 c9 서버를 열어주고 사용하기
+
+
+
+1. axios 사용해서 불러오기
+
+   ```js
+       const app = new Vue({
+           el: '#app',
+           data: {
+               musics: {}
+           },
+           methods: {
+               getMusics: function(){
+                   // axios를 통한 요청은 promise 객체를 리턴. 
+                   axios.get('https://django-intro-sweetrain.c9users.io/api/v1/musics/')
+                   // resolve되면, (성공하면) => then으로 처리
+                   .then(e => console.log(e))
+                   // reject 되면, (실패하면) => catch에서 처리
+                   .catch(error => {
+                       console.log(error)
+                   })
+               }
+           }
+       })
+   ```
+
+   ![1557361713206](.\img\1557361713206.png)
+
+   + CORS(Cross Origin Resource Sharing)는 내가 다른 사이트에가서 아무거나 긁어오는것이 불가능하게 만들어졌다. 왜냐하면 내가 구글 사이트를 들어가서 막 가져오게 만들 수 있게 할 수 없게 만들기 위해서이다. 
+
+     [참고사이트1](<https://zamezzz.tistory.com/137>), [참고사이트2](<https://developer.mozilla.org/ko/docs/Web/HTTP/Access_control_CORS>)
+
+   + 현재 규정이 없기 때문에 그것을 우리가 c9, django에서 만들어줘야한다.
+
+     
+
+2. c9에서 
+
+   `$ pip install django-cors-headers`
+
+   입력해서 설치하기.
+
+   이후 시행사항 따라하기 => [사이트](<https://github.com/ottoyiu/django-cors-headers>)
+
+   1. settings.py
+
+      ```python
+      INSTALLED_APPS = [
+          'rest_framework_swagger',
+          'corsheaders',
+          'musics',
+      ]
+      ```
+
+      ```python
+      MIDDLEWARE = [  # Or MIDDLEWARE_CLASSES on Django < 1.10
+          ...
+          'corsheaders.middleware.CorsMiddleware',
+          'django.middleware.common.CommonMiddleware',
+          ...
+      ]
+      ```
+
+      `'django.middleware.common.CommonMiddleware',` 부분이 아마 대부분 존재할것. 때문에 이것 위에 `'corsheaders.middleware.CorsMiddleware',`를 입력해야한다.
+
+   2. 이후 settings.py 최하단에 
+
+      ```python
+      # 모두 허용하려면
+      CORS_ORIGIN_ALLOW_ALL = True
+      
+      # 특정한 오리진만 허용하려면,
+      # CORS_ORIGIN_WHITElIST = [
+      #     'localhost:8000',
+      #     'naver.com'
+      # ]
+      ```
+
+      [origin 허용을 설정](<https://github.com/ottoyiu/django-cors-headers#configuration>)한다.
+
+   
+
+3. `js`
+
+   ```js
+       const app = new Vue({
+           el: '#app',
+           data: {
+               musics: {}
+           },
+           methods: {
+               getMusics: function() {
+                   // axios를 통한 요청은 promise 객체를 리턴. 
+                   axios.get('https://django-intro-sweetrain.c9users.io/api/v1/musics/')
+                   // resolve되면, (성공하면) => then으로 처리
+                   .then(response => response.data)
+                   .then(musics => this.musics = musics)
+                   // reject 되면, (실패하면) => catch에서 처리
+                   .catch(error => {
+                       console.log(error)
+                   })
+               }
+           },
+           mounted: function() {
+               this.getMusics()
+           }
+       })
+   ```
+
+   `html`
+
+   ```html
+       <div id="app">
+           <ul>
+               <li v-for="music in musics">{{music.id}}번 곡 : {{music.artist}}-{{music.title}}</li>
+           </ul>
+       </div>
+   ```
+
+   ![1557364524807](.\img\1557364524807.png)
+
+   이 경우 아티스트가 foreignkey로 숫자로 묶여온다. 이것을 수정
+
+4. c9 -> `musics/serializers.py`
+
+   ```python
+   class MusicSerializer(serializers.ModelSerializer):
+       artist_name = serializers.CharField(source='artist.name')
+       class Meta:
+           model = Music
+           fields = ['id', 'title', 'artist', 'artist_name']
+   ```
+
+5. html
+
+   ```html
+   <li v-for="music in musics">{{music.id}}번 곡 : {{music.artist_name}}-{{music.title}}</li>
+   ```
+
+   artist를 musics.artist_name으로 수정해준다.
+
+   
+
+   
+
+6. 댓글까지 확인해보기
+
+   c9 ->`musics/serializers.py`
+
+   ```python
+   
+   class CommentSerializer(serializers.ModelSerializer):
+       class Meta:
+           model = Comment
+           fields = ['id', 'content']
+   
+   class MusicSerializer(serializers.ModelSerializer):
+       artist_name = serializers.CharField(source='artist.name')
+       comment_set = CommentSerializer(many=True)
+       class Meta:
+           model = Music
+           fields = ['id', 'title', 'artist', 'artist_name', 'comment_set']
+   
+   ```
+
+   `html`
+
+   ```html
+       <div id="app">
+           <ul>
+               <li v-for="music in musics">
+                   <h2>{{music.id}}번 곡 : {{music.artist_name}}-{{music.title}}</h2>
+                   <ul>
+                       <li v-for="comment in music.comment_set" class="comment">
+                           {{comment.content}}
+                       </li>
+                   </ul>
+                   <hr>
+               </li>
+               
+           </ul>
+       </div>
+   ```
+
+   
+
+   
+
+   
+
+7. 댓글달기
+
+   ```html
+       <div id="app">
+           <ul>
+               <li v-for="music in musics">
+                   <h2>{{music.id}}번 곡 : {{music.artist_name}}-{{music.title}}</h2>
+                   <input v-model="music.newComment">
+                   <ul>
+                       <li v-for="comment in music.comment_set" class="comment">
+                           {{comment.content}}
+                       </li>
+                   </ul>
+                   <hr>
+               </li>
+               
+           </ul>
+       </div>
+   ```
+
+   
+
+   ```js
+       const app = new Vue({
+           el: '#app',
+           data: {
+               newComment: '',
+               musics: []
+           },
+   ```
+
+   ![1557366331435](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557366331435.png)
+
+   이 경우 모든 곳에 똑같은 값이 입력된다.
+
+   이것을 방지하기 위해 music 하나씩마다 newComment를 하나씩 만들어주는것이 좋다.
+
+8. ```js
+           methods: {
+               getMusics: function() {
+                   // axios를 통한 요청은 promise 객체를 리턴. 
+                   axios.get('https://django-intro-sweetrain.c9users.io/api/v1/musics/')
+                   // resolve되면, (성공하면) => then으로 처리
+                   .then(response => response.data)
+                   .then(musics => {
+                       this.musics = musics.map((music) => {
+                           return {...music, newComment: ''}
+                       })
+                   })
+   ```
+
+   + methods에서 getMusics를 만들 때 각각의 music에 newComment를 추가해준다.
+
+   + 이렇게 되면 각각이 따로 동작하게 된다.
+
+     ![1557366465246](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557366465246.png)
+
+   + 각각의 설정을 한 후 createComment 함수를 만들것
+
+     ```html
+         <div id="app">
+             <ul>
+                 <li v-for="music in musics">
+                     <h2>{{music.id}}번 곡 : {{music.artist_name}}-{{music.title}}</h2>
+                     <input v-model="music.newComment" v-on:keyup.enter="createComment(music)">
+                     <ul>
+                         <li v-for="comment in music.comment_set" class="comment">
+                             {{comment.content}}
+                         </li>
+                     </ul>
+                     <hr>
+                 </li>
+                 
+             </ul>
+         </div>
+     ```
+
+     ```js
+                 createComment: function(music) {
+                     const url = `https://django-intro-sweetrain.c9users.io/api/v1/musics/${music.id}/comments/`
+                     console.log(url)
+                     console.log(music.newComment)
+                     axios.post(url, {
+                         content: music.newComment
+                     })
+                     .then(response => console.log(response))
+                     .catch(error => console.log(error))
+                 }
+     ```
+
+   + 하지만 위와 같은 경우 글을 남긴 후 새로고침을 해야지만 저장된것이 보인다.
+
+     이것을 업데이트 해야한다.
+
+   + then을 이어서 사용.
+
+     ```js
+     createComment: function(music) {
+         const url = `https://django-intro-sweetrain.c9users.io/api/v1/musics/${music.id}/comments/`
+         console.log(url)
+         console.log(music.newComment)
+         axios.post(url, {
+             content: music.newComment
+         })
+         .then(response => {
+             music.comment_set.push(response.data)
+             music.newComment=""
+         })
+         .catch(error => console.log(error))
+     }
+     ```
+
+9. 위에서 한 것들을 바로 github에 올려도 바로 사용 가능하다. why? 싱글페이지이기 때문. 이것을 사용하다보면 필터링이나 삭제, 추가 등을 가능하게 할 수 있다.
+
+
+
+
+
 
 
