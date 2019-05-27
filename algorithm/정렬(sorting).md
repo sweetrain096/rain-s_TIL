@@ -341,6 +341,46 @@ int main() {
 
 
 
+```c
+void qSort(int *data , int l , int r) {
+
+	int L = l , R = r;
+	if(L>R)return;
+
+	int mid = (L+R)/2;
+	int pivo = data[mid];
+
+	while(L<=R) {
+		while(data[L]<pivo)L++;//기준
+		while(pivo<data[R])R--;//기준
+
+		if(L<=R) {
+			int c;
+			c = data[L];
+			data[L] = data[R];
+			data[R] = c;
+			// SWAP(data[L] , data[R]);
+			L++;
+			R--;
+		}
+	}
+	if(L<r)qSort(data , L , r);
+	if(l<R)qSort(data , l , R);
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
