@@ -5,7 +5,7 @@
 + 일반적인 Array List와는 다르게 각 요소간의 연결(link)를 이용해서 리스트를 구현하는 것. 
 + 단방향 연결 리스트 / 양방향 연결 리스트 / 환형 연결 리스트 세가지 종류가 존재한다.
 
-![img](C:\Users\student\Desktop\rain\rain-s_TIL\algorithm\img\2939.png)
+![img](.\img\2939.png)
 
 
 
