@@ -159,11 +159,41 @@ print(data)
 
 
 
-## 병합정렬(merge sort)
+## [합병정렬(merge sort)](<https://gmlwjd9405.github.io/2018/05/08/algorithm-merge-sort.html>)
 
 => 병합해놓은 리스트를 원본에 복사하는 과정 등이 필요하기 때문에 시간이 오래 걸리며, 
 
 => 긴 배열이 뒤에 따라붙으면 복사하는 과정이 오래 걸리기 때문에 linked list로 해야만 효율이 좋다.
+
+- 분할 정복 알고리즘의 하나.
+  - 분할정복
+    - 문제를 작은 2개의 문제로 분리하고 각각을 해결한 다음 결과를 모아서 원래의 문제를 해결하는 전략
+    - 일반적으로 재귀(순환) 호출울 이용하여 구현한다.
+- 과정
+  1. 리스트의 길이가 0 또는 1이면 이미 정렬된 것으로 본다. 
+  2. 그렇지 않은 경우 정렬되지 않은 리스트를 절반으로 잘라 비슷한 크기의 두 부분 리스트로 나눈다.
+  3. 각 부분 리스트를 재귀적으로 합병정렬을 이용해 정렬한다.
+  4. 두 부분 리스트를 다시 하나의 정렬된 리스트로 합병한다.
+
+
+
+### 합병 정렬(merge sort) 알고리즘의 예제
+
++ 배열에 27, 10, 12, 20, 25, 13, 15, 22이 저장되어 있다고 가정하고 자료를 오름차순으로 정렬해 보자.
+
++ 2개의 정렬된 리스트를 합병(merge)하는 과정
+
+  1. 2개의 리스트의 값들을 처음부터 하나씩 비교하여 두 개의 리스트의 값 중에서 더 작은 값을 새로운 리스트(sorted)로 옮긴다.
+
+  2. 둘 중에서 하나가 끝날 때까지 이 과정을 되풀이한다.
+
+  3. 만약 둘 중에서 하나의 리스트가 먼저 끝나게 되면 나머지 리스트의 값들을 전부 새로운 리스트(sorted)로 복사한다.
+
+  4. 새로운 리스트(sorted)를 원래의 리스트(list)로 옮긴다.
+
+     ![img](https://gmlwjd9405.github.io/images/algorithm-merge-sort/merge-sort.png)
+
+
 
 
 
@@ -210,6 +240,51 @@ out:
 
 [61, 324, 21, 56, 243, 6, 1, 634, 43, 3, 52]
 [1, 3, 6, 21, 43, 52, 56, 61, 243, 324, 634]
+
+
+
+
+
+c언어
+
+```c
+#include <stdio.h>
+#pragma warning(disable:4996)
+
+void merge(int *arr, int left, int mid, int right) {
+	int i = left;
+	int j = mid + 1;
+	int k = left;
+	int temp[9];
+	while (i <= mid && j <= right) {
+		if (arr[i] <= arr[j]) temp[k++] = arr[i++];
+		else if (arr[i] >= arr[j]) temp[k++] = arr[j++];
+	}
+	if (i > mid) {
+		while (j <= right) temp[k++] = arr[j++];
+	}
+	else {
+		while (i <= mid) temp[k++] = arr[i++];
+	}
+	for (int m = left; m <= right; m++) arr[m] = temp[m];
+}
+
+void mergesort(int *arr, int left, int right) {
+	if (left < right) {
+		int mid = (left + right) / 2;
+		mergesort(arr, left, mid);
+		mergesort(arr, mid + 1, right);
+		merge(arr, left, mid, right);
+	}
+}
+int main() {
+	int arr[9] = { 2,4,7,1,2,10,2,2,5 };
+	mergesort(arr, 0, 8);
+	for (int i = 0; i < 9; i++) printf("%d ", arr[i]);
+}
+```
+
+
 
 
 
