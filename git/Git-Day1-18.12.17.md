@@ -328,7 +328,7 @@ git branch 용어
    
    ```
 
-   ![1557447966086](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557447966086.png)
+   ![1557447966086](./img/1557447966086.png)
 
 3. 다시 마스터 가기
 
@@ -374,7 +374,7 @@ git branch 용어
 
    ![1557448051960](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557448051960.png)
 
-   + 
+   
 
 6. git branch list 확인
 
