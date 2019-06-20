@@ -302,6 +302,7 @@ git branch 용어
 > >
 > > 이 때 만든 핫픽스 브랜치에서의 변경 사항은 'develop' 브랜치에도 병합하여 문제가 되는 부분을 처리해 주어야 합니다.
 
+1.     
 
 
 
@@ -328,8 +329,6 @@ git branch 용어
    
    ```
 
-   ![1557447966086](./img/1557447966086.png)
-
 3. 다시 마스터 가기
 
    ```bash
@@ -339,7 +338,7 @@ git branch 용어
    
    ```
 
-   ![1557447995117](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557447995117.png)
+   
 
    
 
@@ -372,7 +371,7 @@ git branch 용어
    
    ```
 
-   ![1557448051960](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557448051960.png)
+   
 
    
 
@@ -459,7 +458,7 @@ git branch 용어
 
     
 
-    ![1557448615974](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557448615974.png)
+    
 
     이렇게 저장하게 되면 master와 sweet가 묶인 merge 커밋을 맨 앞에 하나 붙이고 생긴 순서대로 붙는다. 위의 경우에는 
 
@@ -584,7 +583,7 @@ git branch 용어
 
     이것을 vs코드로 열면
 
-    ![1557449377374](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557449377374.png)
+    
 
     하나 설정할 수 있게 만들어져있고
 
@@ -679,12 +678,11 @@ git branch 용어
    ```bash
    vi ~/.bashrc
    #alias python='winpty python.exe'
-   export TELEGRAM_TOKEN='726512140:AAGiXt6o3088tnYTCCIqq_PzmjX_oxmJ5tE'
    alias jn='jupyter notebook'
    export KOBIS_KEY="9a678709f02e6c18438932ed1bf7bee4"
    export PATH="/c/Users/student/.pyenv/bin:$PATH"
    ```
-
+   
 4. global
 
    ```bash
@@ -715,5 +713,5 @@ $ pyenv rehash
 
 ```
 
-![photo_2019-05-10_17-43-05](C:\Users\student\Desktop\rain\rain-s_TIL\git\img\photo_2019-05-10_17-43-05.jpg)
+
 
