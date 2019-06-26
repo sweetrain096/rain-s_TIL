@@ -48,3 +48,10 @@ D2CodingAll 들어가서 폰트 설치 후 user/.jupyter/custom
 
 
 
++ 편하게 줄여쓰기
+
+```bash
+vi ~/.bash_profile
+alias jn="jupyter notebook"
+```
+
