@@ -119,6 +119,47 @@ $ git status
 
 
 
++ git status 및 add 등으로 수정 할 때 한국어 파일명이 깨지는 상황 방지
+
+  1. bashrc에 추가 : `vi .bashrc`
+
+     ```bash
+     alias ls='ls --show-control-chars'
+     ```
+
+  2. git bash에 아래 명령어 입력
+
+     ```bash
+     git config core.quotepath false
+     
+     git config --global core.quotepath fasle
+     위에거는 글로벌 명령어
+     ```
+
+     + bash창에 입력하면 한국어 파일명이 잘 저장된다.
+
+     ![1561623916171](img/1561623916171.png)
+
+     ![1561623929839](img/1561623929839.png)
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 원격 저장소로 보내기(push)
 
 사전에 github에 저장소(repository)를 만들어 놓는다.
