@@ -660,6 +660,26 @@ git branch 용어
 
 
 
+### git branch pull 하기
+
+#### git remote update
+
++ 원격의 브랜치에 접근하기 위해 git remote를 갱신해야할 경우가 있다. 
++ `fatal: Cannot update paths and switch to branch 'feature/rename' at the same time.`이라는 오류를 해결해준다.
+
+
+
+#### 원격 저장소 branch 확인
+
++ `git branch -r` : 원격 저장소의 branch 리스트를 볼 수 있다.
++ `git branch -a` : 로컬 및 원격 모든 저장소의 branch 리스트를 볼 수 있다.
+
+
+
+#### 원격 저장소의 branch 가져오기
+
+만약 `develop` 브랜치를 가져오고 싶다면,<br>`git checkout -t origin/develop` 명령어를 입력하면 브랜치를 가져옴과 동시에 develop 브랜치로 이동한다.
+
 
 
 
