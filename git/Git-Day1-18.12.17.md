@@ -119,6 +119,47 @@ $ git status
 
 
 
++ git status 및 add 등으로 수정 할 때 한국어 파일명이 깨지는 상황 방지
+
+  1. bashrc에 추가 : `vi .bashrc`
+
+     ```bash
+     alias ls='ls --show-control-chars'
+     ```
+
+  2. git bash에 아래 명령어 입력
+
+     ```bash
+     git config core.quotepath false
+     
+     git config --global core.quotepath fasle
+     위에거는 글로벌 명령어
+     ```
+
+     + bash창에 입력하면 한국어 파일명이 잘 저장된다.
+
+     ![1561623916171](img/1561623916171.png)
+
+     ![1561623929839](img/1561623929839.png)
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 원격 저장소로 보내기(push)
 
 사전에 github에 저장소(repository)를 만들어 놓는다.
@@ -302,6 +343,7 @@ git branch 용어
 > >
 > > 이 때 만든 핫픽스 브랜치에서의 변경 사항은 'develop' 브랜치에도 병합하여 문제가 되는 부분을 처리해 주어야 합니다.
 
+1.     
 
 
 
@@ -328,8 +370,6 @@ git branch 용어
    
    ```
 
-   ![1557447966086](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557447966086.png)
-
 3. 다시 마스터 가기
 
    ```bash
@@ -339,7 +379,7 @@ git branch 용어
    
    ```
 
-   ![1557447995117](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557447995117.png)
+   
 
    
 
@@ -372,9 +412,9 @@ git branch 용어
    
    ```
 
-   ![1557448051960](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557448051960.png)
+   
 
-   + 
+   
 
 6. git branch list 확인
 
@@ -459,7 +499,7 @@ git branch 용어
 
     
 
-    ![1557448615974](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557448615974.png)
+    
 
     이렇게 저장하게 되면 master와 sweet가 묶인 merge 커밋을 맨 앞에 하나 붙이고 생긴 순서대로 붙는다. 위의 경우에는 
 
@@ -584,7 +624,7 @@ git branch 용어
 
     이것을 vs코드로 열면
 
-    ![1557449377374](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1557449377374.png)
+    
 
     하나 설정할 수 있게 만들어져있고
 
@@ -699,12 +739,11 @@ git branch 용어
    ```bash
    vi ~/.bashrc
    #alias python='winpty python.exe'
-   export TELEGRAM_TOKEN='726512140:AAGiXt6o3088tnYTCCIqq_PzmjX_oxmJ5tE'
    alias jn='jupyter notebook'
    export KOBIS_KEY="9a678709f02e6c18438932ed1bf7bee4"
    export PATH="/c/Users/student/.pyenv/bin:$PATH"
    ```
-
+   
 4. global
 
    ```bash
@@ -735,5 +774,5 @@ $ pyenv rehash
 
 ```
 
-![photo_2019-05-10_17-43-05](C:\Users\student\Desktop\rain\rain-s_TIL\git\img\photo_2019-05-10_17-43-05.jpg)
+
 

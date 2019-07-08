@@ -21,7 +21,7 @@ def func(parameter1, parameter2):
 
 
 
-![1546504042236](C:\Users\student\AppData\Roaming\Typora\typora-user-images\1546504042236.png)
+
 
 
 
