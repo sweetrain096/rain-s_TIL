@@ -3787,11 +3787,11 @@ methods: {
 
      database와 hosting
 
-     ![1557298454573](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557298454573.png)
+     ![1557298454573](.\img\1557298454573.png)
 
      enter 후
 
-     ![1557298494246](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557298494246.png)
+     ![1557298494246](.\img\1557298494246.png)
 
      
 
@@ -3803,7 +3803,7 @@ methods: {
 
    그리고 나서 deploy
 
-   ![1557298522621](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557298522621.png)
+   ![1557298522621](.\img\1557298522621.png)
 
 8. 하고 나서 firebase의 hosting을 가보면 기본 도메인 `<https://vue-project-rain.firebaseapp.com/?mode=select>` 로 들어갈 수 있다.
 
