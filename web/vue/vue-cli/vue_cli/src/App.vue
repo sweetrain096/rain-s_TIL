@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>삭제 해볼까?</h1>
   </div>
 </template>
 
@@ -12,6 +11,15 @@ export default {
   name: 'app',
   components: {
     HelloWorld
+  },
+  data() {
+    return {
+      someLeakyProperty: 'I leak memory if not cleaned up!'
+    }
+  },
+
+  beforeDestroy() {
+    console.log("삭제 하기 전!");
   }
 }
 </script>
