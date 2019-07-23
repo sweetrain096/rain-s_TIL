@@ -1,28 +1,12 @@
 <template>
   <div id="app">
-    <h1>삭제 해볼까?</h1>
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
+    <router-view/>
   </div>
 </template>
-
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  },
-  data() {
-    return {
-      someLeakyProperty: 'I leak memory if not cleaned up!'
-    }
-  },
-
-  beforeDestroy() {
-    console.log("삭제 하기 전!");
-  }
-}
-</script>
 
 <style>
 #app {
