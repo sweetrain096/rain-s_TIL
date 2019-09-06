@@ -722,6 +722,16 @@ git branch 용어
 
 
 
+#### bash 한글 깨질때
+
+```bash
+git config --global core.quotepath false
+```
+
+
+
+
+
 
 
 ## 윈도우 로컬에서 pyenv 사용하기[x]
