@@ -4067,7 +4067,7 @@ methods: {
 
    + 이렇게 되면 각각이 따로 동작하게 된다.
 
-     ![1557366465246](C:\Users\student\Desktop\rain\rain-s_TIL\web\js\img\1557366465246.png)
+     ![1557366465246](img/1557366465246.png)
 
    + 각각의 설정을 한 후 createComment 함수를 만들것
 
