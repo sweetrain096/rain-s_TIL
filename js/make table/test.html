@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <table class="table">
+
+    </table>
+</body>
+</html>
+<style>
+    table{
+        border: 1px solid lightgray;
+    }
+    td{
+        border-right: 1px solid lightgray;
+    }
+    
+</style>
+
+<script type="text/javascript">
+    var header = document.querySelector('header');
+    var section = document.querySelector('section');
+
+    var requestURL = 'https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json';
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'json';
+    request.send();
+    request.onload = function() {
+    var superHeroes = request.response;
+        // populateHeader(superHeroes);
+        showHeroes(superHeroes);
+    }
+
+    function showHeroes(jsonObj) {
+    var heroes = jsonObj['members'];
+    var keyList = Object.getOwnPropertyNames(heroes[0]);
+    var len = Object.keys(heroes[0]).length;
+    var tHead = [];
+    var headCnt = 0;
+    tHead[headCnt++] = '<thead style="background-color: navy; color:white; font-size: 2em;"><tr>';
+    for (var i = 0; i<len; i++){
+        tHead[headCnt++] = '<td>';
+        tHead[headCnt++] = keyList[i];
+        tHead[headCnt++] = '</td>';
+    }
+    tHead[headCnt++] = '</tr></thead>'
+    $('table').append(tHead.join(''));
+
+
+    var valList = [];
+    var cnt = 0;
+    valList[cnt++] = '<tbody style="font-size: 1.5em;">';
+    for (var i = 0; i<heroes.length; i++){
+        console.log(len, keyList);
+        valList[cnt++] = '<tr>';
+        for (var j = 0; j<len; j++){
+            var keyName = keyList[j];
+            valList[cnt++] = '<td>';
+            if (heroes[i][keyName] == undefined){
+                valList[cnt++] = 'null';
+            }else{
+                valList[cnt++] = heroes[i][keyName];
+            }
+            valList[cnt++] = '</td>';
+        }
+        valList[cnt++] = '</tr>';
+
+    }
+    valList[cnt++] = '</tbody>';
+    $('table').append(valList.join(''));
+
+    }
+</script>
